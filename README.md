@@ -1,4 +1,3 @@
-
 # Placify by Innovision Technologies Pvt Ltd - GSSoC 2025
 
 ![GSSoC 2025](https://img.shields.io/badge/GSSoC-2025-blue.svg)
@@ -7,88 +6,91 @@
 [![GitHub issues](https://img.shields.io/github/issues/MonishRaman/Placify-Smarter_Placements-Sharper_Talent)](https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent/issues)
 [![GitHub forks](https://img.shields.io/github/forks/MonishRaman/Placify-Smarter_Placements-Sharper_Talent)](https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent/network)
 [![GitHub stars](https://img.shields.io/github/stars/MonishRaman/Placify-Smarter_Placements-Sharper_Talent)](https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent/stargazers)
+[![Join our Discord](https://img.shields.io/badge/Join_Discord-7289DA?logo=discord\&logoColor=white)](https://discord.gg/WdAdQPAB)
 
-Welcome to the official repository for **Placify**, a project by **Innovision Technologies Pvt Ltd** participating in the GirlScript Summer of Code (GSSoC) 2025! We are thrilled to have you here.
 
-**Tagline:** _Unboxing New Ideas_
+Welcome to the official repository for **Placify**, a project by **Innovision Technologies Pvt Ltd**, participating in **GirlScript Summer of Code (GSSoC) 2025**. We're thrilled to have you join our mission!
 
-**Vision:** _"Reinventing campus placement through AI-powered intelligent interviewing."_
+**Tagline:** *Unboxing New Ideas*
+
+**Vision:** *"Reinventing campus placement through AI-powered intelligent interviewing."*
 
 ---
 
 ## ✨ Live Demo
 
-**https://placifyapp.netlify.app/**
+🔗 **[Placify Live App](https://placifyapp.netlify.app/)**
 
 ---
 
 ## 📖 Table of Contents
-*   [The Problem](#-the-problem)
-*   [The Solution: Placify](#-the-solution-placify)
-*   [🚀 Key Features](#-key-features)
-*   [👥 Primary Beneficiaries](#-primary-beneficiaries)
-*   [🛠️ Technology Stack (Proposed)](#️-technology-stack-proposed)
-*   [🗺️ Project Roadmap](#️-project-roadmap)
-*   [🏆 Achievements](#-achievements)
-*   [🏁 Getting Started](#-getting-started)
-*   [🤝 How to Contribute](#-how-to-contribute)
-*   [🧑‍💻 Our Team](#-our-team)
-*   [📄 License](#-license)
-*   [📞 Contact](#-contact)
+
+* [😫 The Problem](#-the-problem)
+* [💡 The Solution: Placify](#-the-solution-placify)
+* [🚀 Key Features](#-key-features)
+* [👥 Primary Beneficiaries](#-primary-beneficiaries)
+* [🛠️ Technology Stack (Proposed)](#️-technology-stack-proposed)
+* [🗺️ Project Roadmap](#️-project-roadmap)
+* [🏆 Achievements](#-achievements)
+* [🏁 Getting Started](#-getting-started)
+* [🤝 How to Contribute](#-how-to-contribute)
+* [🧑‍💻 Our Team](#-our-team)
+* [📄 License](#-license)
+* [📞 Contact](#-contact)
 
 ---
 
 ## 😫 The Problem
 
-The traditional campus hiring process is broken, leading to significant inefficiencies for all parties involved:
-*   **Time-Consuming:** Interviewing over 500 students can take several days or even weeks for corporate recruiters.
-*   **Subjectivity:** The feedback provided by human recruiters can often be inconsistent and subjective.
-*   **Lack of Feedback:** Students are often left in the dark, not knowing where they went wrong or how to improve.
-*   **No Actionable Insights:** Educational institutions lack the data required to identify curriculum gaps and improve student employability.
+The traditional campus hiring process is inefficient and outdated:
 
-**The consequence?** Talented students go unnoticed, companies waste valuable resources, and institutional placement records suffer.
+* ⏱️ **Time-Consuming:** Interviewing 500+ students can take weeks.
+* 🎯 **Subjectivity:** Human evaluation varies widely.
+* ❌ **Lack of Feedback:** Students often get no insights post-interview.
+* 📉 **No Data:** Institutions miss critical improvement metrics.
+
+**Result?** Talented students go unnoticed, companies lose time and resources, and placement records fall short.
+
+---
 
 ## 💡 The Solution: Placify
 
-**Placify** is a full-stack, AI-based assessment platform designed to automate and optimize the campus placement process from start to finish.
+**Placify** is an AI-powered, full-stack assessment platform that automates and elevates the campus placement process. It mimics real interviews and evaluates candidates on:
 
-Our system can evaluate **40 students per hour** by simulating realistic interviews. We use advanced AI models to analyze not just what a candidate says, but also how they say it. By analyzing facial expressions, tone of voice, speech patterns, and behavioral indicators, we provide a holistic and unbiased assessment of each candidate, without compromising on quality.
+* 📹 Facial expressions
+* 🎤 Voice tone, clarity, and confidence
+* 🧠 Technical accuracy
+* 👥 Behavioral traits
+
+⏩ Evaluate **40+ students per hour**, fairly and consistently!
 
 ---
 
 ## 🚀 Key Features
 
-Our platform is packed with features designed to empower students, recruiters, and institutions.
-
-*   **⚡ 10x Faster Interviews:** Reduce the hiring timeline for 500 students from weeks to under 48 hours.
-*   **🤖 AI-Based Unbiased Scoring:** Eliminates human subjectivity by analyzing a wide range of parameters.
-*   **📊 Real-time Analysis:** Captures and analyzes responses via webcam and microphone, focusing on:
-    *   Eye movement & confidence levels
-    *   Tone, pitch, and clarity of voice
-    *   Technical and logical accuracy
-    *   Behavioral indicators
-*   **📈 Personalized Student Feedback:** Students receive an instant, detailed report highlighting their strengths and areas for improvement.
-*   **🧠 AI-Generated Improvement Path:** Provides a customized roadmap for students to enhance their skills.
-*   **🏢 Comprehensive Dashboards:** Real-time dashboards offer recruiters and institutions deep, actionable insights into the talent pool.
-*   **❓ Adaptive, Industry-Standard Questions:** Smart questions adapt in real-time to the candidate's performance.
+* ⚡ **10x Faster Interviews:** Complete 500 interviews in under 48 hours.
+* 🤖 **AI-Based Scoring:** Removes human bias, ensures consistency.
+* 📊 **Real-Time Analysis:** Monitors webcam & audio inputs for tone, clarity, logic, and body language.
+* 📈 **Student Feedback Reports:** Personalized improvement suggestions.
+* 🧠 **AI Learning Roadmap:** Smart progress path suggestions.
+* 📊 **Recruiter Dashboards:** Actionable talent pool insights.
+* ❓ **Adaptive Questions:** Adjust based on responses.
 
 ---
 
 ## 👥 Primary Beneficiaries
 
-*   **Students:** Gain invaluable performance insights and personalized training guidance to excel in future interviews.
-*   **Placement Officers:** Optimize placement timelines, manage the process efficiently, and improve placement outcomes.
-*   **HR Recruiters:** Save time, reduce hiring costs, and make data-driven decisions to find the best talent.
-*   **Educational Institutions:** Receive actionable data to improve curriculum, enhance teaching methods, and boost employability metrics.
+* 🎓 **Students** – Understand strengths, get feedback, and grow
+* 🏫 **Institutions** – Analyze gaps, boost curriculum, improve metrics
+* 🧑‍💼 **HR Recruiters** – Hire faster, smarter, and with data
+* 🎯 **Placement Cells** – Automate workflows, improve efficiency
 
 ---
 
 ## 📁 Project Structure
 
-Here is the proposed file structure for the Placify project.
-
-<pre>
-Placify-Smarter-Placements.-Sharper-Talent.-/
+```bash
+Placify-Smarter_Placements-Sharper_Talent/
 ├── node_modules/
 ├── src/
 │   ├── pages/
@@ -112,190 +114,152 @@ Placify-Smarter-Placements.-Sharper-Talent.-/
 ├── README.md
 ├── tailwind.config.js
 └── vite.config.js
-</pre>
+```
 
 ---
-
 
 ## 🛠️ Technology Stack (Proposed)
 
-*   **Frontend:** React.js / Next.js / Vue.js
-*   **Backend:** Node.js (Express.js) / Python (Django / FastAPI)
-*   **Database:** MongoDB / PostgreSQL
-*   **AI/ML:** Python, TensorFlow, PyTorch, OpenCV, NLP libraries
-*   **Cloud & DevOps:** Vercel, Render, AWS, Google Cloud, Azure
-
-
----
-
-## 🏁 Getting Started
-
-To get a local copy up and running, please follow these simple steps.
-
-1.  **Fork the repository.**
-2.  **Clone the forked repository:**
-    ```sh
-    git clone https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent.git
-    ```
-3.  **Navigate to the project directory:**
-    ```sh
-    cd Placify-Smarter_Placements-Sharper_Talent
-    ```
-4.  **Install dependencies (for both client and server):**
-    ```sh
-    # Example command, update as per project setup
-    npm install
-    ```
-5.  **Run the application:**
-    ```sh
-    # Example command
-    npm run dev
-    ```
+* **Frontend:** React.js / Next.js / Vue.js
+* **Backend:** Node.js (Express.js) / Django / FastAPI
+* **Database:** MongoDB / PostgreSQL
+* **AI/ML:** Python, TensorFlow, PyTorch, OpenCV, NLP
+* **Cloud & DevOps:** Vercel, Render, AWS, Google Cloud, Azure
 
 ---
 
 ## 🏁 Getting Started
 
-To get a local copy up and running, please follow these simple steps.
+Want to run Placify on your local machine? Here’s how 👇
 
-1.  **Fork the repository.**
-2.  **Clone the repository:**
-    ```sh
-    https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent.git
-    ```
-3.  **Navigate to the project directory:**
-    ```sh
-    cd Placify-Smarter_Placements-Sharper_Talent
-    ```
-4.  **Install dependencies:**
-    ```sh
-    # This is an example command, update it based on the package manager
-    npm install
-    ```
-5.  **Run the application:**
-    ```sh
-    # This is an example command
-    npm run dev
-    ```
+### ✅ Prerequisites
+
+* Node.js & npm installed
+* Git installed
+* Code editor (VS Code recommended)
+
+### 🔧 Steps
+
+1. **Fork this repo** by clicking the Fork button (top right).
+2. **Clone your fork**:
+
+```bash
+git clone https://github.com/your-username/Placify-Smarter_Placements-Sharper_Talent.git
+```
+
+3. **Navigate into the project directory**:
+
+```bash
+cd Placify-Smarter_Placements-Sharper_Talent
+```
+
+4. **Install dependencies**:
+
+```bash
+npm install
+```
+
+5. **Start the development server**:
+
+```bash
+npm run dev
+```
+
+Visit `http://localhost:5174` in your browser to see it live.
 
 ---
 
-## 🤝 Contribution Guidelines
+## 🤝 How to Contribute
 
-We are excited to see your contributions! Please read our **[CONTRIBUTING.md](CONTRIBUTING.md)** and **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** files.
+We welcome all contributions! 🚀
 
-If you are adding content or creating new pages, please:
--   Ensure new UI components are responsive and reusable.
--   Use PNG or JPG files for minimal size and **always compress images** before adding them.
--   Ensure that your forked repository is up to date before submitting a pull request.
+Please read our [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE\_OF\_CONDUCT.md](CODE_OF_CONDUCT.md) before starting.
 
-### Steps for Contributing
+### 📌 Contributor Checklist
 
-#### 1. Fork the Repository
-Click on the "Fork" button at the top right of the repository page.
+* Responsive, clean code
+* Compress and optimize assets
+* Sync your fork before PRs
 
-#### 2. Clone the Forked Repository
+### 🛠 Contribution Steps
+
 ```bash
-git clone https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent.git
-```
+# Fork the repo via GitHub
 
-#### 3. Create a New Branch
-```bash
-git checkout -b your-awesome-feature-name
-```
+# Clone it
+git clone https://github.com/your-username/Placify-Smarter_Placements-Sharper_Talent.git
 
-#### 4. Make Your Changes
-Work your magic! Ensure you follow the project's coding style.
-  
-#### 5. Commit Your Changes
-```bash
+# Create your feature branch
+git checkout -b feature/your-awesome-feature
+
+# Stage and commit
 git add .
-git commit -m "feat: Describe your awesome changes here"
+git commit -m "feat: add awesome feature"
+
+# Push to your fork
+git push origin feature/your-awesome-feature
 ```
 
-#### 6. Push to Your Branch
-```bash
-git push origin your-awesome-feature-name
-```
+Submit your PR from GitHub with a short description.
 
-#### 7. Create a Pull Request:
-Go to the original repository and click on "New Pull Request." Provide a clear description of your work and link the relevant issue.
+### 🔄 Keep Your Fork Updated
 
-## Keeping Your Fork Updated
-
-Before creating a pull request, ensure your fork is up-to-date with the main project.
-
-#### Add Remote Upstream Repository:
 ```bash
 git remote add upstream https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent.git
-```
-
-#### Fetch Upstream Changes:
-```bash
 git fetch upstream
-```
-
-#### Merge Upstream Changes:
-```bash
 git checkout main
 git merge upstream/main
-```
-
-#### Push Changes to Your Fork:
-```bash
 git push origin main
 ```
 
-Now, your main branch is synced. You can create new feature branches from it.
 ---
 
 ## 🗺️ Project Roadmap
 
-We have a clear vision for the future of Placify. Our roadmap is structured into phases to ensure steady progress and impactful delivery.
+### 🚦 Rollout Plan
 
-#### **Pilot Plan & Phased Rollout**
-*   **Phase 1 (2025):** Build the Minimum Viable Product (MVP) featuring the core AI Interview Bot.
-*   **Phase 2 (2025):** Launch pilot programs in 3 colleges to gather real-world user feedback and iterate.
-*   **Phase 3 (2026):** Forge strategic partnerships with university placement cells and corporate HR firms.
-*   **Phase 4 (2027):** Expand operations PAN-India and introduce multi-language support to cater to a diverse user base.
+* **Phase 1 (2025):** MVP with core AI Interview Bot
+* **Phase 2 (2025):** Pilots across 3 colleges
+* **Phase 3 (2026):** Partner with HR & universities
+* **Phase 4 (2027):** PAN-India scale with multi-language support
 
-#### **Vision for 2027**
-*   To help over **1 million students** improve their hiring readiness.
-*   To become the **#1 intelligent recruitment platform** for educational institutions in India.
+### 🎯 Vision 2027
+
+* Impact 1M+ students
+* Become India’s leading smart recruitment platform
 
 ---
 
 ## 🏆 Achievements
 
-We are proud to have been recognized for our innovative approach.
-*   **Best Startup Pitch:** Awarded to our founder, Monish R, at the **Founders Networking Summit 2025**, hosted by iLearnings and DSATM, Bangalore.
+🏅 **Best Startup Pitch** awarded to **Monish R** at **Founders Networking Summit 2025**, hosted by iLearnings & DSATM, Bangalore.
 
 ---
 
 ## 🧑‍💻 Our Team
 
-Placify is brought to you by the dedicated team at Innovision Pvt Ltd, Bangalore.
+Built with ❤️ by:
 
-*   **Monish R** - Founder
-*   **Prashanth A N** - Co-Founder
+* **Monish R** – Founder
+* **Prashanth A N** – Co-Founder
 
-Both are students of DSATM, Bangalore.
+*Final Year, DSATM Bangalore*
 
 ---
 
 ## 📄 License
 
-This project is distributed under the MIT License. See `LICENSE.txt` for more information.
+This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for more info.
 
 ---
 
 ## 📞 Contact
 
-*   **Monish R:** [monishr608@gmail.com](mailto:monishr608@gmail.com)
-*   **Prashanth A N:** [prashanth3792@gmail.com](mailto:prashanth3792@gmail.com)
-*   **Website:** [MonishRaman Portfolio](http://www.monishraman.netlify.app)
-*   **Phone:** +91 82968 63444
+* 📧 **Monish R:** [monishr608@gmail.com](mailto:monishr608@gmail.com)
+* 📧 **Prashanth A N:** [prashanth3792@gmail.com](mailto:prashanth3792@gmail.com)
+* 🌐 **Portfolio:** [monishraman.netlify.app](http://www.monishraman.netlify.app)
+* 📱 **Phone:** +91 82968 63444
 
-***
-_"If we can transform recruitment for 500 students in hours instead of weeks, imagine what we can do for a nation."_
-***
+---
+
+> *"If we can transform recruitment for 500 students in hours instead of weeks, imagine what we can do for a nation."*

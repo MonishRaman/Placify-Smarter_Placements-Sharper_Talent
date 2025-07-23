@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { Camera, Mic, SkipForward, Square, Bot,Send, AlertCircle, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+
 const InterviewInterface = () => {
   const navigate = useNavigate();
   const videoRef = useRef(null);
@@ -106,6 +108,7 @@ const [messages, setMessages] = useState([
     setCurrentQuestion(currentQuestion + 1); // prevent it from repeating
   }
 
+
     setMessages(updatedMessages);
     setUserInput('');
   };
@@ -135,30 +138,39 @@ const [messages, setMessages] = useState([
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.4 }}
                 >
+
+//   return (
+//     <div className="min-h-screen dark:bg-gray-900 dark:text-white bg-gray-100 text-gray-900 transition-colors">
+//       {/* Header */}
+//       <div className=" dark:bg-black/50 bg-white/70 p-4 transition-colors">
+//         <div className="max-w-7xl mx-auto flex items-center justify-between">
+//           <div className="flex items-center space-x-4">
+//             <div className="flex items-center space-x-2">
+//               {cameraPermission === 'granted' && (
+//                 <div className="flex items-center space-x-1 text-emerald-400">
+
                   <Camera className="w-4 h-4" />
                   <span className="text-sm">Camera Active</span>
-                </motion.div>
+                </div>
               )}
-              <motion.div
-                className="flex items-center space-x-1 dark:text-emerald-400 text-emerald-600"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.4, delay: 0.1 }}
-              >
+              <div className="flex items-center space-x-1 text-emerald-400">
                 <Mic className="w-4 h-4" />
                 <span className="text-sm">Mic Active</span>
-              </motion.div>
+              </div>
             </div>
           </div>
 
+
           <div className="dark:text-white text-gray-900">
             {/* <span className="text-sm">Question {currentQuestionIndex + 1} of {questions.length}</span> */}
+
           </div>
         </div>
-      </motion.div>
+      </div>
 
       <div className="flex h-screen">
         {/* Left Panel - Video Feed */}
+
 
         <motion.div
           className="flex-1 p-6"
@@ -184,14 +196,24 @@ const [messages, setMessages] = useState([
                   Please allow camera access to continue with the interview
                 </p>
 
+
+//         <div className="flex-1 p-6">
+//           <div className=" rounded-2xl h-full flex items-center justify-center relative overflow-hidden dark:bg-black bg-white transition-colors">
+//             {cameraPermission === 'pending' && (
+//               <div className="text-center">
+//                 <AlertCircle className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
+//                 <h3 className="text-xl font-semibold mb-2">Camera Permission Required</h3>
+//                 <p className=" dark:text-gray-400 text-gray-600 mb-4">Please allow camera access to continue with the interview</p>
+
                 <button
                   onClick={requestCameraAccess}
                   className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors"
                 >
                   Grant Camera Access
                 </button>
-              </motion.div>
+              </div>
             )}
+
 
             {cameraPermission === "denied" && (
               <motion.div
@@ -209,42 +231,47 @@ const [messages, setMessages] = useState([
                   Please enable camera access in your browser settings
                 </p>
 
+
+            
+//             {cameraPermission === 'denied' && (
+//               <div className="text-center">
+//                 <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+//                 <h3 className="text-xl font-semibold mb-2">Camera Access Denied</h3>
+//                 <p className=" dark:text-gray-400 text-gray-600 mb-4">Please enable camera access in your browser settings</p>
+
                 <button
                   onClick={requestCameraAccess}
                   className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors"
                 >
                   Try Again
                 </button>
-              </motion.div>
+              </div>
             )}
 
+
             {cameraPermission === "granted" && (
+
+            
+            
               <>
-                <motion.video
+                <video
                   ref={videoRef}
                   autoPlay
                   muted
                   playsInline
                   className="w-full h-full object-cover rounded-2xl"
-                  initial={{ scale: 0.98, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.5 }}
                 />
-                <motion.div
-                  className="absolute bottom-4 left-4 flex items-center space-x-2 dark:bg-black/50 bg-white/80 px-3 py-2 rounded-lg transition-colors duration-300"
-                  initial={{ y: 10, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.4, delay: 0.2 }}
-                >
+                <div className="absolute bottom-4 left-4 flex items-center space-x-2 bg-black/50 px-3 py-2 rounded-lg">
                   <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                   <span className="text-sm">Recording</span>
-                </motion.div>
+                </div>
               </>
             )}
           </div>
-        </motion.div>
+        </div>
 
         {/* Right Panel - Questions */}
+
 
         <motion.div
           className="w-1/2 p-6"
@@ -287,6 +314,62 @@ const [messages, setMessages] = useState([
                     className={`flex items-center ${
                       msg.sender === "bot" ? "justify-start" : "justify-end"
                     }`}
+
+//         <div className="w-1/2 p-6">
+//           <div className=" dark:bg-gray-800 bg-white rounded-2xl h-full p-8 flex flex-col transition-colors">
+//             {/* Progress Bar */}
+//             <div className="mb-8">
+//               <div className="flex justify-between items-center mb-2">
+//                 <span className="text-sm dark:text-gray-400 text-gray-600">Progress</span>
+//                 <span className="text-sm  dark:text-gray-400 text-gray-600">
+//                   {Math.round(((currentQuestionIndex + 1) / questions.length) * 100)}%
+//                 </span>
+//               </div>
+//               <div className="w-full dark:bg-gray-700 bg-gray-200 rounded-full h-2">
+//                 <div
+//                   className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+//                   style={{
+//                     width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`
+//                   }}
+//                 ></div>
+//               </div>
+//             </div>
+
+//             {/* Current Question */}
+//             <div className="flex-1 flex flex-col justify-center">
+//               <div className="mb-8">
+//                 <h2 className="text-3xl font-bold mb-6 leading-tight">
+//                   {questions[currentQuestionIndex]}
+//                 </h2>
+//                 <div className="border rounded-xl p-4 dark:bg-purple-600/20 dark:border-purple-500/30 bg-purple-100/40 border-purple-300/30">
+//                   <p className=" dark:text-purple-200 text-purple-800 text-sm">
+//                     💡 <strong>Tip:</strong> Take your time to think before answering. 
+//                     Speak clearly and maintain eye contact with the camera.
+//                   </p>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Controls */}
+//             <div className="space-y-4">
+//               <div className="flex space-x-4">
+//                 {!isLastQuestion ? (
+//                   <button
+//                     onClick={handleNextQuestion}
+//                     className="flex-1 bg-purple-600 hover:bg-purple-700 px-6 py-4 rounded-xl 
+//                                font-semibold flex items-center justify-center space-x-2 
+//                                transition-colors"
+//                   >
+//                     <SkipForward className="w-5 h-5" />
+//                     <span>Next Question</span>
+//                   </button>
+//                 ) : (
+//                   <button
+//                     onClick={handleFinishInterview}
+//                     className="flex-1 bg-emerald-600 hover:bg-emerald-700 px-6 py-4 rounded-xl 
+//                                font-semibold flex items-center justify-center space-x-2 
+//                                transition-colors"
+
                   >
                     {msg.sender === "bot" && (
                       <Bot className="w-8 h-8 text-blue-700 mr-2" />
@@ -305,6 +388,7 @@ const [messages, setMessages] = useState([
                 ))}
               </div>
 
+
               {/* Input area */}
               <div className="h-20 flex items-center gap-2 p-3 border-t border-gray-300">
                 <input
@@ -322,11 +406,20 @@ const [messages, setMessages] = useState([
                   <Send className="h-5 w-5" />
                 </button>
               </div>
+
+              
+//               <button
+//                 onClick={() => navigate('/dashboard')}
+//                 className="w-full text-gray-400 dark:text-gray-400 hover:text-white dark:hover:text-white py-2 transition-colors"
+//               >
+//                 Exit Interview
+//               </button>
+
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

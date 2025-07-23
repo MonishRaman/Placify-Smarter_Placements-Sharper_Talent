@@ -5,6 +5,7 @@ import ThemeToggle from "../components/ThemeToggle";
 
 import { motion } from "framer-motion";
 
+
 const LandingPage = () => {
   const navigate = useNavigate();
 
@@ -37,23 +38,10 @@ const LandingPage = () => {
   ];
 
   return (
-
-    <motion.div
-      className="min-h-screen"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.6, ease: "easeInOut" }}
-    >
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <motion.div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
-          initial={{ y: -30 }}
-          animate={{ y: 0 }}
-          exit={{ y: -30 }}
-          transition={{ duration: 0.7, ease: "easeInOut" }}
-        >
-
+      <header className="bg-white dark:bg-gray-800 shadow-sm transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
               <Brain className="w-8 h-8 text-purple-600 dark:text-purple-400" />
@@ -70,20 +58,12 @@ const LandingPage = () => {
             </button>
               </div>
           </div>
-        </motion.div>
+        </div>
       </header>
 
       {/* Hero Section */}
-
-      <section className="bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 text-white">
-        <motion.div
-          initial={{ y: 30 }}
-          animate={{ y: 0 }}
-          exit={{ y: 30 }}
-          transition={{ duration: 0.7, ease: "easeInOut" }}
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
-        >
-
+      <section className="bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 dark:from-purple-800 dark:via-purple-900 dark:to-indigo-950 text-white transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
               Placify: Smarter Placements.
@@ -110,19 +90,11 @@ const LandingPage = () => {
               <ArrowRight className="w-5 h-5" />
             </button>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* Features Section */}
-
-      <motion.section
-        className="py-20 bg-white"
-        initial={{ opacity: 0, y: 60 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-      >
-
+      <section className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -136,17 +108,11 @@ const LandingPage = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <motion.div
+              <div
                 key={index}
-
-                className="bg-gray-50 p-8 rounded-2xl hover:shadow-xl transition-all duration-300 
-                           hover:bg-white border border-transparent hover:border-purple-100 
-                           transform hover:-translate-y-1"
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.5, delay: index * 0.15 }}
-
+                className="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl hover:shadow-xl transition-all duration-300 
+                           hover:bg-white dark:hover:bg-gray-700 border border-transparent hover:border-purple-100 
+                           dark:hover:border-purple-400 transform hover:-translate-y-1"
               >
                 <div className="text-purple-600 dark:text-purple-400 mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
@@ -155,31 +121,18 @@ const LandingPage = () => {
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                   {feature.description}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* Benefits Section */}
-
-      <motion.section
-        className="py-20 bg-gradient-to-r from-purple-50 to-indigo-50"
-        initial={{ opacity: 0, y: 60 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-      >
+      <section className="py-20 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-            >
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">
-
+            <div>
+              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
                 Unlock Your Full Potential
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
@@ -188,29 +141,14 @@ const LandingPage = () => {
               </p>
               <div className="space-y-4">
                 {benefits.map((benefit, index) => (
-
-                  <motion.div
-                    key={index}
-                    className="flex items-center space-x-3"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, amount: 0.5 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                  >
-                    <CheckCircle className="w-6 h-6 text-emerald-500" />
-                    <span className="text-lg text-gray-700">{benefit}</span>
-                  </motion.div>
+                  <div key={index} className="flex items-center space-x-3">
+                    <CheckCircle className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
+                    <span className="text-lg text-gray-700 dark:text-gray-200">{benefit}</span>
+                  </div>
                 ))}
               </div>
-            </motion.div>
-            <motion.div
-              className="bg-white p-8 rounded-2xl shadow-xl"
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-            >
-
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl">
               <div className="text-center">
                 <div className="text-5xl font-bold text-purple-600 dark:text-purple-400 mb-2">
                   85%
@@ -225,21 +163,13 @@ const LandingPage = () => {
                 </div>
                 <div className="text-gray-600 dark:text-gray-300">Partner Companies</div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* CTA Section */}
-
-      <motion.section
-        className="py-20 bg-gray-900 text-white"
-        initial={{ opacity: 0, y: 60 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-      >
-
+      <section className="py-20 bg-white dark:bg-gray-950 text-white transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl dark:text-white text-black font-bold mb-6">
             Ready to Ace Your Next Interview?
@@ -258,8 +188,8 @@ const LandingPage = () => {
             <ArrowRight className="w-5 h-5" />
           </button>
         </div>
-      </motion.section>
-    </motion.div>
+      </section>
+    </div>
   );
 };
 

@@ -6,10 +6,9 @@ import Dashboard from "./pages/Dashboard";
 import InterviewInterface from "./pages/InterviewInterface";
 import ResultsPage from "./pages/ResultsPage";
 import Footer from "./components/Footer";
-import { AnimatePresence } from "framer-motion";
+
 function App() {
   return (
-    <AnimatePresence mode="wait">
     <Router>
       <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
         <div>
@@ -26,7 +25,6 @@ function App() {
         <Footer />
       </div>
     </Router>
-    </AnimatePresence>
   );
 }
 
