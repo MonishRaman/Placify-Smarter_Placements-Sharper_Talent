@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Brain, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Brain } from 'lucide-react';
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -11,7 +11,6 @@ const AuthPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Mock authentication - always redirect to dashboard
     navigate('/dashboard');
   };
 
@@ -104,12 +103,11 @@ const AuthPage = () => {
             </button>
           </form>
 
-          {/* Switch between login/signup */}
           <div className="mt-6 text-center">
             <p className="text-gray-600 dark:text-gray-300">
               {isLogin ? "Don't have an account?" : "Already have an account?"}
               <button
-                onClick={() => setIsLogin(!isLogin)}
+                onClick={isLogin ? () => navigate('/register') : () => setIsLogin(true)}
                 className="ml-2 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold"
               >
                 {isLogin ? 'Sign up' : 'Sign in'}
@@ -117,7 +115,6 @@ const AuthPage = () => {
             </p>
           </div>
 
-          {/* Demo note */}
           <div className="mt-6 p-4 bg-purple-50 dark:bg-gray-800 rounded-xl">
             <p className="text-sm text-purple-700 dark:text-purple-300 text-center">
               <strong>Demo Mode:</strong> Enter any email and password to continue
