@@ -2,9 +2,9 @@ import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft, TrendingUp, Eye, Mic, Brain,
-  Award, Target, CheckCircle, AlertTriangle
+  Award, Target, CheckCircle, AlertTriangle,
+  Home, Play
 } from 'lucide-react';
-
 
 // Mock interview results (you can later fetch from backend instead)
 const interviewResults = [
@@ -75,17 +75,46 @@ const ResultsPage = () => {
   const navigate = useNavigate();
 
   const result = interviewResults.find((r) => r.id === interviewId);
-  console.log("Interview ID from URL:", interviewId);
+
   if (!result) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-center text-red-500">
-        No results found for Interview ID: {interviewId}
+      <div className="min-h-screen flex flex-col items-center justify-center text-center p-6 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-md mx-auto">
+          <div className="mb-6">
+            <Award className="w-12 h-12 mx-auto text-purple-600 dark:text-purple-400" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Interview Completed
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            Your interview session has finished, but we couldn't retrieve the detailed analysis.
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
+            Interview ID: {interviewId}
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+              <Home className="w-5 h-5" />
+              Return to Dashboard
+            </button>
+            <button
+              onClick={() => navigate('/interview')}
+              className="flex items-center justify-center gap-2 bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+              <Play className="w-5 h-5" />
+              Try Another Interview
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
   const { overallScore, metrics } = result;
-
 
   const getBadgeStyles = (color) => {
     const styles = {
