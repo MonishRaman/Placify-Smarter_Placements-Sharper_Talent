@@ -2,6 +2,10 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Brain, Users, Target, CheckCircle } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle";
+
+import { motion } from "framer-motion";
+
+
 const LandingPage = () => {
   const navigate = useNavigate();
 
