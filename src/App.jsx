@@ -12,6 +12,17 @@ import InstitutionForm from './pages/register/InstitutionForm';
 import EmployeeForm from './pages/register/EmployeeForm';
 import CompanyForm from './pages/register/CompanyForm';
 
+import InstitutionDashboard from './components/InstitutionDashboard';
+import EmployeeDashboard from './components/EmployeeDashboard';
+import CompanyDashboard from './components/CompanyDashboard';
+
+import RoleSelectionPage from './pages/RoleSelectionPage';
+import StudentForm from './pages/register/StudentForm';
+import InstitutionForm from './pages/register/InstitutionForm';
+import EmployeeForm from './pages/register/EmployeeForm';
+import CompanyForm from './pages/register/CompanyForm';
+
+
 function App() {
   return (
     <Router>
@@ -24,6 +35,13 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/interview" element={<InterviewInterface />} />
             <Route path="/results/:interviewId" element={<ResultsPage />} />
+
+
+            <Route path="/dashboard/institution" element={<InstitutionDashboard />} />
+            <Route path="/dashboard/employee" element={<EmployeeDashboard />} />
+            <Route path="/dashboard/company" element={<CompanyDashboard />} />
+
+
             
             {/* Registration Flow */}
             <Route path="/register" element={<RoleSelectionPage />} />
