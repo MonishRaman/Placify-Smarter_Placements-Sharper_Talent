@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Brain, Play, Calendar, Clock, TrendingUp, Award, LogOut } from 'lucide-react';
+import ThemeToggle from '../components/ThemeToggle';
 
 import { motion } from 'framer-motion';
 
