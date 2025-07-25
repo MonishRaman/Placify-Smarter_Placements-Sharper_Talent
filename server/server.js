@@ -40,4 +40,3 @@ mongoose
       console.log(`Server running on port ${PORT}`)
     );
   })
-  .catch((err) => console.error("MongoDB connection error:", err));
