@@ -730,7 +730,7 @@ const LandingPage = () => {
                   whileInView={{ scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
                   viewport={{ once: true }}
-                  className="text-5xl font-bold text-purple-600 dark:text-purple-400 mb-2"
+                  className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2"
                 >
                   85%
                 </motion.div>
@@ -742,7 +742,7 @@ const LandingPage = () => {
                   whileInView={{ scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                   viewport={{ once: true }}
-                  className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-2"
+                  className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mb-2"
                 >
                   10K+
                 </motion.div>
@@ -754,7 +754,7 @@ const LandingPage = () => {
                   whileInView={{ scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.6 }}
                   viewport={{ once: true }}
-                  className="text-3xl font-bold text-emerald-500 dark:text-emerald-400 mb-2"
+                  className="text-4xl font-bold text-emerald-500 dark:text-emerald-400 mb-2"
                 >
                   500+
                 </motion.div>
