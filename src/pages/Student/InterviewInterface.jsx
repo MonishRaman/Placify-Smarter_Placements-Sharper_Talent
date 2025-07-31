@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import InterviewLeft from "../components/InterviewLeft";
-import InterviewRight from "../components/InterviewRight";
+import InterviewLeft from "../../components/InterviewLeft";
+import InterviewRight from "../../components/InterviewRight";
+
 
 const InterviewInterface = () => {
   const navigate = useNavigate();
