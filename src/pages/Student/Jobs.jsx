@@ -18,14 +18,121 @@ const Jobs = () => {
   const jobsPerPage = 5;
   const today = new Date();
 
-  // ✅ Fetch jobs from API instead of mock data
+  // ✅ Static default jobs
+  const defaultStaticJobs = [
+    {
+      id: "static1",
+      title: "Frontend Developer Intern",
+      company: "Tech Studio",
+      type: "Internship",
+      domain: "Web Development",
+      location: "Remote",
+      status: "Open",
+      date: "2025-08-10",
+    },
+    {
+      id: "static2",
+      title: "Machine Learning Trainee",
+      company: "AIWorks",
+      type: "Full-Time",
+      domain: "AI/ML",
+      location: "Bangalore",
+      status: "Open",
+      date: "2025-08-15",
+    },
+    {
+      id: "static3",
+      title: "UI/UX Intern",
+      company: "DesignHive",
+      type: "Internship",
+      domain: "UI/UX",
+      location: "Delhi",
+      status: "Open",
+      date: "2025-08-20",
+    },
+    {
+      id: "static4",
+      title: "Backend Developer",
+      company: "CodeNest",
+      type: "Full-Time",
+      domain: "Web Development",
+      location: "Mumbai",
+      status: "Open",
+      date: "2025-08-18",
+    },
+    {
+      id: "static5",
+      title: "Cybersecurity Analyst Intern",
+      company: "SecureNet",
+      type: "Internship",
+      domain: "Cybersecurity",
+      location: "Hyderabad",
+      status: "Open",
+      date: "2025-08-12",
+    },
+    {
+      id: "static6",
+      title: "Cloud DevOps Engineer",
+      company: "CloudOps Tech",
+      type: "Full-Time",
+      domain: "DevOps",
+      location: "Chennai",
+      status: "Open",
+      date: "2025-08-14",
+    },
+    {
+      id: "static7",
+      title: "NLP Research Intern",
+      company: "DeepLang AI",
+      type: "Internship",
+      domain: "AI/ML",
+      location: "Remote",
+      status: "Open",
+      date: "2025-08-21",
+    },
+    {
+      id: "static8",
+      title: "Mobile App Developer",
+      company: "AppSpark",
+      type: "Full-Time",
+      domain: "Web Development",
+      location: "Delhi",
+      status: "Open",
+      date: "2025-08-16",
+    },
+    {
+      id: "static9",
+      title: "Data Analyst Intern",
+      company: "InsightData",
+      type: "Internship",
+      domain: "Data Science",
+      location: "Bangalore",
+      status: "Open",
+      date: "2025-08-17",
+    },
+    {
+      id: "static10",
+      title: "React.js Developer",
+      company: "FrontendHub",
+      type: "Full-Time",
+      domain: "Web Development",
+      location: "Remote",
+      status: "Open",
+      date: "2025-08-22",
+    },
+  ];
+
+  // ✅ Fetch jobs and merge with static ones
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/jobs"); // replace with actual endpoint
-        setJobsData(response.data);
+        const response = await axios.get("http://localhost:5000/api/jobs");
+        const apiJobs = response.data || [];
+        const mergedJobs = [...defaultStaticJobs, ...apiJobs];
+        setJobsData(mergedJobs);
       } catch (err) {
         setError("Failed to fetch jobs.");
+        setJobsData(defaultStaticJobs);
       } finally {
         setLoading(false);
       }
@@ -33,18 +140,32 @@ const Jobs = () => {
     fetchJobs();
   }, []);
 
-const defaultDomains = ["Web Development", "Data Science", "AI/ML", "DevOps", "UI/UX", "Cybersecurity"];
-const defaultLocations = ["Remote", "Bangalore", "Hyderabad", "Delhi", "Mumbai", "Chennai"];
+  const defaultDomains = [
+    "Web Development",
+    "Data Science",
+    "AI/ML",
+    "DevOps",
+    "UI/UX",
+    "Cybersecurity",
+  ];
+  const defaultLocations = [
+    "Remote",
+    "Bangalore",
+    "Hyderabad",
+    "Delhi",
+    "Mumbai",
+    "Chennai",
+  ];
 
-const domainsSet = new Set(defaultDomains);
-jobsData.forEach((job) => domainsSet.add(job.domain));
-const domains = Array.from(domainsSet);
+  const domainsSet = new Set(defaultDomains);
+  jobsData.forEach((job) => domainsSet.add(job.domain));
+  const domains = Array.from(domainsSet);
 
-const locationsSet = new Set(defaultLocations);
-jobsData.forEach((job) => locationsSet.add(job.location));
-const locations = Array.from(locationsSet);
+  const locationsSet = new Set(defaultLocations);
+  jobsData.forEach((job) => locationsSet.add(job.location));
+  const locations = Array.from(locationsSet);
 
-  const statuses = ["Applied", "Selected", "Rejected"];
+  const statuses = ["Open", "Applied", "Selected", "Rejected"];
 
   const filteredJobs = jobsData.filter((job) => {
     const matchesSearch =
@@ -52,9 +173,12 @@ const locations = Array.from(locationsSet);
       job.company.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesType = selectedType === "All" || job.type === selectedType;
-    const matchesDomain = selectedDomain === "All" || job.domain === selectedDomain;
-    const matchesLocation = selectedLocation === "All" || job.location === selectedLocation;
-    const matchesStatus = selectedStatus === "All" || job.status === selectedStatus;
+    const matchesDomain =
+      selectedDomain === "All" || job.domain === selectedDomain;
+    const matchesLocation =
+      selectedLocation === "All" || job.location === selectedLocation;
+    const matchesStatus =
+      selectedStatus === "All" || job.status === selectedStatus;
 
     const jobDate = new Date(job.date);
     const matchesDate =
@@ -78,21 +202,24 @@ const locations = Array.from(locationsSet);
   const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
 
   if (loading) {
-  return (
-    <div className="p-6">
-      <h2 className="text-3xl font-bold text-purple-700 mb-2">Jobs</h2>
-      <p className="text-gray-500 mb-6">Welcome back! Here's what's happening.</p>
-      <div className="text-center mt-20 text-lg text-gray-700">
-        Loading Jobs Page... Please wait.
+    return (
+      <div className="p-6">
+        <h2 className="text-3xl font-bold text-purple-700 mb-2">Jobs</h2>
+        <p className="text-gray-500 mb-6">
+          Welcome back! Here's what's happening.
+        </p>
+        <div className="text-center mt-20 text-lg text-gray-700">
+          Loading Jobs Page... Please wait.
+        </div>
       </div>
-    </div>
-  );
-}
-
+    );
+  }
 
   return (
     <div className="p-6 bg-white rounded-xl shadow-md">
-      <h2 className="text-3xl font-bold text-purple-700 mb-6">Explore Opportunities</h2>
+      <h2 className="text-3xl font-bold text-purple-700 mb-6">
+        Explore Opportunities
+      </h2>
 
       <div className="flex flex-wrap gap-4 mb-6">
         <div className="relative w-full sm:w-1/3">
@@ -132,7 +259,9 @@ const locations = Array.from(locationsSet);
         >
           <option value="All">All Domains</option>
           {domains.map((domain, index) => (
-            <option key={index} value={domain}>{domain}</option>
+            <option key={index} value={domain}>
+              {domain}
+            </option>
           ))}
         </select>
 
@@ -146,7 +275,9 @@ const locations = Array.from(locationsSet);
         >
           <option value="All">All Locations</option>
           {locations.map((loc, idx) => (
-            <option key={idx} value={loc}>{loc}</option>
+            <option key={idx} value={loc}>
+              {loc}
+            </option>
           ))}
         </select>
 
@@ -160,7 +291,9 @@ const locations = Array.from(locationsSet);
         >
           <option value="All">Status</option>
           {statuses.map((status, index) => (
-            <option key={index} value={status}>{status}</option>
+            <option key={index} value={status}>
+              {status}
+            </option>
           ))}
         </select>
 
@@ -183,7 +316,10 @@ const locations = Array.from(locationsSet);
           <li className="text-center text-gray-500">No jobs found.</li>
         )}
         {currentJobs.map((job) => (
-          <li key={job.id} className="p-4 border rounded-lg shadow hover:shadow-md transition">
+          <li
+            key={job.id}
+            className="p-4 border rounded-lg shadow hover:shadow-md transition"
+          >
             <h3 className="text-xl font-semibold text-purple-700 flex items-center gap-2">
               <Briefcase className="w-5 h-5" />
               {job.title}
@@ -195,9 +331,15 @@ const locations = Array.from(locationsSet);
             </div>
 
             <div className="mt-2 flex flex-wrap gap-2 text-xs">
-              <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded">{job.type}</span>
-              <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded">{job.domain}</span>
-              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded">{job.status}</span>
+              <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded">
+                {job.type}
+              </span>
+              <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded">
+                {job.domain}
+              </span>
+              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded">
+                {job.status}
+              </span>
               <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded flex items-center gap-1">
                 <CalendarDays className="w-3 h-3" />
                 {job.date}
@@ -245,4 +387,3 @@ const locations = Array.from(locationsSet);
 };
 
 export default Jobs;
-
