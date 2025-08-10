@@ -35,6 +35,13 @@ const LandingPage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   const features = [
     {
       icon: <Brain className="w-6 h-6" />,
@@ -95,9 +102,7 @@ const LandingPage = () => {
                   whileHover={{ rotate: 360 }}
                   transition={{ duration: 0.6 }}
                   className="p-2 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg cursor-pointer"
-                  onClick={() =>
-                    window.scrollTo({ top: 0, behavior: "smooth" })
-                  }
+                  onClick={scrollToTop}
                 >
                   <Brain className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
                 </motion.div>
@@ -656,9 +661,9 @@ const LandingPage = () => {
         </div>
       </motion.section>
       {/* How it works? */}
-    
+
       <motion.section
-      id="works"
+        id="works"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
@@ -867,7 +872,11 @@ const LandingPage = () => {
           </motion.button>
         </div>
       </motion.section>
-      <Chatbot />
+
+      <div style={{ position: "fixed", right: "20px", bottom: "15rem" }}>
+        <Chatbot />
+      </div>
+      
     </div>
   );
 };
