@@ -300,7 +300,7 @@ const LandingPage = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.5 }}
-        className="relative min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 dark:from-purple-800 dark:via-purple-900 dark:to-indigo-950 text-white transition-colors duration-300 pt-24 lg:pt-28 overflow-hidden"
+        className="relative min-h-screen bg-gradient-to-br from-black via-purple-700 to-black dark:from-purple-800 dark:via-purple-900 dark:to-indigo-950 text-white transition-colors duration-300 pt-24 lg:pt-28 overflow-hidden"
       >
         {/* Background Pattern/Decoration */}
         <div className="absolute inset-0 opacity-10">
@@ -340,7 +340,7 @@ const LandingPage = () => {
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
               >
                 <span className="block">Placify:</span>
-                <span className="block bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-purple-600 to-orange-500 bg-clip-text text-transparent">
                   Smarter Placements.
                 </span>
                 <span className="block text-purple-200 dark:text-purple-300 text-3xl md:text-4xl lg:text-5xl mt-2">
@@ -352,7 +352,7 @@ const LandingPage = () => {
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, delay: 1.1 }}
-                className="text-lg md:text-xl text-purple-100 dark:text-purple-200 leading-relaxed max-w-2xl lg:max-w-none"
+                className="text-lg md:text-l text-purple-100 dark:text-purple-200 leading-relaxed max-w-2xl lg:max-w-none"
               >
                 Revolutionize campus placements with our AI-powered platform
                 that streamlines 60-70% of recruitment processes. From automated
@@ -368,13 +368,13 @@ const LandingPage = () => {
                 className="flex flex-wrap justify-center lg:justify-start gap-8 text-sm"
               >
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-yellow-300">
+                  <div className="text-2xl font-bold text-yellow-400">
                     60-70%
                   </div>
                   <div className="text-purple-200">Process Automation</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-300">10x</div>
+                  <div className="text-2xl font-bold text-green-400">10x</div>
                   <div className="text-purple-200">Faster Screening</div>
                 </div>
                 <div className="text-center">
@@ -450,7 +450,7 @@ const LandingPage = () => {
               <div className="relative">
                 {/* Glowing background effect */}
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-300 to-indigo-400 rounded-3xl blur-3xl opacity-30"
+                  className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-300 to-black rounded-3xl blur-3xl opacity-30"
                   animate={{
                     scale: [1, 1.1, 1],
                     rotate: [0, 5, 0],
