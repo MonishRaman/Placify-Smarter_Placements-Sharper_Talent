@@ -7,6 +7,7 @@ const settingsSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  
   notifications: {
     emailNotifications: { type: Boolean, default: true },
     smsNotifications: { type: Boolean, default: false },
