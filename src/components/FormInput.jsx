@@ -1,9 +1,17 @@
-
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
-export default function FormInput({ label, type = 'text', value, onChange, required = false }) {
+export default function FormInput({
+  label,
+  type = 'text',
+  value,
+  onChange,
+  required = false,
+  focusColor = 'purple' // Default focus color is purple
+}) {
   const [showPassword, setShowPassword] = useState(false);
+
+
 
   return (
     <div className="mb-4">
@@ -15,8 +23,13 @@ export default function FormInput({ label, type = 'text', value, onChange, requi
           type={type === 'password' ? (showPassword ? 'text' : 'password') : type}
           value={value}
           onChange={onChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-slate-700 dark:border-slate-600 dark:text-gray-200 dark:focus:ring-purple-500"
           required={required}
+          className={`
+            w-full px-3 py-2 border border-gray-300 rounded-md
+            dark:bg-slate-700 dark:border-slate-600 dark:text-gray-200
+            transition-all duration-300 outline-none
+            focus:border-${focusColor}-500 focus:ring-2 focus:ring-${focusColor}-500 focus-visible:ring-offset-0
+          `}
         />
         {type === 'password' && (
           <button
