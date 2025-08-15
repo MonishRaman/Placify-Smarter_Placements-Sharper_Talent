@@ -49,19 +49,19 @@ const Footer = () => {
     {
       name: "GitHub",
       icon: <Github className="w-5 h-5" />,
-      href: "https://github.com/npratik01/Placify-Smarter_Placements-Sharper_Talent",
+      href: "https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent",
       color: "hover:text-gray-800 dark:hover:text-gray-200",
     },
     {
       name: "LinkedIn",
       icon: <Linkedin className="w-5 h-5" />,
-      href: "https://linkedin.com/company/placify",
+      href: "https://www.linkedin.com/in/monishr608/",
       color: "hover:text-blue-600",
     },
     {
       name: "Twitter",
       icon: <Twitter className="w-5 h-5" />,
-      href: "https://twitter.com/placify",
+      href: "https://x.com/Monishr_608",
       color: "hover:text-blue-400",
     },
   ];
