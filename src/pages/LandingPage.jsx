@@ -637,9 +637,11 @@ const LandingPage = () => {
                 whileInView={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.6, delay: index * 0.2 }}
                 viewport={{ once: true }}
-                className="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl transition-all duration-200 
-                           hover:bg-white dark:hover:bg-gray-700 border border-transparent hover:border-purple-100 
-                           dark:hover:border-purple-400 card-hover"
+                className="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl transition-all duration-300 
+           hover:bg-purple-100 dark:hover:bg-gray-700 
+           border border-transparent hover:border-purple-300 
+           dark:hover:border-purple-400 card-hover"
+
               >
                 <div className="text-purple-600 dark:text-purple-400 mb-4">
                   {feature.icon}
@@ -663,7 +665,7 @@ const LandingPage = () => {
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true, margin: "-100px" }}
-        className="py-20 bg-gray-100 dark:bg-gray-900 transition-colors duration-300"
+className="py-20 bg-gradient-to-tr from-[#B566FF] to-[#FFFFFF] dark:from-gray-900 dark:to-gray-900"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -778,7 +780,11 @@ const LandingPage = () => {
               whileInView={{ x: 0, opacity: 1, scale: 1 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl transition-all duration-200 hover:scale-105 will-change-transform"
+className="p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 will-change-transform 
+  bg-gradient-to-br from-[#EFDDFF] to-[#FFFFFF] 
+  dark:from-gray-900 dark:to-gray-900 
+  border border-transparent hover:border-[#B566FF] 
+  hover:shadow-[0_0_25px_#B566FF]/70"
             >
               <div className="text-center">
                 <motion.div
@@ -829,7 +835,7 @@ const LandingPage = () => {
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true, margin: "-100px" }}
-        className="py-20 bg-white dark:bg-gray-950 text-white transition-colors duration-300"
+        className="py-20 bg-gradient-to-br from-[#B566FF] to-[#FFFFFF] dark:from-black dark:to-black text-white transition-colors duration-300"
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.h2
