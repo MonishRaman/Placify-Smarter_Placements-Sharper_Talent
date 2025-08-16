@@ -1,4 +1,3 @@
-// src/pages/register/InstitutionForm.jsx
 import { School } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function InstitutionForm() {
   const navigate = useNavigate();
   const { addUser } = useUser();
+
   const [formData, setFormData] = useState({
     institutionName: '',
     website: '',
@@ -20,8 +20,10 @@ export default function InstitutionForm() {
     password: '',
     role: 'institution'
   });
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,13 +48,13 @@ export default function InstitutionForm() {
     // Website validation
     try {
       new URL(formData.website);
-    } catch (error) {
+    } catch {
       setError('Please enter a valid website URL');
       setLoading(false);
       return;
     }
 
-    // Password validation (at least 6 characters)
+    // Password length check
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long');
       setLoading(false);
@@ -60,38 +62,16 @@ export default function InstitutionForm() {
     }
 
     try {
-      // Save user to local storage
-      // try {
-      //   addUser(formData);
-      //   console.log('Institution Registration Data saved to local storage:', formData);
-      // } catch (localStorageError) {
-      //   setError(localStorageError.message);
-      //   setLoading(false);
-      //   return;
-      // }
+      console.log('Sending registration data:', formData);
 
-      // // Simulate API delay
-      // await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // // Success toast
-      // toast.success('Institution registration successful! Please login with your email and password.');
-
-      // // Redirect after short delay
-      // setTimeout(() => {
-      //   navigate('/auth');
-      // }, 2000);
-
-      // Uncomment this when backend is ready
-
-      const response = await fetch('http://localhost:5000/api/auth/register/institution', {
+      const response = await fetch(`${API_URL}/api/auth/register/institution`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
       const data = await response.json();
+      console.log('Server response:', data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Registration failed');
@@ -99,12 +79,13 @@ export default function InstitutionForm() {
 
       toast.success('Institution registration successful! Please login.');
       setTimeout(() => navigate('/auth'), 3000);
-    } catch (error) {
-      console.error('Registration error:', error);
-      if (error.message === 'Failed to fetch') {
-        setError('Server connection error. The backend server might not be running. Please try again later.');
+
+    } catch (err) {
+      console.error('Registration error:', err);
+      if (err.message === 'Failed to fetch') {
+        setError('Server connection error. Is your backend running on port 5000?');
       } else {
-        setError(error.message || 'Registration failed. Please try again.');
+        setError(err.message || 'Registration failed. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -112,14 +93,19 @@ export default function InstitutionForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       <Header />
-      <ToastContainer position="top-center" autoClose={3000} />
+      <ToastContainer 
+        position="top-center" 
+        autoClose={3000} 
+        theme="colored"
+        toastClassName="dark:bg-gray-800 dark:text-white"
+      />
 
       <div className="pt-16">
         <RegistrationHeader
           title="Institution Registration"
-          subtitle="Transform your campus placements with our AI-powered recruitment platform. Join leading universities in revolutionizing the placement process."
+          subtitle="Transform your campus placements with our AI-powered recruitment platform."
           tagline="Complete setup in under 5 minutes"
           icon={<School className="w-10 h-10 text-white" />}
           color="blue"
@@ -128,54 +114,59 @@ export default function InstitutionForm() {
       </div>
 
       <div className="py-12 px-4">
-        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 transition-colors duration-200">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md border border-red-200">
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md border border-red-200 dark:border-red-800">
               {error}
             </div>
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <FormInput
-              label="Institution Name"
-              value={formData.institutionName}
-              onChange={(e) => setFormData({ ...formData, institutionName: e.target.value })}
-              required
+            <FormInput 
+              label="Institution Name" 
+              value={formData.institutionName} 
+              onChange={(e) => setFormData({ ...formData, institutionName: e.target.value })} 
+              required 
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
-
-            <FormInput
-              label="Website"
-              type="url"
-              value={formData.website}
-              onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-              required
+            
+            <FormInput 
+              label="Website" 
+              type="url" 
+              value={formData.website} 
+              onChange={(e) => setFormData({ ...formData, website: e.target.value })} 
+              required 
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
-
-            <FormInput
-              label="Contact Person"
-              value={formData.contactPerson}
-              onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
-              required
+            
+            <FormInput 
+              label="Contact Person" 
+              value={formData.contactPerson} 
+              onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })} 
+              required 
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
-
-            <FormInput
-              type="email"
-              label="Email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
+            
+            <FormInput 
+              type="email" 
+              label="Email" 
+              value={formData.email} 
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })} 
+              required 
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
-
-            <FormInput
-              type="password"
-              label="Password"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              required
+            
+            <FormInput 
+              type="password" 
+              label="Password" 
+              value={formData.password} 
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })} 
+              required 
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 disabled:bg-blue-400"
+              className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white py-2 px-4 rounded-md transition duration-200 disabled:bg-blue-400 dark:disabled:bg-blue-400"
               disabled={loading}
             >
               {loading ? 'Registering...' : 'Register Institution'}

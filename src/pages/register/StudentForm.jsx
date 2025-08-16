@@ -51,27 +51,6 @@ export default function StudentForm() {
     }
     
     try {
-      // Save user to local storage
-      // try {
-      //   addUser(formData);
-      //   console.log('Student Registration Data saved to local storage:', formData);
-      // } catch (localStorageError) {
-      //   setError(localStorageError.message);
-      //   setLoading(false);
-      //   return;
-      // }
-      
-      // // Simulate API delay
-      // await new Promise(resolve => setTimeout(resolve, 1000));
-      
-
-      // Simulate successful registration
-      // toast.success('Registration successful! Please login with your email and password.', {
-      //   position: 'top-center'
-      // });
-      // setTimeout(() => navigate('/auth'), 2000); // Redirect to login after showing toast
-
-      
       const response = await fetch('http://localhost:5000/api/auth/register/student', {
         method: 'POST',
         headers: {
@@ -87,10 +66,8 @@ export default function StudentForm() {
       }
       
       // Registration successful
-
       toast.success('Registration successful! Please login.', { position: 'top-center' });
       setTimeout(() => navigate('/auth'), 3000);
-      
 
     } catch (error) {
       console.error('Registration error:', error);
@@ -105,7 +82,7 @@ export default function StudentForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       <Header />
       
       <div className="pt-16"> {/* Add padding to account for fixed header */}
@@ -120,9 +97,9 @@ export default function StudentForm() {
       </div>
       
       <div className="py-12 px-4">
-        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 transition-colors duration-200">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md border border-red-200">
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md border border-red-200 dark:border-red-800">
               {error}
             </div>
           )}
@@ -132,6 +109,7 @@ export default function StudentForm() {
               value={formData.fullName}
               onChange={(e) => setFormData({...formData, fullName: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             
             <FormInput
@@ -139,6 +117,7 @@ export default function StudentForm() {
               value={formData.university}
               onChange={(e) => setFormData({...formData, university: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             
             <FormInput
@@ -146,6 +125,7 @@ export default function StudentForm() {
               value={formData.major}
               onChange={(e) => setFormData({...formData, major: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             
             <FormInput
@@ -154,6 +134,7 @@ export default function StudentForm() {
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             
             <FormInput
@@ -162,11 +143,12 @@ export default function StudentForm() {
               value={formData.password}
               onChange={(e) => setFormData({...formData, password: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             
             <button
               type="submit"
-              className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition duration-200 disabled:bg-purple-400"
+              className="w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white py-2 px-4 rounded-md transition duration-200 disabled:bg-purple-400 dark:disabled:bg-purple-400"
               disabled={loading}
             >
               {loading ? 'Registering...' : 'Register as Student'}
@@ -176,7 +158,12 @@ export default function StudentForm() {
       </div>
 
       {/* Toast container to show toast messages */}
-      <ToastContainer position="top-center" autoClose={3000} />
+      <ToastContainer 
+        position="top-center" 
+        autoClose={3000} 
+        theme="colored"
+        toastClassName="dark:bg-gray-800 dark:text-white"
+      />
     </div>
   );
 }

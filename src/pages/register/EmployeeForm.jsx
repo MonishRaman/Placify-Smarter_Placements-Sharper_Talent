@@ -50,28 +50,6 @@ export default function EmployeeForm() {
     }
       
     try {
-      // // Save user to local storage
-      // try {
-      //   addUser(formData);
-      //   console.log('Employee Registration Data saved to local storage:', formData);
-      // } catch (localStorageError) {
-      //   setError(localStorageError.message);
-      //   setLoading(false);
-      //   return;
-      // }
-      
-      // // Simulate API delay
-      // await new Promise(resolve => setTimeout(resolve, 1000));
-      
-
-      // Simulate successful registration
-      // toast.success('Employee registration successful! Please login with your email and password.');
-      // setTimeout(() => {
-      //   navigate('/auth');
-      // }, 2000);
-
-      
-      //  Uncomment this when backend is ready
       const response = await fetch('http://localhost:5000/api/auth/register/employee', {
         method: 'POST',
         headers: {
@@ -103,7 +81,7 @@ export default function EmployeeForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       <Header />
       
       <div className="pt-16">
@@ -118,9 +96,9 @@ export default function EmployeeForm() {
       </div>
       
       <div className="py-12 px-4">
-        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 transition-colors duration-200">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md border border-red-200">
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md border border-red-200 dark:border-red-800">
               {error}
             </div>
           )}
@@ -130,6 +108,7 @@ export default function EmployeeForm() {
               value={formData.fullName}
               onChange={(e) => setFormData({...formData, fullName: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             
             <FormInput
@@ -137,6 +116,7 @@ export default function EmployeeForm() {
               value={formData.currentCompany}
               onChange={(e) => setFormData({...formData, currentCompany: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             
             <FormInput
@@ -144,6 +124,7 @@ export default function EmployeeForm() {
               value={formData.jobTitle}
               onChange={(e) => setFormData({...formData, jobTitle: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             
             <FormInput
@@ -152,6 +133,7 @@ export default function EmployeeForm() {
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             
             <FormInput
@@ -160,11 +142,12 @@ export default function EmployeeForm() {
               value={formData.password}
               onChange={(e) => setFormData({...formData, password: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             
             <button
               type="submit"
-              className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-200 disabled:bg-green-400"
+              className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white py-2 px-4 rounded-md transition duration-200 disabled:bg-green-400 dark:disabled:bg-green-400"
               disabled={loading}
             >
               {loading ? 'Registering...' : 'Register as Employee'}
@@ -173,7 +156,12 @@ export default function EmployeeForm() {
         </div>
       </div>
 
-      <ToastContainer position="top-center" autoClose={3000} />
+      <ToastContainer 
+        position="top-center" 
+        autoClose={3000} 
+        theme="colored"
+        toastClassName="dark:bg-gray-800 dark:text-white"
+      />
     </div>
   );
 }

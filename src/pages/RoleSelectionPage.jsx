@@ -23,9 +23,10 @@ const RoleSelectionPage = () => {
       icon: <GraduationCap className="w-8 h-8" />,
       route: "/register/student",
       color: "from-blue-500 to-cyan-500",
-      bgColor: "bg-blue-50 dark:bg-blue-900/20",
-      iconBg: "bg-blue-100 dark:bg-blue-900/50",
+      bgColor: "bg-blue-50/80 dark:bg-blue-900/20",
+      iconBg: "bg-blue-100 dark:bg-blue-800/50",
       textColor: "text-blue-600 dark:text-blue-400",
+      hoverBg: "group-hover:bg-blue-100/50 dark:group-hover:bg-blue-800/30",
       features: [
         "AI Interview Practice",
         "Skill Assessment",
@@ -41,9 +42,10 @@ const RoleSelectionPage = () => {
       icon: <School className="w-8 h-8" />,
       route: "/register/institution",
       color: "from-emerald-500 to-teal-500",
-      bgColor: "bg-emerald-50 dark:bg-emerald-900/20",
-      iconBg: "bg-emerald-100 dark:bg-emerald-900/50",
+      bgColor: "bg-emerald-50/80 dark:bg-emerald-900/20",
+      iconBg: "bg-emerald-100 dark:bg-emerald-800/50",
       textColor: "text-emerald-600 dark:text-emerald-400",
+      hoverBg: "group-hover:bg-emerald-100/50 dark:group-hover:bg-emerald-800/30",
       features: [
         "Automated Screening",
         "Bulk Assessments",
@@ -59,9 +61,10 @@ const RoleSelectionPage = () => {
       icon: <Briefcase className="w-8 h-8" />,
       route: "/register/employee",
       color: "from-purple-500 to-pink-500",
-      bgColor: "bg-purple-50 dark:bg-purple-900/20",
-      iconBg: "bg-purple-100 dark:bg-purple-900/50",
+      bgColor: "bg-purple-50/80 dark:bg-purple-900/20",
+      iconBg: "bg-purple-100 dark:bg-purple-800/50",
       textColor: "text-purple-600 dark:text-purple-400",
+      hoverBg: "group-hover:bg-purple-100/50 dark:group-hover:bg-purple-800/30",
       features: [
         "Smart Candidate Matching",
         "Video Interview Analysis",
@@ -77,9 +80,10 @@ const RoleSelectionPage = () => {
       icon: <Building className="w-8 h-8" />,
       route: "/register/company",
       color: "from-orange-500 to-red-500",
-      bgColor: "bg-orange-50 dark:bg-orange-900/20",
-      iconBg: "bg-orange-100 dark:bg-orange-900/50",
+      bgColor: "bg-orange-50/80 dark:bg-orange-900/20",
+      iconBg: "bg-orange-100 dark:bg-orange-800/50",
       textColor: "text-orange-600 dark:text-orange-400",
+      hoverBg: "group-hover:bg-orange-100/50 dark:group-hover:bg-orange-800/30",
       features: [
         "Enterprise Solutions",
         "Custom Assessments",
@@ -95,12 +99,12 @@ const RoleSelectionPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 transition-colors duration-300">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
-        <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
-        <div className="absolute bottom-20 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-4000"></div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-850 dark:to-purple-900/50 transition-colors duration-300">
+      {/* Enhanced Background Pattern */}
+      <div className="absolute inset-0 opacity-20 dark:opacity-10">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 dark:bg-purple-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl animate-pulse"></div>
+        <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 dark:bg-blue-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl animate-pulse animation-delay-2000"></div>
+        <div className="absolute bottom-20 left-20 w-72 h-72 bg-pink-200 dark:bg-pink-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl animate-pulse animation-delay-4000"></div>
       </div>
 
       <div className="relative min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
@@ -114,16 +118,20 @@ const RoleSelectionPage = () => {
           >
             {/* Logo/Brand */}
             <motion.div
-              className="flex items-center justify-center space-x-3 mb-6 cursor-pointer"
+              className="flex items-center justify-center space-x-3 mb-6 cursor-pointer group"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               onClick={handleLogoClick}
             >
-              <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg">
+              <motion.div 
+                className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 dark:from-purple-400 dark:to-indigo-500 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.6 }}
+              >
                 <Brain className="w-8 h-8 text-white" />
-              </div>
-              <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+              </motion.div>
+              <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 bg-clip-text text-transparent">
                 Placify
               </span>
             </motion.div>
@@ -147,29 +155,29 @@ const RoleSelectionPage = () => {
               assessments and placements
             </motion.p>
 
-            {/* Trust Indicators */}
+            {/* Enhanced Trust Indicators */}
             <motion.div
-              className="flex items-center justify-center space-x-8 mt-8 text-sm text-gray-500 dark:text-gray-400"
+              className="flex flex-wrap items-center justify-center gap-6 lg:gap-8 mt-8 text-sm text-gray-500 dark:text-gray-400"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.8 }}
             >
-              <div className="flex items-center space-x-2">
-                <Users className="w-4 h-4" />
+              <div className="flex items-center space-x-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm px-3 py-2 rounded-full border border-gray-200/50 dark:border-gray-700/50">
+                <Users className="w-4 h-4 text-blue-500 dark:text-blue-400" />
                 <span>10K+ Active Users</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="w-4 h-4 text-green-500" />
+              <div className="flex items-center space-x-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm px-3 py-2 rounded-full border border-gray-200/50 dark:border-gray-700/50">
+                <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400" />
                 <span>85% Success Rate</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <Building className="w-4 h-4" />
+              <div className="flex items-center space-x-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm px-3 py-2 rounded-full border border-gray-200/50 dark:border-gray-700/50">
+                <Building className="w-4 h-4 text-purple-500 dark:text-purple-400" />
                 <span>500+ Companies</span>
               </div>
             </motion.div>
           </motion.div>
 
-          {/* Role Cards Grid */}
+          {/* Enhanced Role Cards Grid */}
           <motion.div
             className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8"
             initial={{ opacity: 0 }}
@@ -180,10 +188,11 @@ const RoleSelectionPage = () => {
               <motion.div
                 key={role.title}
                 onClick={() => navigate(role.route)}
-                className={`relative group cursor-pointer ${role.bgColor} backdrop-blur-sm
-                           rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 
-                           border border-white/20 dark:border-gray-700/50 overflow-hidden
-                           transform hover:-translate-y-2`}
+                className={`relative group cursor-pointer backdrop-blur-sm
+                           rounded-2xl shadow-lg hover:shadow-2xl dark:hover:shadow-2xl transition-all duration-300 
+                           border border-white/40 dark:border-gray-700/40 hover:border-white/60 dark:hover:border-gray-600/60 overflow-hidden
+                           transform hover:-translate-y-2 ${role.bgColor} ${role.hoverBg}
+                           bg-white/60 dark:bg-gray-800/60`}
                 initial={{ opacity: 0, y: 50, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{
@@ -197,16 +206,16 @@ const RoleSelectionPage = () => {
                 }}
                 whileTap={{ scale: 0.98 }}
               >
-                {/* Gradient Overlay */}
+                {/* Enhanced Gradient Overlay */}
                 <div
-                  className={`absolute inset-0 bg-gradient-to-br ${role.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+                  className={`absolute inset-0 bg-gradient-to-br ${role.color} opacity-0 group-hover:opacity-5 dark:group-hover:opacity-10 transition-opacity duration-300`}
                 />
 
                 {/* Content */}
                 <div className="relative p-6 lg:p-8">
-                  {/* Icon */}
+                  {/* Enhanced Icon */}
                   <motion.div
-                    className={`${role.iconBg} ${role.textColor} p-4 rounded-2xl mb-6 inline-flex shadow-md group-hover:shadow-lg transition-all duration-300`}
+                    className={`${role.iconBg} ${role.textColor} p-4 rounded-2xl mb-6 inline-flex shadow-md group-hover:shadow-lg transition-all duration-300 border border-white/20 dark:border-gray-700/20`}
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     transition={{
@@ -237,7 +246,7 @@ const RoleSelectionPage = () => {
                     </p>
                   </motion.div>
 
-                  {/* Features List */}
+                  {/* Enhanced Features List */}
                   <motion.div
                     className="space-y-2 mb-6"
                     initial={{ opacity: 0 }}
@@ -249,13 +258,13 @@ const RoleSelectionPage = () => {
                         key={featureIndex}
                         className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300"
                       >
-                        <CheckCircle className="w-3 h-3 text-green-500 flex-shrink-0" />
+                        <CheckCircle className="w-3 h-3 text-green-500 dark:text-green-400 flex-shrink-0" />
                         <span>{feature}</span>
                       </div>
                     ))}
                   </motion.div>
 
-                  {/* CTA Button */}
+                  {/* Enhanced CTA Button */}
                   <motion.div
                     className="flex items-center justify-between"
                     initial={{ opacity: 0, y: 20 }}
@@ -266,20 +275,23 @@ const RoleSelectionPage = () => {
                       className={`inline-flex items-center space-x-2 ${role.textColor} font-semibold group-hover:translate-x-1 transition-transform duration-300`}
                     >
                       <span>Get Started</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                     </div>
                   </motion.div>
                 </div>
 
-                {/* Hover Border Effect */}
+                {/* Enhanced Hover Border Effect */}
                 <div
-                  className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${role.color} opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none`}
+                  className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${role.color} opacity-0 group-hover:opacity-10 dark:group-hover:opacity-20 transition-opacity duration-300 pointer-events-none`}
                 />
+
+                {/* Subtle inner glow effect */}
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-transparent via-transparent to-white/5 dark:to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
               </motion.div>
             ))}
           </motion.div>
 
-          {/* Bottom CTA */}
+          {/* Enhanced Bottom CTA */}
           <motion.div
             className="text-center mt-12"
             initial={{ opacity: 0, y: 30 }}
@@ -289,13 +301,15 @@ const RoleSelectionPage = () => {
             <p className="text-gray-600 dark:text-gray-300 mb-4">
               Not sure which option is right for you?
             </p>
-            <button
+            <motion.button
               onClick={() => navigate("/contact")}
-              className="inline-flex items-center space-x-2 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors duration-300"
+              className="inline-flex items-center space-x-2 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm px-4 py-2 rounded-full border border-purple-200/50 dark:border-purple-700/50 hover:border-purple-300/70 dark:hover:border-purple-600/70"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               <span>Contact our team for guidance</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+            </motion.button>
           </motion.div>
         </div>
       </div>

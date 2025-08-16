@@ -67,10 +67,15 @@ export default function CompanyForm() {
       setLoading(false);
     }
   };
+  
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       <Header />
-      <ToastContainer position="top-center" />
+      <ToastContainer 
+        position="top-center" 
+        theme="colored"
+        toastClassName="dark:bg-gray-800 dark:text-white"
+      />
 
       <div className="pt-16">
         <RegistrationHeader
@@ -84,9 +89,9 @@ export default function CompanyForm() {
       </div>
 
       <div className="py-12 px-4">
-        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 transition-colors duration-200">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md border border-red-200">
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md border border-red-200 dark:border-red-800">
               {error}
             </div>
           )}
@@ -96,6 +101,7 @@ export default function CompanyForm() {
               value={formData.companyName}
               onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
             <FormInput
@@ -103,22 +109,24 @@ export default function CompanyForm() {
               value={formData.industry}
               onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
+            
             <FormInput
               label="Website"
               value={formData.website}
               onChange={(e) => setFormData({ ...formData, website: e.target.value })}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
             <FormInput
               type="email"
               label="HR Contact Email"
-
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
             <FormInput
@@ -127,11 +135,12 @@ export default function CompanyForm() {
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
             <button
               type="submit"
-              className="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 transition duration-200 disabled:bg-orange-400"
+              className="w-full bg-orange-600 hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-600 text-white py-2 px-4 rounded-md transition duration-200 disabled:bg-orange-400 dark:disabled:bg-orange-400"
               disabled={loading}
             >
               {loading ? 'Registering...' : 'Register Company'}
