@@ -404,16 +404,12 @@ const LandingPage = () => {
 
                 {/* Secondary CTA Button - Optimized for performance */}
                 <button
-                  onClick={() => {
-                    document
-                      .getElementById("works")
-                      ?.scrollIntoView({ behavior: "smooth" });
-                  }}
+                  onClick={() => navigate("/resume")}
                   className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white border-2 border-white/30 rounded-2xl hover:bg-white/10 hover:border-white/50 transition-all duration-200 backdrop-blur-sm hover-lift will-change-transform"
                 >
                   <span className="flex items-center space-x-2">
                     <Target className="w-5 h-5" />
-                    <span>See How It Works</span>
+                    <span>Try Our New Resume Builder</span>
                   </span>
                 </button>
               </motion.div>
