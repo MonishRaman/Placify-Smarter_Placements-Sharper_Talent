@@ -61,12 +61,8 @@ const Footer = () => {
     {
       name: "X",
       icon: <X className="w-5 h-5" />,
-      href: "https://x.com/placify",
-      color: "hover:text-gray-800 dark:hover:text-gray-200",
-      name: "Twitter",
-      icon: <Twitter className="w-5 h-5" />,
       href: "https://x.com/Monishr_608",
-      color: "hover:text-blue-400",
+      color: "hover:text-gray-800 dark:hover:text-gray-200",
     },
   ];
 
