@@ -179,7 +179,7 @@ const Footer = () => {
           {/* Bottom Section */}
           <div className="mt-6 pt-4 border-t border-purple-400 dark:border-gray-700 text-center">
             <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0 text-sm text-gray-500 dark:text-gray-400">
-              <p>© 2025 Placify. All rights reserved.</p>
+              <p>© {new Date().getFullYear()} Placify. All rights reserved.</p>
               <div className="flex items-center space-x-1">
                 <span>Made with</span>
                 <Heart className="w-4 h-4 text-red-500 fill-current" />
