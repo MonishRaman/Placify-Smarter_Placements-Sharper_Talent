@@ -9,7 +9,7 @@ import {
   Mail,
   Github,
   Linkedin,
-  Twitter,
+  X,
   ExternalLink,
   Heart,
 } from "lucide-react";
@@ -59,10 +59,10 @@ const Footer = () => {
       color: "hover:text-blue-600",
     },
     {
-      name: "Twitter",
-      icon: <Twitter className="w-5 h-5" />,
-      href: "https://twitter.com/placify",
-      color: "hover:text-blue-400",
+      name: "X",
+      icon: <X className="w-5 h-5" />,
+      href: "https://x.com/placify",
+      color: "hover:text-gray-800 dark:hover:text-gray-200",
     },
   ];
 
