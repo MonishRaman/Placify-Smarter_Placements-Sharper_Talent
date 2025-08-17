@@ -392,7 +392,7 @@ const LandingPage = () => {
               >
                 {/* Primary CTA Button - Optimized for performance */}
                 <button
-                  onClick={() => navigate("/register")}
+                  onClick={() => navigate("/resume")}
                   className="group relative inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-purple-700 bg-white rounded-2xl shadow-xl transition-all duration-200 overflow-hidden btn-hover"
                 >
                   <span className="relative z-10 flex items-center space-x-2">
