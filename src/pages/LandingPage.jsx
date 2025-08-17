@@ -392,7 +392,7 @@ const LandingPage = () => {
               >
                 {/* Primary CTA Button - Optimized for performance */}
                 <button
-                  onClick={() => navigate("/resume")}
+                  onClick={() => navigate("/register")}
                   className="group relative inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-purple-700 bg-white rounded-2xl shadow-xl transition-all duration-200 overflow-hidden btn-hover"
                 >
                   <span className="relative z-10 flex items-center space-x-2">
@@ -404,16 +404,12 @@ const LandingPage = () => {
 
                 {/* Secondary CTA Button - Optimized for performance */}
                 <button
-                  onClick={() => {
-                    document
-                      .getElementById("works")
-                      ?.scrollIntoView({ behavior: "smooth" });
-                  }}
+                  onClick={() => navigate("/resume")}
                   className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white border-2 border-white/30 rounded-2xl hover:bg-white/10 hover:border-white/50 transition-all duration-200 backdrop-blur-sm hover-lift will-change-transform"
                 >
                   <span className="flex items-center space-x-2">
                     <Target className="w-5 h-5" />
-                    <span>See How It Works</span>
+                    <span>Try Our New Resume Builder</span>
                   </span>
                 </button>
               </motion.div>
