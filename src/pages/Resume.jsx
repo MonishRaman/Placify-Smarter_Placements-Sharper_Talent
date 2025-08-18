@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Download, Eye, Edit3, Plus, Trash2, GripVertical, Palette, Moon, Sun, Upload, X } from 'lucide-react';
 
 const ResumeBuilder = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => JSON.parse(localStorage.getItem('resumeBuilderTheme')) || false);
   const [activeTemplate, setActiveTemplate] = useState(0);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [primaryColor, setPrimaryColor] = useState('#3B82F6');
@@ -76,6 +76,10 @@ const ResumeBuilder = () => {
     ]
   });
 
+  useEffect(()=>{
+    localStorage.setItem('resumeBuilderTheme', JSON.stringify(isDarkMode));
+  },[isDarkMode]);
+  
   const [sectionOrder, setSectionOrder] = useState([
     'personal', 'experience', 'education', 'skills', 'projects', 'achievements', 'hobbies', 'references'
   ]);
