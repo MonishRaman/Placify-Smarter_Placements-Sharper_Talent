@@ -6,4 +6,7 @@ const studentSchema = new mongoose.Schema({
   major: { type: String, required: true }
 });
 
-export default User.discriminator("Student", studentSchema);
+const Student = User.discriminator("Student", studentSchema);
+
+export default Student;
+

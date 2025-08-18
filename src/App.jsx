@@ -61,6 +61,7 @@ import JobSwitchInsights from './pages/employee/JobSwitchInsights';
 import EmployeeSettings from './pages/employee/Settings';
 
 import { motion } from "framer-motion";
+import API from "./api/api";
 
 import UserJobs from "./pages/Student/UserJobs";
 
