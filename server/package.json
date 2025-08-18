@@ -29,7 +29,7 @@
     "multer": "^2.0.2",
     "nodemailer": "^6.9.8",
     "nodemon": "^3.1.10",
-    "pdfjs-dist": "^5.4.54",
+    "pdfjs-dist": "^2.16.105",
     "reading-time": "^1.5.0",
     "retext": "^9.0.0",
     "retext-english": "^5.0.0",
