@@ -1234,6 +1234,17 @@ const ResumeBuilder = () => {
                   </button>
                 ))}
               </div>
+              <div className={`p-6 rounded-lg shadow-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                <h2 className="text-xl font-semibold mb-4">Live Preview</h2>
+                <div className="transform scale-[1] origin-top-left overflow-hidden border rounded-lg">
+                  <ResumeTemplate 
+                    template={templates[activeTemplate]} 
+                    data={resumeData} 
+                    primaryColor={primaryColor}
+                    profileImage={profileImage}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
