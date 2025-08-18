@@ -4,7 +4,7 @@ import { Building2, School } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const InstitutionProfile = () => {
   const navigate = useNavigate();
