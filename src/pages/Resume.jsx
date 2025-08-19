@@ -9,7 +9,8 @@ const ResumeBuilder = () => {
   const [profileImage, setProfileImage] = useState(null);
   const fileInputRef = useRef(null);
 
-  const [resumeData, setResumeData] = useState({
+  // We moved your initial data into a constant
+  const defaultResumeData = {
     personal: {
       name: 'John Smith',
       title: 'Senior Software Engineer',
@@ -74,12 +75,20 @@ const ResumeBuilder = () => {
         phone: '+1 (555) 987-6543'
       }
     ]
+  };
+
+  // Load saved data from localStorage when the component starts
+  const [resumeData, setResumeData] = useState(() => {
+    const savedData = localStorage.getItem('resumeBuilderData');
+    return savedData ? JSON.parse(savedData) : defaultResumeData;
   });
+
 
   useEffect(()=>{
     localStorage.setItem('resumeBuilderTheme', JSON.stringify(isDarkMode));
   },[isDarkMode]);
   
+
   const [sectionOrder, setSectionOrder] = useState([
     'personal', 'experience', 'education', 'skills', 'projects', 'achievements', 'hobbies', 'references'
   ]);

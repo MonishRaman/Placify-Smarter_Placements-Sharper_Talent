@@ -48,7 +48,7 @@ const InterviewInterface = () => {
       formData.append("interviewId", interviewId);
 
 
-      await axios.post("http://localhost:5000/api/interviews/upload", formData);
+      await axios.post(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/interviews/upload`,formData);
 
       navigate(`/results/${interviewId}`);
     } catch (err) {
