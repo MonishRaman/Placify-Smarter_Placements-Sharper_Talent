@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { UserProvider } from "./context/UserContext"
 
 import Footer from "./components/Footer";
 import AuthPage from "./pages/AuthPage";
@@ -216,12 +217,13 @@ const AppWrapper = () => {
   );
 };
 
-// ✅ Actual App that wraps AppWrapper inside Router
 function App() {
   return (
-    <Router>
-      <AppWrapper />
-    </Router>
+    <UserProvider>
+      <Router>
+        <AppWrapper />
+      </Router>
+    </UserProvider>
   );
 }
 

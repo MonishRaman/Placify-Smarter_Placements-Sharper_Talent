@@ -890,30 +890,6 @@ const CodingPractice = () => {
         </div>
       </div>
 
-      {/* Daily Challenge Banner */}
-      <div className="fixed bottom-6 right-6 z-20">
-        <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-2xl shadow-2xl p-4 max-w-sm">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Coffee className="w-5 h-5" />
-                <span className="font-semibold text-sm">Daily Challenge</span>
-              </div>
-              <h4 className="font-bold mb-1">Two Pointers Technique</h4>
-              <p className="text-sm opacity-90 mb-3">
-                Solve today's challenge to maintain your streak!
-              </p>
-              <button className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
-                Take Challenge
-              </button>
-            </div>
-            <button className="text-white/70 hover:text-white">
-              <span className="text-lg">×</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Progress Modal/Tooltip */}
       <div className="fixed top-20 left-4 z-10">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border dark:border-gray-700 p-4 max-w-xs">

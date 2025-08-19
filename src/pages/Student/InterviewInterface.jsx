@@ -1,6 +1,876 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Upload, Mic, MicOff, Calendar, FileText, Brain, Star, Clock, ChevronRight, Play, Pause, RotateCcw } from 'lucide-react';
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Upload,
+  Mic,
+  MicOff,
+  Calendar,
+  FileText,
+  Brain,
+  Star,
+  Clock,
+  ChevronRight,
+  RotateCcw,
+  Copy,
+  Trash2,
+  User,
+  Bot,
+  Settings,
+  CheckCircle,
+  AlertCircle,
+  Loader,
+  Plus,
+  ExternalLink,
+} from "lucide-react";
 
+// ===== Speech Recognition Component =====
+const SpeechRecognitionComponent = ({
+  transcript,
+  setCurrentAnswer,
+  browserSupportsSpeechRecognition,
+}) => {
+  const [textToCopy, setTextToCopy] = useState("");
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef(null);
+
+  // Initialize speech recognition
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  const hasSupport = SpeechRecognition && browserSupportsSpeechRecognition;
+
+  if (!hasSupport) {
+    return (
+      <div className="bg-red-50 border border-red-200 p-6 rounded-lg mb-6">
+        <p className="text-red-600">
+          Speech recognition is not supported in this browser. Please use Chrome or Edge for speech features.
+        </p>
+      </div>
+    );
+  }
+
+  const startListening = () => {
+    try {
+      if (!recognitionRef.current) {
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.continuous = true;
+        recognitionRef.current.interimResults = true;
+        recognitionRef.current.lang = "en-US";
+
+        recognitionRef.current.onresult = (event) => {
+          let finalTranscript = "";
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            if (event.results[i].isFinal) {
+              finalTranscript += event.results[i][0].transcript;
+            }
+          }
+          if (finalTranscript) {
+            setCurrentAnswer(prev => prev + " " + finalTranscript);
+            setTextToCopy(prev => prev + " " + finalTranscript);
+          }
+        };
+
+        recognitionRef.current.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionRef.current.onerror = (event) => {
+          console.error("Speech recognition error:", event.error);
+          setIsListening(false);
+        };
+      }
+
+      setIsListening(true);
+      recognitionRef.current.start();
+    } catch (error) {
+      console.error("Error starting speech recognition:", error);
+      setIsListening(false);
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+    setIsListening(false);
+  };
+
+  const clearText = () => {
+    setCurrentAnswer("");
+    setTextToCopy("");
+  };
+
+  return (
+    <div className="bg-blue-50 border border-blue-200 p-6 rounded-lg mb-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold flex items-center">
+          <Mic className="w-5 h-5 mr-2" />
+          Speech-to-Text Converter
+        </h3>
+        {isListening && (
+          <div className="flex items-center text-red-600">
+            <div className="w-3 h-3 bg-red-600 rounded-full animate-pulse mr-2"></div>
+            <span className="text-sm font-medium">Recording...</span>
+          </div>
+        )}
+      </div>
+      <div className="bg-white p-4 rounded-lg border-2 border-dashed border-blue-300 mb-4 min-h-24">
+        <div className="text-xs text-gray-500 mb-2">
+          Speech will appear here:
+        </div>
+        <div className="text-sm text-blue-700">
+          {transcript || textToCopy || "Your speech will appear here..."}
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        <button
+          onClick={startListening}
+          disabled={isListening}
+          className="flex items-center px-4 py-2 rounded-lg font-medium transition-colors bg-green-600 text-white hover:bg-green-700 disabled:bg-gray-400"
+        >
+          <Mic className="w-4 h-4 mr-2" />
+          Start Listening
+        </button>
+        <button
+          onClick={stopListening}
+          disabled={!isListening}
+          className="flex items-center px-4 py-2 rounded-lg font-medium transition-colors bg-red-600 text-white hover:bg-red-700 disabled:bg-gray-400"
+        >
+          <MicOff className="w-4 h-4 mr-2" />
+          Stop Listening
+        </button>
+        <button
+          onClick={clearText}
+          className="flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+        >
+          <Trash2 className="w-4 h-4 mr-2" />
+          Clear
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ===== Header Component =====
+const Header = () => (
+  <header className="text-center mb-8">
+    <h1 className="text-4xl font-bold text-gray-800 mb-2">
+      AI Interview Assistant
+    </h1>
+    <p className="text-gray-600">
+      Master your interviews with AI-powered practice sessions
+    </p>
+  </header>
+);
+
+// ===== Progress Bar Component =====
+const ProgressBar = ({ currentStep }) => {
+  const steps = [
+    { number: 1, label: "Upload Resume" },
+    { number: 2, label: "Analysis" },
+    { number: 3, label: "Interview" },
+    { number: 4, label: "Feedback" },
+    { number: 5, label: "Schedule" },
+  ];
+
+  return (
+    <div className="flex justify-center mb-8">
+      <div className="flex items-center space-x-4 overflow-x-auto">
+        {steps.map((step, index) => (
+          <div key={step.number} className="flex items-center">
+            <div className="flex flex-col items-center">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
+                  currentStep >= step.number ? "bg-blue-600" : "bg-gray-300"
+                }`}
+              >
+                {step.number}
+              </div>
+              <span className="text-xs text-gray-600 mt-1 hidden sm:block">
+                {step.label}
+              </span>
+            </div>
+            {index < steps.length - 1 && (
+              <ChevronRight className="w-5 h-5 text-gray-400 mx-2" />
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ===== Resume Upload Component =====
+const ResumeUpload = ({
+  fileInputRef,
+  setResumeFile,
+  setResumeAnalysis,
+  setCurrentStep,
+  loading,
+  setLoading,
+}) => {
+  const handleResumeUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setResumeFile(file);
+    setLoading(true);
+
+    // Simulate resume analysis
+    setTimeout(() => {
+      const mockAnalysis = {
+        summary: "Experienced software developer with 5+ years in full-stack development",
+        skills: ["JavaScript", "React", "Node.js", "Python", "SQL", "AWS"],
+        experience: "5+ years",
+        strengths: [
+          "Technical leadership",
+          "Problem-solving",
+          "Team collaboration",
+        ],
+        suggestions: [
+          "Highlight specific project outcomes",
+          "Add more quantifiable metrics",
+        ],
+      };
+
+      setResumeAnalysis(mockAnalysis);
+      setCurrentStep(2);
+      setLoading(false);
+    }, 2000);
+  };
+
+  return (
+    <div className="text-center">
+      <Upload className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+      <h2 className="text-2xl font-bold mb-4">Upload Your Resume</h2>
+      <p className="text-gray-600 mb-6">
+        Upload your resume to get personalized interview questions tailored to
+        your background
+      </p>
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleResumeUpload}
+        accept=".pdf,.doc,.docx,.txt"
+        className="hidden"
+      />
+      <button
+        onClick={() => fileInputRef.current?.click()}
+        className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center mx-auto"
+        disabled={loading}
+      >
+        {loading ? (
+          <>
+            <Loader className="w-5 h-5 mr-2 animate-spin" />
+            Analyzing Resume...
+          </>
+        ) : (
+          <>
+            <Upload className="w-5 h-5 mr-2" />
+            Choose Resume File
+          </>
+        )}
+      </button>
+      <p className="text-sm text-gray-500 mt-4">
+        Supported formats: PDF, DOC, DOCX, TXT
+      </p>
+    </div>
+  );
+};
+
+// ===== Resume Analysis Component =====
+const ResumeAnalysis = ({ resumeAnalysis, generateQuestions, loading }) => (
+  <div>
+    <div className="flex items-center mb-6">
+      <FileText className="w-8 h-8 text-blue-600 mr-3" />
+      <h2 className="text-2xl font-bold">Resume Analysis Complete</h2>
+    </div>
+
+    <div className="grid md:grid-cols-2 gap-6 mb-8">
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h3 className="font-bold text-lg mb-3 text-green-800">Summary</h3>
+        <p className="text-gray-700">{resumeAnalysis.summary}</p>
+      </div>
+
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h3 className="font-bold text-lg mb-3 text-blue-800">
+          Experience Level
+        </h3>
+        <p className="text-gray-700">{resumeAnalysis.experience}</p>
+      </div>
+
+      <div className="bg-purple-50 p-6 rounded-lg">
+        <h3 className="font-bold text-lg mb-3 text-purple-800">Key Skills</h3>
+        <div className="flex flex-wrap gap-2">
+          {resumeAnalysis.skills.map((skill, index) => (
+            <span
+              key={index}
+              className="bg-purple-200 text-purple-800 px-3 py-1 rounded-full text-sm"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-yellow-50 p-6 rounded-lg">
+        <h3 className="font-bold text-lg mb-3 text-yellow-800">Strengths</h3>
+        <ul className="text-gray-700">
+          {resumeAnalysis.strengths.map((strength, index) => (
+            <li key={index} className="mb-1">
+              • {strength}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div className="bg-amber-50 p-6 rounded-lg mb-8">
+      <h3 className="font-bold text-lg mb-3 text-amber-800 flex items-center">
+        <AlertCircle className="w-5 h-5 mr-2" />
+        Improvement Suggestions
+      </h3>
+      <ul className="text-gray-700">
+        {resumeAnalysis.suggestions.map((suggestion, index) => (
+          <li key={index} className="mb-1">
+            • {suggestion}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div className="text-center">
+      <button
+        onClick={generateQuestions}
+        className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center mx-auto"
+        disabled={loading}
+      >
+        {loading ? (
+          <>
+            <Loader className="w-5 h-5 mr-2 animate-spin" />
+            Generating Personalized Questions...
+          </>
+        ) : (
+          <>
+            <Brain className="w-5 h-5 mr-2" />
+            Generate Interview Questions
+          </>
+        )}
+      </button>
+    </div>
+  </div>
+);
+
+// ===== Interview Session Component =====
+const InterviewSession = ({
+  questions,
+  currentQuestionIndex,
+  currentAnswer,
+  setCurrentAnswer,
+  transcript,
+  nextQuestion,
+  resetInterview,
+}) => {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center">
+          <Bot className="w-8 h-8 text-blue-600 mr-3" />
+          <h2 className="text-2xl font-bold">Mock Interview Session</h2>
+        </div>
+        <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+          Question {currentQuestionIndex + 1} of {questions.length}
+        </div>
+      </div>
+
+      {/* Current Question Display */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg mb-6 border-l-4 border-blue-600">
+        <div className="flex items-start">
+          <Bot className="w-6 h-6 text-blue-600 mr-3 mt-1" />
+          <div>
+            <h3 className="text-lg font-semibold mb-2 text-blue-800">
+              Interview Question {currentQuestionIndex + 1}:
+            </h3>
+            <p className="text-gray-700 text-lg leading-relaxed">
+              {questions[currentQuestionIndex]}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Speech Recognition Interface */}
+      <SpeechRecognitionComponent
+        transcript={transcript}
+        setCurrentAnswer={setCurrentAnswer}
+        browserSupportsSpeechRecognition={true}
+      />
+
+      {/* Answer Input */}
+      <div className="mb-6">
+        <div className="flex items-center mb-3">
+          <User className="w-5 h-5 text-green-600 mr-2" />
+          <label className="block text-lg font-medium">Your Answer:</label>
+        </div>
+        <textarea
+          value={currentAnswer}
+          onChange={(e) => setCurrentAnswer(e.target.value)}
+          placeholder="Your answer will appear here as you speak, or you can type it manually..."
+          className="w-full p-4 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-32 resize-vertical"
+          rows={6}
+        />
+      </div>
+
+      {/* Navigation */}
+      <div className="flex justify-between items-center">
+        <button
+          onClick={resetInterview}
+          className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors flex items-center"
+        >
+          <RotateCcw className="w-5 h-5 mr-2" />
+          Start Over
+        </button>
+        <button
+          onClick={nextQuestion}
+          disabled={!currentAnswer.trim()}
+          className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold flex items-center"
+        >
+          {currentQuestionIndex === questions.length - 1 ? (
+            <>
+              <CheckCircle className="w-5 h-5 mr-2" />
+              Complete Interview
+            </>
+          ) : (
+            <>
+              Next Question
+              <ChevronRight className="w-5 h-5 ml-2" />
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ===== Feedback Component =====
+const Feedback = ({ feedback, loading, resetInterview, scheduleNext }) => {
+  return (
+    <div>
+      {loading ? (
+        <div className="text-center py-12">
+          <Loader className="w-12 h-12 text-blue-600 mx-auto mb-4 animate-spin" />
+          <h2 className="text-2xl font-bold mb-2">
+            Analyzing Your Performance
+          </h2>
+          <p className="text-gray-600">AI is evaluating your responses...</p>
+        </div>
+      ) : (
+        feedback && (
+          <>
+            <div className="flex items-center mb-6">
+              <Star className="w-8 h-8 text-yellow-500 mr-3" />
+              <h2 className="text-2xl font-bold">
+                Interview Results & Feedback
+              </h2>
+            </div>
+
+            {/* Overall Score */}
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-lg mb-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800">
+                    Overall Score
+                  </h3>
+                  <p className="text-gray-600">
+                    Based on content, clarity, and structure
+                  </p>
+                </div>
+                <div className="text-3xl font-bold text-green-600">
+                  {feedback.overallScore}/10
+                </div>
+              </div>
+            </div>
+
+            {/* Detailed Feedback */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <div className="bg-green-50 p-6 rounded-lg">
+                <h3 className="font-bold text-lg mb-3 text-green-800 flex items-center">
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  Strengths
+                </h3>
+                <ul className="text-gray-700 space-y-2">
+                  {feedback.strengths.map((strength, index) => (
+                    <li key={index} className="flex items-start">
+                      <span className="text-green-600 mr-2">•</span>
+                      {strength}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="bg-orange-50 p-6 rounded-lg">
+                <h3 className="font-bold text-lg mb-3 text-orange-800 flex items-center">
+                  <AlertCircle className="w-5 h-5 mr-2" />
+                  Areas for Improvement
+                </h3>
+                <ul className="text-gray-700 space-y-2">
+                  {feedback.improvements.map((improvement, index) => (
+                    <li key={index} className="flex items-start">
+                      <span className="text-orange-600 mr-2">•</span>
+                      {improvement}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Question-by-Question Feedback */}
+            <div className="bg-gray-50 p-6 rounded-lg mb-8">
+              <h3 className="font-bold text-lg mb-4">
+                Question-by-Question Analysis
+              </h3>
+              <div className="space-y-4">
+                {feedback.questionFeedback.map((qf, index) => (
+                  <div key={index} className="bg-white p-4 rounded-lg border">
+                    <h4 className="font-semibold mb-2">
+                      Q{index + 1}: {qf.question}
+                    </h4>
+                    <div className="grid md:grid-cols-3 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium text-blue-600">
+                          Content:{" "}
+                        </span>
+                        <span className="font-bold">{qf.contentScore}/10</span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-green-600">
+                          Clarity:{" "}
+                        </span>
+                        <span className="font-bold">{qf.clarityScore}/10</span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-purple-600">
+                          Structure:{" "}
+                        </span>
+                        <span className="font-bold">
+                          {qf.structureScore}/10
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-gray-600 mt-2 text-sm">{qf.feedback}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={resetInterview}
+                className="flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <RotateCcw className="w-5 h-5 mr-2" />
+                Practice Again
+              </button>
+              <button
+                onClick={scheduleNext}
+                className="flex items-center bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <Calendar className="w-5 h-5 mr-2" />
+                Schedule Next Session
+              </button>
+            </div>
+          </>
+        )
+      )}
+    </div>
+  );
+};
+
+// ===== Calendar Scheduling Component =====
+const CalendarScheduling = ({
+  calendarEvents,
+  setCalendarEvents,
+  resetInterview,
+}) => {
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
+  const [sessionTitle, setSessionTitle] = useState("AI Interview Practice Session");
+
+  // Generate unique ID for events
+  const generateEventId = () => {
+    return 'event_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  };
+
+  // Schedule Interview locally
+  const scheduleInterview = () => {
+    if (!selectedDate || !selectedTime) {
+      alert("Please select both date and time");
+      return;
+    }
+
+    const eventDate = new Date(`${selectedDate}T${selectedTime}`);
+    if (eventDate <= new Date()) {
+      alert("Please select a future date and time");
+      return;
+    }
+
+    const newEvent = {
+      id: generateEventId(),
+      title: sessionTitle,
+      date: selectedDate,
+      time: selectedTime,
+      dateTime: eventDate.toISOString(),
+      source: "local",
+      description: "Scheduled via AI Interview Assistant - Practice your interview skills",
+    };
+
+    setCalendarEvents([...calendarEvents, newEvent]);
+    setSelectedDate("");
+    setSelectedTime("");
+    setSessionTitle("AI Interview Practice Session");
+    alert("✅ Interview session scheduled successfully!");
+  };
+
+  // Delete Event
+  const handleDeleteEvent = (eventId) => {
+    setCalendarEvents(calendarEvents.filter((event) => event.id !== eventId));
+    alert("✅ Event deleted successfully!");
+  };
+
+  // Export to ICS format
+  const exportToICS = (event) => {
+    const startDate = new Date(event.dateTime);
+    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hour later
+    
+    const formatDate = (date) => {
+      return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+
+    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//AI Interview Assistant//EN
+BEGIN:VEVENT
+UID:${event.id}@ai-interview-assistant.com
+DTSTAMP:${formatDate(new Date())}
+DTSTART:${formatDate(startDate)}
+DTEND:${formatDate(endDate)}
+SUMMARY:${event.title}
+DESCRIPTION:${event.description}
+END:VEVENT
+END:VCALENDAR`;
+
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${event.title.replace(/\s+/g, '_')}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Generate Google Calendar URL
+  const getGoogleCalendarURL = (event) => {
+    const startDate = new Date(event.dateTime);
+    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+    
+    const formatGoogleDate = (date) => {
+      return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+
+    const params = new URLSearchParams({
+      action: 'TEMPLATE',
+      text: event.title,
+      dates: `${formatGoogleDate(startDate)}/${formatGoogleDate(endDate)}`,
+      details: event.description,
+    });
+
+    return `https://calendar.google.com/calendar/render?${params.toString()}`;
+  };
+
+  return (
+    <div>
+      <div className="flex items-center mb-6">
+        <Calendar className="w-8 h-8 text-blue-600 mr-3" />
+        <h2 className="text-2xl font-bold">Schedule Practice Sessions</h2>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-8">
+        {/* Schedule New Session */}
+        <div className="bg-blue-50 p-6 rounded-lg">
+          <h3 className="font-bold text-lg mb-4 flex items-center">
+            <Plus className="w-5 h-5 mr-2" />
+            Schedule New Session
+          </h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Session Title
+              </label>
+              <input
+                type="text"
+                value={sessionTitle}
+                onChange={(e) => setSessionTitle(e.target.value)}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="AI Interview Practice Session"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Select Date
+              </label>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                min={new Date().toISOString().split("T")[0]}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Select Time
+              </label>
+              <input
+                type="time"
+                value={selectedTime}
+                onChange={(e) => setSelectedTime(e.target.value)}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <button
+              onClick={scheduleInterview}
+              disabled={!selectedDate || !selectedTime}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            >
+              <Calendar className="w-5 h-5 mr-2" />
+              Schedule Session
+            </button>
+          </div>
+        </div>
+
+        {/* Scheduled Sessions */}
+        <div className="bg-green-50 p-6 rounded-lg">
+          <h3 className="font-bold text-lg mb-4 flex items-center">
+            <CheckCircle className="w-5 h-5 mr-2" />
+            Scheduled Sessions ({calendarEvents.length})
+          </h3>
+
+          {calendarEvents.length > 0 ? (
+            <div className="space-y-3 max-h-64 overflow-y-auto">
+              {calendarEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="bg-white p-4 rounded-lg border border-green-200"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-800">
+                        {event.title}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        📅 {new Date(event.date).toLocaleDateString("en-US", {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })} at ⏰ {event.time}
+                      </p>
+                      
+                      {/* Export Buttons */}
+                      <div className="flex items-center space-x-2 mt-2">
+                        <button
+                          onClick={() => exportToICS(event)}
+                          className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition-colors"
+                          title="Download .ics file"
+                        >
+                          📥 Export
+                        </button>
+                        <a
+                          href={getGoogleCalendarURL(event)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition-colors inline-flex items-center"
+                          title="Add to Google Calendar"
+                        >
+                          📅 Google
+                        </a>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteEvent(event.id)}
+                      className="text-red-600 hover:text-red-800 transition-colors p-1 ml-2"
+                      title="Delete event"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p className="font-medium">No sessions scheduled yet</p>
+              <p className="text-sm">
+                Schedule your first practice session above
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Help Section */}
+      <div className="mt-8 bg-gray-50 p-6 rounded-lg">
+        <h3 className="font-bold text-lg mb-4 flex items-center">
+          <Settings className="w-5 h-5 mr-2" />
+          Calendar Integration Help
+        </h3>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <h4 className="font-semibold mb-2">📱 Mobile Devices</h4>
+            <p className="text-sm text-gray-600 mb-2">
+              Use the "Export" button to download a calendar file that can be imported into:
+            </p>
+            <ul className="text-sm text-gray-600 space-y-1">
+              <li>• iOS Calendar (iPhone/iPad)</li>
+              <li>• Android Calendar</li>
+              <li>• Outlook Mobile</li>
+              <li>• Any calendar app that supports .ics files</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">💻 Desktop Applications</h4>
+            <p className="text-sm text-gray-600 mb-2">
+              Compatible with popular calendar applications:
+            </p>
+            <ul className="text-sm text-gray-600 space-y-1">
+              <li>• Microsoft Outlook</li>
+              <li>• Apple Calendar (macOS)</li>
+              <li>• Thunderbird Calendar</li>
+              <li>• Google Calendar (via web)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-8 text-center">
+        <button
+          onClick={resetInterview}
+          className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors flex items-center mx-auto"
+        >
+          <RotateCcw className="w-5 h-5 mr-2" />
+          Start New Interview
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ===== Main AI Interview Assistant Component =====
 const AIInterviewAssistant = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [resumeFile, setResumeFile] = useState(null);
@@ -8,433 +878,73 @@ const AIInterviewAssistant = () => {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
-  const [isRecording, setIsRecording] = useState(false);
-  const [currentAnswer, setCurrentAnswer] = useState('');
+  const [currentAnswer, setCurrentAnswer] = useState("");
   const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(false);
   const [calendarEvents, setCalendarEvents] = useState([]);
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectedTime, setSelectedTime] = useState('');
-  const [isGoogleCalendarLoaded, setIsGoogleCalendarLoaded] = useState(false);
-  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  // Speech Recognition states
+  const [transcript, setTranscript] = useState("");
 
   const fileInputRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
 
-  // API Configuration
-  const GEMINI_API_KEY = 'AIzaSyCNxNQPMt0c7pIyIKMEBCmhQVWOdguC_jc';
-  const GOOGLE_CLIENT_ID = '863542617609-o40s9dj91qsnhpkj25p9vqa3421i4ugg.apps.googleusercontent.com';
-  const SPEECH_API_KEY = '6cdbcf7779044d498d9863a70b048b8a';
-
-  // Load Google APIs
-  useEffect(() => {
-    const loadGoogleAPIs = () => {
-      // Load Google Calendar API
-      if (!window.gapi) {
-        const script = document.createElement('script');
-        script.src = 'https://apis.google.com/js/api.js';
-        script.onload = () => {
-          window.gapi.load('client:auth2', initializeGapi);
-        };
-        document.head.appendChild(script);
-      } else {
-        window.gapi.load('client:auth2', initializeGapi);
-      }
-    };
-
-    const initializeGapi = async () => {
-      try {
-        await window.gapi.client.init({
-          apiKey: GEMINI_API_KEY,
-          clientId: GOOGLE_CLIENT_ID,
-          discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
-          scope: 'https://www.googleapis.com/auth/calendar'
-        });
-
-        const authInstance = window.gapi.auth2.getAuthInstance();
-        setIsSignedIn(authInstance.isSignedIn.get());
-        setIsGoogleCalendarLoaded(true);
-
-        // Listen for sign-in state changes
-        authInstance.isSignedIn.listen(setIsSignedIn);
-      } catch (error) {
-        console.error('Error initializing Google API:', error);
-        setIsGoogleCalendarLoaded(true); // Still mark as loaded to show fallback
-      }
-    };
-
-    loadGoogleAPIs();
-  }, []);
-
-  // Google Calendar Sign In
-  const signInToGoogle = async () => {
-    try {
-      const authInstance = window.gapi.auth2.getAuthInstance();
-      await authInstance.signIn();
-      setIsSignedIn(true);
-    } catch (error) {
-      console.error('Sign-in failed:', error);
-      alert('Failed to sign in to Google Calendar. Please try again.');
-    }
-  };
-
-  // Sign out from Google
-  const signOutFromGoogle = async () => {
-    try {
-      const authInstance = window.gapi.auth2.getAuthInstance();
-      await authInstance.signOut();
-      setIsSignedIn(false);
-    } catch (error) {
-      console.error('Sign-out failed:', error);
-    }
-  };
-
-  // Step 1: Resume Upload and Analysis
-  const handleResumeUpload = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setResumeFile(file);
-      setLoading(true);
-      
-      try {
-        // Simulate resume analysis with Gemini AI
-        const resumeText = await extractTextFromFile(file);
-        const analysis = await analyzeResumeWithGemini(resumeText);
-        setResumeAnalysis(analysis);
-        setCurrentStep(2);
-      } catch (error) {
-        console.error('Resume analysis failed:', error);
-        // Fallback analysis
-        setResumeAnalysis({
-          skills: ['JavaScript', 'React', 'Node.js', 'Python'],
-          experience: '3 years in software development',
-          strengths: ['Problem solving', 'Team collaboration', 'Technical expertise'],
-          role: 'Software Developer'
-        });
-        setCurrentStep(2);
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
-  const extractTextFromFile = async (file) => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target.result);
-      reader.readAsText(file);
-    });
-  };
-
-  const analyzeResumeWithGemini = async (resumeText) => {
-    const prompt = `Analyze this resume and extract:
-    1. Top 5 technical skills
-    2. Years of experience
-    3. Key strengths
-    4. Most suitable role
-    
-    Resume: ${resumeText}
-    
-    Return as JSON format.`;
-
-    try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
-        })
-      });
-      
-      const data = await response.json();
-      const analysisText = data.candidates[0].content.parts[0].text;
-      
-      // Parse the response (simplified)
-      return {
-        skills: ['JavaScript', 'React', 'Node.js', 'Python', 'SQL'],
-        experience: '3+ years in software development',
-        strengths: ['Problem solving', 'Team collaboration', 'Technical expertise'],
-        role: 'Software Developer'
-      };
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  // Step 2: Generate Interview Questions
-  const generateQuestions = async () => {
+  const generateQuestions = () => {
     setLoading(true);
-    try {
-      const prompt = `Generate 8 interview questions for a ${resumeAnalysis.role} with skills: ${resumeAnalysis.skills.join(', ')} and experience: ${resumeAnalysis.experience}. 
-      Include behavioral, technical, and situational questions. Return as JSON array.`;
-
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
-        })
-      });
-      
-      const data = await response.json();
-      
-      // Fallback questions based on analysis
-      const generatedQuestions = [
+    // Simulate question generation based on resume analysis
+    setTimeout(() => {
+      const mockQuestions = [
         "Tell me about yourself and your background in software development.",
-        "How do you approach problem-solving in your development work?",
-        "Describe a challenging project you've worked on with React or JavaScript.",
-        "How do you stay updated with the latest technology trends?",
-        "Tell me about a time you had to collaborate with a difficult team member.",
-        "How do you handle tight deadlines and pressure?",
-        "What's your experience with database design and SQL?",
-        "Where do you see yourself in the next 5 years?"
+        "Describe a challenging project you worked on and how you overcame obstacles.",
+        "How do you stay updated with the latest technologies in your field?",
+        "Explain a time when you had to work with a difficult team member.",
+        "Where do you see yourself in the next 5 years?",
+        "What interests you most about this role and our company?",
+        "Describe your experience with React and JavaScript frameworks.",
+        "How do you approach debugging complex technical issues?",
       ];
-      
-      setQuestions(generatedQuestions);
+      setQuestions(mockQuestions);
       setCurrentStep(3);
-    } catch (error) {
-      console.error('Question generation failed:', error);
-    } finally {
       setLoading(false);
-    }
-  };
-
-  // Step 3: Conduct Interview with Speech-to-Text
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
-      audioChunksRef.current = [];
-
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
-      };
-
-      mediaRecorderRef.current.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        const transcript = await transcribeAudio(audioBlob);
-        setCurrentAnswer(transcript);
-      };
-
-      mediaRecorderRef.current.start();
-      setIsRecording(true);
-    } catch (error) {
-      console.error('Recording failed:', error);
-      alert('Failed to start recording. Please check microphone permissions.');
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      
-      // Stop all tracks to free up microphone
-      mediaRecorderRef.current.stream?.getTracks().forEach(track => track.stop());
-    }
-  };
-
-  const transcribeAudio = async (audioBlob) => {
-    try {
-      // Convert blob to base64
-      const base64Audio = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64 = reader.result.split(',')[1];
-          resolve(base64);
-        };
-        reader.readAsDataURL(audioBlob);
-      });
-
-      // Use Web Speech API (browser-based) as fallback
-      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        return await useWebSpeechAPI();
-      }
-
-      // Try Azure Speech Services
-      const response = await fetch(`https://eastus.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US`, {
-        method: 'POST',
-        headers: {
-          'Ocp-Apim-Subscription-Key': SPEECH_API_KEY,
-          'Content-Type': 'audio/wav',
-          'Accept': 'application/json'
-        },
-        body: audioBlob
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        return result.DisplayText || "Could not transcribe audio.";
-      } else {
-        throw new Error('Speech API request failed');
-      }
-    } catch (error) {
-      console.error('Transcription failed:', error);
-      return "Transcription failed. Please type your answer or try recording again.";
-    }
-  };
-
-  const useWebSpeechAPI = () => {
-    return new Promise((resolve) => {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      
-      recognition.lang = 'en-US';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        resolve(transcript);
-      };
-
-      recognition.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
-        resolve("Speech recognition failed. Please try again or type your answer.");
-      };
-
-      recognition.start();
-    });
+    }, 2000);
   };
 
   const nextQuestion = () => {
-    if (currentAnswer) {
-      setAnswers([...answers, { question: questions[currentQuestionIndex], answer: currentAnswer }]);
-      setCurrentAnswer('');
-      
-      if (currentQuestionIndex < questions.length - 1) {
-        setCurrentQuestionIndex(currentQuestionIndex + 1);
-      } else {
-        evaluateInterview();
-      }
-    }
-  };
+    const updatedAnswers = [...answers];
+    updatedAnswers[currentQuestionIndex] = currentAnswer;
+    setAnswers(updatedAnswers);
 
-  // Step 4: Evaluate Interview
-  const evaluateInterview = async () => {
-    setLoading(true);
-    setCurrentStep(4);
-    
-    try {
-      const prompt = `Evaluate this interview performance:
-      Questions and Answers: ${JSON.stringify(answers)}
-      
-      Provide:
-      1. Overall score (1-10)
-      2. Strengths (3 points)
-      3. Areas for improvement (3 points)
-      4. Specific feedback for each answer
-      
-      Return as JSON.`;
-
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
-        })
-      });
-      
-      // Simulate feedback
-      setFeedback({
-        overallScore: 7.5,
-        strengths: [
-          'Clear communication and articulation',
-          'Good technical knowledge demonstration',
-          'Professional demeanor throughout'
-        ],
-        improvements: [
-          'Provide more specific examples',
-          'Elaborate on problem-solving process',
-          'Show more enthusiasm and passion'
-        ],
-        detailedFeedback: answers.map((_, index) => ({
-          question: index + 1,
-          score: Math.floor(Math.random() * 3) + 7,
-          comment: 'Good response with room for more detail.'
-        }))
-      });
-    } catch (error) {
-      console.error('Evaluation failed:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Google Calendar Integration
-  const scheduleToGoogleCalendar = async () => {
-    if (!selectedDate || !selectedTime) {
-      alert('Please select both date and time');
-      return;
-    }
-
-    if (!isSignedIn) {
-      await signInToGoogle();
-      return;
-    }
-
-    try {
-      const startDateTime = new Date(`${selectedDate}T${selectedTime}`);
-      const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hour duration
-
-      const event = {
-        summary: 'Mock Interview Practice Session',
-        description: 'AI-powered interview practice session',
-        start: {
-          dateTime: startDateTime.toISOString(),
-          timeZone: 'America/New_York'
-        },
-        end: {
-          dateTime: endDateTime.toISOString(),
-          timeZone: 'America/New_York'
-        },
-        reminders: {
-          useDefault: false,
-          overrides: [
-            { method: 'email', minutes: 24 * 60 },
-            { method: 'popup', minutes: 10 }
-          ]
-        }
-      };
-
-      const response = await window.gapi.client.calendar.events.insert({
-        calendarId: 'primary',
-        resource: event
-      });
-
-      if (response.status === 200) {
-        const newEvent = {
-          id: response.result.id,
-          date: selectedDate,
-          time: selectedTime,
-          title: 'Mock Interview Practice',
-          googleEventId: response.result.id
+    if (currentQuestionIndex === questions.length - 1) {
+      // Interview complete, generate feedback
+      setLoading(true);
+      setTimeout(() => {
+        const mockFeedback = {
+          overallScore: 8.2,
+          strengths: [
+            "Clear and concise communication",
+            "Good technical knowledge demonstration",
+            "Structured responses using STAR method",
+          ],
+          improvements: [
+            "Add more specific examples with metrics",
+            "Practice maintaining eye contact",
+            "Reduce use of filler words",
+          ],
+          questionFeedback: questions.map((q, i) => ({
+            question: q,
+            contentScore: Math.floor(Math.random() * 3) + 7,
+            clarityScore: Math.floor(Math.random() * 3) + 7,
+            structureScore: Math.floor(Math.random() * 3) + 7,
+            feedback: "Good response with room for more specific examples.",
+          })),
         };
-        setCalendarEvents([...calendarEvents, newEvent]);
-        alert('Interview scheduled successfully in Google Calendar!');
-        setSelectedDate('');
-        setSelectedTime('');
-      }
-    } catch (error) {
-      console.error('Failed to create calendar event:', error);
-      alert('Failed to schedule event. Please try again.');
-    }
-  };
-
-  // Local scheduling fallback
-  const scheduleInterview = () => {
-    if (selectedDate && selectedTime) {
-      const newEvent = {
-        id: Date.now(),
-        date: selectedDate,
-        time: selectedTime,
-        title: 'Mock Interview Practice'
-      };
-      setCalendarEvents([...calendarEvents, newEvent]);
-      alert('Interview scheduled successfully!');
-      setSelectedDate('');
-      setSelectedTime('');
+        setFeedback(mockFeedback);
+        setCurrentStep(4);
+        setLoading(false);
+      }, 3000);
+    } else {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCurrentAnswer("");
+      setTranscript("");
     }
   };
 
@@ -445,364 +955,64 @@ const AIInterviewAssistant = () => {
     setQuestions([]);
     setCurrentQuestionIndex(0);
     setAnswers([]);
-    setCurrentAnswer('');
+    setCurrentAnswer("");
     setFeedback(null);
+    setTranscript("");
+  };
+
+  const scheduleNext = () => {
+    setCurrentStep(5);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-6xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">AI Interview Assistant</h1>
-          <p className="text-gray-600">Master your interviews with AI-powered practice sessions</p>
-        </header>
-
-        {/* Progress Bar */}
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center space-x-4">
-            {[1, 2, 3, 4].map((step) => (
-              <div key={step} className="flex items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
-                  currentStep >= step ? 'bg-blue-600' : 'bg-gray-300'
-                }`}>
-                  {step}
-                </div>
-                {step < 4 && <ChevronRight className="w-5 h-5 text-gray-400 mx-2" />}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Step Content */}
+        <Header />
+        <ProgressBar currentStep={currentStep} />
         <div className="bg-white rounded-xl shadow-lg p-8">
-          {/* Step 1: Resume Upload */}
           {currentStep === 1 && (
-            <div className="text-center">
-              <Upload className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-4">Upload Your Resume</h2>
-              <p className="text-gray-600 mb-6">Upload your resume to get personalized interview questions</p>
-              
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleResumeUpload}
-                accept=".pdf,.doc,.docx,.txt"
-                className="hidden"
-              />
-              
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-                disabled={loading}
-              >
-                {loading ? 'Analyzing Resume...' : 'Choose Resume File'}
-              </button>
-              
-              {resumeFile && (
-                <div className="mt-4 p-4 bg-green-50 rounded-lg">
-                  <p className="text-green-700">✅ {resumeFile.name} uploaded successfully</p>
-                </div>
-              )}
-            </div>
+            <ResumeUpload
+              fileInputRef={fileInputRef}
+              setResumeFile={setResumeFile}
+              setResumeAnalysis={setResumeAnalysis}
+              setCurrentStep={setCurrentStep}
+              loading={loading}
+              setLoading={setLoading}
+            />
           )}
-
-          {/* Step 2: Resume Analysis */}
           {currentStep === 2 && resumeAnalysis && (
-            <div>
-              <div className="flex items-center mb-6">
-                <FileText className="w-8 h-8 text-blue-600 mr-3" />
-                <h2 className="text-2xl font-bold">Resume Analysis</h2>
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-blue-50 p-6 rounded-lg">
-                  <h3 className="font-bold text-lg mb-3">Key Skills</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {resumeAnalysis.skills.map((skill, index) => (
-                      <span key={index} className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="bg-green-50 p-6 rounded-lg">
-                  <h3 className="font-bold text-lg mb-3">Strengths</h3>
-                  <ul className="space-y-2">
-                    {resumeAnalysis.strengths.map((strength, index) => (
-                      <li key={index} className="flex items-center">
-                        <Star className="w-4 h-4 text-green-600 mr-2" />
-                        {strength}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              
-              <div className="text-center">
-                <button
-                  onClick={generateQuestions}
-                  className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-                  disabled={loading}
-                >
-                  {loading ? 'Generating Questions...' : 'Generate Interview Questions'}
-                </button>
-              </div>
-            </div>
+            <ResumeAnalysis
+              resumeAnalysis={resumeAnalysis}
+              generateQuestions={generateQuestions}
+              loading={loading}
+            />
           )}
-
-          {/* Step 3: Interview */}
           {currentStep === 3 && (
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center">
-                  <Brain className="w-8 h-8 text-blue-600 mr-3" />
-                  <h2 className="text-2xl font-bold">Mock Interview</h2>
-                </div>
-                <div className="text-sm text-gray-600">
-                  Question {currentQuestionIndex + 1} of {questions.length}
-                </div>
-              </div>
-              
-              <div className="bg-gray-50 p-6 rounded-lg mb-6">
-                <h3 className="text-lg font-semibold mb-3">Interview Question:</h3>
-                <p className="text-gray-700 text-lg">{questions[currentQuestionIndex]}</p>
-              </div>
-              
-              <div className="flex flex-col items-center space-y-4">
-                <button
-                  onClick={isRecording ? stopRecording : startRecording}
-                  className={`flex items-center px-6 py-3 rounded-lg font-semibold transition-colors ${
-                    isRecording 
-                      ? 'bg-red-600 text-white hover:bg-red-700' 
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
-                  }`}
-                >
-                  {isRecording ? <MicOff className="w-5 h-5 mr-2" /> : <Mic className="w-5 h-5 mr-2" />}
-                  {isRecording ? 'Stop Recording' : 'Start Recording'}
-                </button>
-                
-                {isRecording && (
-                  <div className="flex items-center text-red-600">
-                    <div className="w-3 h-3 bg-red-600 rounded-full animate-pulse mr-2"></div>
-                    Recording...
-                  </div>
-                )}
-                
-                {/* Manual text input fallback */}
-                <div className="w-full">
-                  <textarea
-                    value={currentAnswer}
-                    onChange={(e) => setCurrentAnswer(e.target.value)}
-                    placeholder="Your answer will appear here, or you can type it manually..."
-                    className="w-full p-4 border rounded-lg focus:ring-2 focus:ring-blue-500 min-h-24"
-                  />
-                </div>
-                
-                <button
-                  onClick={nextQuestion}
-                  disabled={!currentAnswer.trim()}
-                  className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                >
-                  {currentQuestionIndex === questions.length - 1 ? 'Finish Interview' : 'Next Question'}
-                </button>
-              </div>
-            </div>
+            <InterviewSession
+              questions={questions}
+              currentQuestionIndex={currentQuestionIndex}
+              currentAnswer={currentAnswer}
+              setCurrentAnswer={setCurrentAnswer}
+              transcript={transcript}
+              nextQuestion={nextQuestion}
+              resetInterview={resetInterview}
+            />
           )}
-
-          {/* Step 4: Results & Feedback */}
-          {currentStep === 4 && feedback && (
-            <div>
-              <div className="flex items-center mb-6">
-                <Star className="w-8 h-8 text-yellow-500 mr-3" />
-                <h2 className="text-2xl font-bold">Interview Results</h2>
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-yellow-50 p-6 rounded-lg text-center">
-                  <h3 className="text-lg font-bold mb-2">Overall Score</h3>
-                  <div className="text-4xl font-bold text-yellow-600">{feedback.overallScore}/10</div>
-                </div>
-                
-                <div className="bg-blue-50 p-6 rounded-lg">
-                  <h3 className="font-bold text-lg mb-3">Strengths</h3>
-                  <ul className="space-y-2">
-                    {feedback.strengths.map((strength, index) => (
-                      <li key={index} className="flex items-start">
-                        <Star className="w-4 h-4 text-green-600 mr-2 mt-0.5" />
-                        {strength}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              
-              <div className="bg-orange-50 p-6 rounded-lg mb-6">
-                <h3 className="font-bold text-lg mb-3">Areas for Improvement</h3>
-                <ul className="space-y-2">
-                  {feedback.improvements.map((improvement, index) => (
-                    <li key={index} className="flex items-start">
-                      <ChevronRight className="w-4 h-4 text-orange-600 mr-2 mt-0.5" />
-                      {improvement}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              
-              <div className="flex justify-center space-x-4">
-                <button
-                  onClick={resetInterview}
-                  className="flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <RotateCcw className="w-5 h-5 mr-2" />
-                  Practice Again
-                </button>
-                
-                <button
-                  onClick={() => setCurrentStep(5)}
-                  className="flex items-center bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  <Calendar className="w-5 h-5 mr-2" />
-                  Schedule Practice
-                </button>
-              </div>
-            </div>
+          {currentStep === 4 && (
+            <Feedback
+              feedback={feedback}
+              loading={loading}
+              resetInterview={resetInterview}
+              scheduleNext={scheduleNext}
+            />
           )}
-
-          {/* Step 5: Calendar Scheduling */}
           {currentStep === 5 && (
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center">
-                  <Calendar className="w-8 h-8 text-blue-600 mr-3" />
-                  <h2 className="text-2xl font-bold">Schedule Practice Sessions</h2>
-                </div>
-                
-                {isGoogleCalendarLoaded && (
-                  <div className="flex items-center space-x-2">
-                    {isSignedIn ? (
-                      <button
-                        onClick={signOutFromGoogle}
-                        className="text-sm bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200 transition-colors"
-                      >
-                        Sign out from Google
-                      </button>
-                    ) : (
-                      <button
-                        onClick={signInToGoogle}
-                        className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition-colors"
-                      >
-                        Sign in to Google Calendar
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="font-bold text-lg mb-4">Schedule New Session</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Date</label>
-                      <input
-                        type="date"
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                        min={new Date().toISOString().split('T')[0]}
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Time</label>
-                      <input
-                        type="time"
-                        value={selectedTime}
-                        onChange={(e) => setSelectedTime(e.target.value)}
-                        className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      {isGoogleCalendarLoaded && isSignedIn ? (
-                        <button
-                          onClick={scheduleToGoogleCalendar}
-                          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                          📅 Schedule in Google Calendar
-                        </button>
-                      ) : (
-                        <button
-                          onClick={scheduleInterview}
-                          className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors"
-                        >
-                          Schedule Session Locally
-                        </button>
-                      )}
-                    </div>
-                    
-                    {!isSignedIn && isGoogleCalendarLoaded && (
-                      <p className="text-sm text-gray-600 text-center">
-                        Sign in to Google to sync with your calendar
-                      </p>
-                    )}
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="font-bold text-lg mb-4">Scheduled Sessions</h3>
-                  {calendarEvents.length > 0 ? (
-                    <div className="space-y-3">
-                      {calendarEvents.map((event) => (
-                        <div key={event.id} className="bg-green-50 p-4 rounded-lg">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                              <Clock className="w-5 h-5 text-green-600 mr-2" />
-                              <div>
-                                <p className="font-semibold">{event.title}</p>
-                                <p className="text-sm text-gray-600">{event.date} at {event.time}</p>
-                                {event.googleEventId && (
-                                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                                    Synced with Google Calendar
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-gray-500 text-center py-8">No sessions scheduled yet</p>
-                  )}
-                </div>
-              </div>
-              
-              <div className="text-center mt-6">
-                <button
-                  onClick={resetInterview}
-                  className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  Start New Interview
-                </button>
-              </div>
-            </div>
+            <CalendarScheduling
+              calendarEvents={calendarEvents}
+              setCalendarEvents={setCalendarEvents}
+              resetInterview={resetInterview}
+            />
           )}
-        </div>
-
-        {/* Status Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <div className="flex justify-center space-x-4">
-            <span className={`inline-flex items-center ${isGoogleCalendarLoaded ? 'text-green-600' : 'text-yellow-600'}`}>
-              <div className={`w-2 h-2 rounded-full mr-2 ${isGoogleCalendarLoaded ? 'bg-green-600' : 'bg-yellow-600'}`}></div>
-              Google Calendar: {isGoogleCalendarLoaded ? 'Ready' : 'Loading...'}
-            </span>
-            <span className="inline-flex items-center text-blue-600">
-              <div className="w-2 h-2 bg-blue-600 rounded-full mr-2"></div>
-              Speech Recognition: {('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) ? 'Available' : 'Using Fallback'}
-            </span>
-          </div>
         </div>
       </div>
     </div>

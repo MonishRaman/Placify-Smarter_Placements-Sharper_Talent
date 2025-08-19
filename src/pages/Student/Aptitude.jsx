@@ -811,52 +811,6 @@ const Aptitude = () => {
           </div>
         </div>
       </div>
-
-      {/* Category Quick Access */}
-      <div className="fixed bottom-6 right-6 z-20">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border dark:border-gray-700 p-4 max-w-sm">
-          <h4 className="font-semibold mb-3 flex items-center gap-2">
-            <PieChart className="w-4 h-4 text-purple-500" />
-            Quick Categories
-          </h4>
-          <div className="grid grid-cols-2 gap-2">
-            {categories.slice(1).map((category, index) => {
-              const categoryQuestions = questions.filter(q => q.category === category);
-              const solved = categoryQuestions.filter(q => q.attempted && q.correct).length;
-              const colors = [
-                'from-blue-500 to-cyan-600',
-                'from-green-500 to-emerald-600', 
-                'from-yellow-500 to-orange-600',
-                'from-red-500 to-pink-600'
-              ];
-              
-              return (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`p-3 rounded-xl text-white text-left hover:shadow-lg transition-all duration-300 hover:scale-105 bg-gradient-to-r ${colors[index]}`}
-                >
-                  <div className="text-xs opacity-90 mb-1">{category.split(' ')[0]}</div>
-                  <div className="font-bold text-sm">{solved}/{categoryQuestions.length}</div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Toast Notifications */}
-      {quizMode && selectedAnswer !== null && (
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-30">
-          <div className={`px-6 py-3 rounded-xl shadow-lg text-white font-semibold ${
-            selectedAnswer === currentQuestion.correctAnswer
-              ? 'bg-gradient-to-r from-green-500 to-emerald-600'
-              : 'bg-gradient-to-r from-red-500 to-pink-600'
-          }`}>
-            {selectedAnswer === currentQuestion.correctAnswer ? 'Correct!' : 'Incorrect!'}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
