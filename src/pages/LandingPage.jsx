@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
@@ -90,19 +91,19 @@ const LandingPage = () => {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className="flex items-center space-x-3"
               >
-                {/* Added onClick to scroll to top when Brain icon is clicked */}
+                {/* onClick and cursor-pointer are on the icon's div */}
                 <motion.div
                   whileHover={{ rotate: 360 }}
                   transition={{ duration: 0.6 }}
                   className="p-2 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg cursor-pointer"
-                  onClick={() =>
-                    window.scrollTo({ top: 0, behavior: "smooth" })
-                  }
+                  onClick={() => window.location.href = "/"}
                 >
                   <Brain className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
                 </motion.div>
+                {/* onClick and cursor-pointer are also on the text's span */}
                 <span
-                  className={`text-2xl lg:text-3xl font-bold transition-all duration-500 ${
+                  onClick={() => window.location.href = "/"}
+                  className={`text-2xl lg:text-3xl font-bold transition-all duration-500 cursor-pointer ${
                     isScrolled
                       ? "bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 bg-clip-text text-transparent"
                       : "text-white"
