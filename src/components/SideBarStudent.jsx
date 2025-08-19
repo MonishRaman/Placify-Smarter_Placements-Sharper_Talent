@@ -90,6 +90,8 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
       label: "Interview Experience",
       path: "/dashboard/interview-experience",
     },
+    // New menu item for the Student Progress Dashboard
+    { icon: BarChart3, label: "Progress Tracker", path: "/dashboard/progress" },
   ];
 
   const handleLogout = () => {

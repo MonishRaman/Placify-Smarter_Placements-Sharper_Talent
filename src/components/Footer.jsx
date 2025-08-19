@@ -9,7 +9,7 @@ import {
   Mail,
   Github,
   Linkedin,
-  Twitter,
+  X,
   ExternalLink,
   Heart,
 } from "lucide-react";
@@ -49,26 +49,26 @@ const Footer = () => {
     {
       name: "GitHub",
       icon: <Github className="w-5 h-5" />,
-      href: "https://github.com/npratik01/Placify-Smarter_Placements-Sharper_Talent",
+      href: "https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent",
       color: "hover:text-gray-800 dark:hover:text-gray-200",
     },
     {
       name: "LinkedIn",
       icon: <Linkedin className="w-5 h-5" />,
-      href: "https://linkedin.com/company/placify",
+      href: "https://www.linkedin.com/in/monishr608/",
       color: "hover:text-blue-600",
     },
     {
-      name: "Twitter",
-      icon: <Twitter className="w-5 h-5" />,
-      href: "https://twitter.com/placify",
-      color: "hover:text-blue-400",
+      name: "X",
+      icon: <X className="w-5 h-5" />,
+      href: "https://x.com/Monishr_608",
+      color: "hover:text-gray-800 dark:hover:text-gray-200",
     },
   ];
 
   return (
     <>
-      <footer className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-200 border-t border-gray-200 dark:border-gray-700">
+      <footer className="bg-gradient-to-t from-purple-300 to-purple-100 dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-200 border-t border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Main Footer Content */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
@@ -140,7 +140,7 @@ const Footer = () => {
           </div>
 
           {/* Contact & Social Section */}
-          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
+          <div className="mt-6 pt-6 border-t border-purple-400 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
             {/* Contact Info */}
             <div className="flex items-center space-x-6 text-sm">
               <a
@@ -177,9 +177,9 @@ const Footer = () => {
           </div>
 
           {/* Bottom Section */}
-          <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 text-center">
+          <div className="mt-6 pt-4 border-t border-purple-400 dark:border-gray-700 text-center">
             <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0 text-sm text-gray-500 dark:text-gray-400">
-              <p>© 2025 Placify. All rights reserved.</p>
+              <p>© {new Date().getFullYear()} Placify. All rights reserved.</p>
               <div className="flex items-center space-x-1">
                 <span>Made with</span>
                 <Heart className="w-4 h-4 text-red-500 fill-current" />
@@ -197,10 +197,10 @@ const Footer = () => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.5 }}
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-50 bg-purple-600 hover:bg-purple-700 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
+          className="fixed bottom-24 right-6 z-50 bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
           aria-label="Back to top"
         >
-          <ArrowUp className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
+          <ArrowUp className="w-6 h-6 group-hover:-translate-y-0.5 transition-transform" />
         </motion.button>
       )}
     </>

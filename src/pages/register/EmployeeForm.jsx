@@ -1,23 +1,20 @@
 import { Briefcase } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../../context/UserContext';
 import FormInput from '../../components/FormInput';
 import RegistrationHeader from '../../components/RegistrationHeader';
 import Header from '../../components/Header';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import apiClient from '../../api/apiClient'; // Import the new apiClient
 
 export default function EmployeeForm() {
   const navigate = useNavigate();
-  const { addUser } = useUser();
   const [formData, setFormData] = useState({
     fullName: '',
     currentCompany: '',
     jobTitle: '',
     email: '',
     password: '',
-    role: 'employee'
+    role: 'employee' // Role is important
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,64 +23,43 @@ export default function EmployeeForm() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    
-    // Basic validation
-    if (!formData.fullName || !formData.currentCompany || !formData.jobTitle || !formData.email || !formData.password) {
-      setError('All fields are required');
-      setLoading(false);
-      return;
-    }
-    
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError('Please enter a valid email address');
-      setLoading(false);
-      return;
-    }
-    
-    // Password validation (at least 6 characters)
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      setLoading(false);
-      return;
-    }
-      
+
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register/employee', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      // REFACTORED API CALL - Fixed endpoint to match server routes
+      console.log('Sending registration data:', formData);
+      await apiClient.post('/auth/register/employee', formData);
       
-      const data = await response.json();
+      alert('Employee registration successful! Please login.');
+      navigate('/auth');
       
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
+    } catch (err) {
+      console.error('Registration error:', err);
       
-      // Registration successful
-      toast.success('Employee registration successful! Please login with your email and password.');
-      navigate('/auth'); // Redirect to login page
-      
-    } catch (error) {
-      console.error('Registration error:', error);
-      if (error.message === 'Failed to fetch') {
-        setError('Server connection error. The backend server might not be running. Please try again later.');
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error('Error response data:', err.response.data);
+        console.error('Error response status:', err.response.status);
+        setError(err.response?.data?.message || `Server error: ${err.response.status}`);
+      } else if (err.request) {
+        // The request was made but no response was received
+        console.error('No response received:', err.request);
+        setError('No response from server. Please check your connection.');
       } else {
-        setError(error.message || 'Registration failed. Please try again.');
+        // Something happened in setting up the request that triggered an Error
+        console.error('Error setting up request:', err.message);
+        setError(`Error: ${err.message}`);
       }
     } finally {
       setLoading(false);
     }
   };
 
+  // JSX remains the same
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    // 1. ADDED dark mode background to the main container
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
       <Header />
-      
       <div className="pt-16">
         <RegistrationHeader
           title="HR Professional Registration"
@@ -94,11 +70,12 @@ export default function EmployeeForm() {
           userType="employee"
         />
       </div>
-      
       <div className="py-12 px-4">
-        <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 transition-colors duration-200">
+        {/* 2. ADDED dark mode background to the form card */}
+        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg dark:bg-slate-800">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md border border-red-200 dark:border-red-800">
+            // 3. ADDED dark mode styles for the error message
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md border border-red-200 dark:bg-red-900/50 dark:text-red-300 dark:border-red-500/50">
               {error}
             </div>
           )}
@@ -110,7 +87,6 @@ export default function EmployeeForm() {
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
-            
             <FormInput
               label="Current Company"
               value={formData.currentCompany}
@@ -118,7 +94,6 @@ export default function EmployeeForm() {
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
-            
             <FormInput
               label="Job Title"
               value={formData.jobTitle}
@@ -126,7 +101,6 @@ export default function EmployeeForm() {
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
-            
             <FormInput
               type="email"
               label="Email"
@@ -135,7 +109,6 @@ export default function EmployeeForm() {
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
-            
             <FormInput
               type="password"
               label="Password"
@@ -144,10 +117,9 @@ export default function EmployeeForm() {
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
-            
             <button
               type="submit"
-              className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white py-2 px-4 rounded-md transition duration-200 disabled:bg-green-400 dark:disabled:bg-green-400"
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 disabled:bg-blue-400 dark:hover:bg-blue-500 dark:disabled:bg-blue-800"
               disabled={loading}
             >
               {loading ? 'Registering...' : 'Register as Employee'}
@@ -155,13 +127,6 @@ export default function EmployeeForm() {
           </form>
         </div>
       </div>
-
-      <ToastContainer 
-        position="top-center" 
-        autoClose={3000} 
-        theme="colored"
-        toastClassName="dark:bg-gray-800 dark:text-white"
-      />
     </div>
   );
 }

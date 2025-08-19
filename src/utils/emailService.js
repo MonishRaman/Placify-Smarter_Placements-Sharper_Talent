@@ -1,8 +1,4 @@
-import axios from "axios";
-
-// API base URL - adjust this based on your backend URL
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import apiClient from "../api/apiClient";
 
 /**
  * Send feedback email via backend API
@@ -23,8 +19,8 @@ export const sendFeedbackEmail = async (feedbackData) => {
     }
 
     // Send feedback to backend
-    const response = await axios.post(
-      `${API_BASE_URL}/feedback`,
+    const response = await apiClient.post(
+      `/feedback`,
       feedbackData,
       {
         headers: {
@@ -65,7 +61,7 @@ export const sendFeedbackEmail = async (feedbackData) => {
  */
 export const testEmailService = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/feedback/test`, {
+    const response = await apiClient.get(`/feedback/test`, {
       timeout: 10000,
     });
 

@@ -6,34 +6,20 @@ import { useNavigate, Link } from 'react-router-dom';
 const RegistrationHeader = ({ title, subtitle, icon, color = "purple", tagline, userType }) => {
   const navigate = useNavigate();
 
-  const colorVariants = {
-    purple: {
-      gradient: "from-purple-600 via-purple-500 to-indigo-600 dark:from-purple-500 dark:via-purple-400 dark:to-indigo-500",
-      accent: "bg-purple-500 dark:bg-purple-400",
-      text: "text-purple-600 dark:text-purple-400",
-      bg: "bg-purple-100 dark:bg-purple-900/30"
-    },
-    blue: {
-      gradient: "from-blue-600 via-blue-500 to-cyan-600 dark:from-blue-500 dark:via-blue-400 dark:to-cyan-500",
-      accent: "bg-blue-500 dark:bg-blue-400",
-      text: "text-blue-600 dark:text-blue-400",
-      bg: "bg-blue-100 dark:bg-blue-900/30"
-    },
-    green: {
-      gradient: "from-green-600 via-green-500 to-emerald-600 dark:from-green-500 dark:via-green-400 dark:to-emerald-500",
-      accent: "bg-green-500 dark:bg-green-400",
-      text: "text-green-600 dark:text-green-400",
-      bg: "bg-green-100 dark:bg-green-900/30"
-    },
-    orange: {
-      gradient: "from-orange-600 via-orange-500 to-red-600 dark:from-orange-500 dark:via-orange-400 dark:to-red-500",
-      accent: "bg-orange-500 dark:bg-orange-400",
-      text: "text-orange-600 dark:text-orange-400",
-      bg: "bg-orange-100 dark:bg-orange-900/30"
-    }
+  const lightColorVariants = {
+    purple: "from-purple-600 to-indigo-600",
+    blue: "from-blue-600 to-cyan-600", 
+    green: "from-green-600 to-emerald-600",
+    orange: "from-orange-600 to-red-600"
   };
 
-  const currentColor = colorVariants[color];
+  // FIX: Updated dark mode colors to match the Landing Page hero section for perfect consistency.
+  const darkColorVariants = {
+    purple: "dark:from-purple-800 dark:via-purple-900 dark:to-indigo-950",
+    blue: "dark:from-blue-800 dark:via-cyan-900 dark:to-cyan-950", 
+    green: "dark:from-green-800 dark:via-emerald-900 dark:to-emerald-950",
+    orange: "dark:from-orange-800 dark:via-red-900 dark:to-red-950"
+  };
 
   const handleBackNavigation = () => {
     // Navigate to role selection page if coming from registration flow
@@ -49,7 +35,8 @@ const RegistrationHeader = ({ title, subtitle, icon, color = "purple", tagline, 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className={`bg-gradient-to-br ${currentColor.gradient} text-white py-20 px-4 relative overflow-hidden transition-all duration-300 min-h-[500px]`}
+      // Applied both light and dark mode classes
+      className={`bg-gradient-to-r ${lightColorVariants[color]} ${darkColorVariants[color]} text-white py-20 px-4 relative overflow-hidden`}
     >
       {/* Enhanced Background Pattern */}
       <div className="absolute inset-0">

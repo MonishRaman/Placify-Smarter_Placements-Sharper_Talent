@@ -83,7 +83,6 @@ export const registerInstitution = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 export const registerEmployee = async (req, res) => {
   try {
     const { fullName, currentCompany, jobTitle, email, password } = req.body;
@@ -98,7 +97,7 @@ export const registerEmployee = async (req, res) => {
       jobTitle,
       email,
       password: hashedPassword,
-      role: "Employee", // Explicitly set role
+      role: 'Employee' 
     });
 
     res.status(201).json({ message: "Employee registered successfully" });

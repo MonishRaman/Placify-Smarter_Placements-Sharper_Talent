@@ -19,7 +19,9 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^3.0.2",
+    "canvas": "^3.1.2",
     "cors": "^2.8.5",
+    "docx": "^9.5.1",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
@@ -27,6 +29,17 @@
     "mongoose": "^8.16.5",
     "multer": "^2.0.2",
     "nodemailer": "^6.9.8",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "pdfjs-dist": "^2.16.105",
+    "reading-time": "^1.5.0",
+    "retext": "^9.0.0",
+    "retext-english": "^5.0.0",
+    "retext-indefinite-article": "^5.0.0",
+    "retext-passive": "^5.0.0",
+    "retext-readability": "^8.0.0",
+    "retext-repeated-words": "^5.0.0",
+    "string-similarity": "^4.0.4",
+    "unified": "^11.0.5",
+    "xmldom": "^0.6.0"
   }
 }

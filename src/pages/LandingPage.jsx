@@ -304,7 +304,7 @@ const LandingPage = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.5 }}
-        className="relative min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 dark:from-purple-800 dark:via-purple-900 dark:to-indigo-950 text-white transition-colors duration-300 pt-24 lg:pt-28 overflow-hidden"
+        className="relative min-h-screen bg-gradient-to-br from-black via-purple-700 to-black dark:from-purple-800 dark:via-purple-900 dark:to-indigo-950 text-white transition-colors duration-300 pt-24 lg:pt-28 overflow-hidden"
       >
         {/* Background Pattern/Decoration */}
         <div className="absolute inset-0 opacity-10 dark:opacity-5">
@@ -356,7 +356,7 @@ const LandingPage = () => {
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, delay: 1.1 }}
-                className="text-lg md:text-xl text-purple-100 dark:text-purple-200 leading-relaxed max-w-2xl lg:max-w-none"
+                className="text-lg md:text-l text-purple-100 dark:text-purple-200 leading-relaxed max-w-2xl lg:max-w-none"
               >
                 Revolutionize campus placements with our AI-powered platform
                 that streamlines 60-70% of recruitment processes. From automated
@@ -417,7 +417,7 @@ const LandingPage = () => {
                 >
                   <span className="flex items-center space-x-2">
                     <Target className="w-5 h-5" />
-                    <span>See How It Works</span>
+                    <span>Try Our New Resume Builder</span>
                   </span>
                 </button>
               </motion.div>

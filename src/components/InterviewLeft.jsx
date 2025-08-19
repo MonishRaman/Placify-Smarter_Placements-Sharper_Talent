@@ -2,11 +2,13 @@ import React, { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { AlertCircle, Camera, CameraOff, Mic, MicOff } from "lucide-react";
 
-const InterviewLeft = ({ onStreamReady, onRecordingReady }) => {
+const InterviewLeft = ({ onStreamReady, onRecordingReady, transcript, setTranscript }) => {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const recordedChunksRef = useRef([]);
+  const recognitionRef = useRef(null);
+
   const [cameraPermission, setCameraPermission] = useState("pending");
   const [isCameraOn, setIsCameraOn] = useState(true);
   const [isMicOn, setIsMicOn] = useState(true);
@@ -60,6 +62,57 @@ const InterviewLeft = ({ onStreamReady, onRecordingReady }) => {
     onRecordingReady(() => stopRecording());
   }, []);
 
+  // --- Speech Recognition Setup ---
+const startSpeechRecognition = () => {
+    console.log("Initializing SpeechRecognition...");
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        console.warn("SpeechRecognition API not supported in this browser.");
+        return;
+    }
+
+    recognitionRef.current = new SpeechRecognition();
+    recognitionRef.current.continuous = true;
+    recognitionRef.current.interimResults = true;
+    recognitionRef.current.lang = "en-US";
+    console.log("SpeechRecognition instance created and configured.");
+
+    recognitionRef.current.onresult = (event) => {
+        console.log("SpeechRecognition result event:", event);
+        let interimTranscript = "";
+        let finalTranscript = transcript;
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            const result = event.results[i];
+            if (result.isFinal) {
+                console.log("Final transcript received:", result[0].transcript);
+                finalTranscript += result[0].transcript + " ";
+            } else {
+                console.log("Interim transcript received:", result[0].transcript);
+                interimTranscript += result[0].transcript;
+            }
+        }
+
+        // Live update parent transcript (final + interim)
+        console.log("Updating transcript:", finalTranscript + interimTranscript);
+        setTranscript(finalTranscript + interimTranscript);
+    };
+
+    recognitionRef.current.onerror = (event) => {
+        console.error("SpeechRecognition error:", event.error);
+    };
+
+    console.log("Starting SpeechRecognition...");
+    recognitionRef.current.start();
+};
+
+  const stopSpeechRecognition = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+  };
+
   // --- Toggle Camera ---
   const toggleCamera = () => {
     if (!streamRef.current) return;
@@ -77,6 +130,12 @@ const InterviewLeft = ({ onStreamReady, onRecordingReady }) => {
     if (audioTrack) {
       audioTrack.enabled = !audioTrack.enabled;
       setIsMicOn(audioTrack.enabled);
+
+      if (audioTrack.enabled) {
+        startSpeechRecognition();
+      } else {
+        stopSpeechRecognition();
+      }
     }
   };
 

@@ -1,687 +1,681 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { Upload, FileText, CheckCircle, AlertTriangle, Zap, Target, BarChart3, Moon, Sun, Star, Sparkles } from 'lucide-react';
+import { useState } from "react";
 
-const ATSResumeChecker = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [dragActive, setDragActive] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [results, setResults] = useState(null);
-  const [error, setError] = useState('');
-  const fileInputRef = useRef(null);
+const ResumeATS = () => {
+  const [resumeFile, setResumeFile] = useState(null);
+  const [jobDescription, setJobDescription] = useState("");
+  const [analysis, setAnalysis] = useState(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [steps, setSteps] = useState([]);
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+  // Helper to safely read a factor from multiFactor. The backend sometimes nests
+  // factors under `multiFactor.factors` and sometimes directly under `multiFactor`.
+  const getFactor = (key) => {
+    if (!analysis || !analysis.multiFactor) return undefined;
+    return analysis.multiFactor.factors?.[key] ?? analysis.multiFactor?.[key];
   };
 
-  // ATS Analysis Logic
-  const analyzeResume = useCallback((text, filename) => {
-    const requiredSections = ['experience', 'education', 'skills', 'work experience', 'employment', 'qualifications'];
-    const actionVerbs = ['achieved', 'managed', 'led', 'developed', 'created', 'implemented', 'improved', 'increased', 'reduced'];
-    const techKeywords = ['python', 'java', 'javascript', 'react', 'angular', 'sql', 'aws', 'docker', 'kubernetes', 'agile'];
-    const businessKeywords = ['management', 'leadership', 'strategy', 'analysis', 'project management', 'team lead'];
-    
-    let score = 100;
-    const issues = [];
-    
-    if (!text.trim()) {
-      return { file_name: filename, ats_score: 0, issues: ['No readable text content found'], word_count: 0 };
-    }
+  const updateStep = (message, status = "pending") => {
+    setSteps((prev) => [...prev, { message, status }]);
+  };
 
-    const textLower = text.toLowerCase();
-    const words = text.split(/\s+/).filter(word => word.length > 0);
-    
-    // Section analysis
-    const sectionsFound = requiredSections.filter(section => textLower.includes(section)).length;
-    if (sectionsFound < 2) {
-      score -= 25;
-      issues.push('Missing essential sections (Experience, Education, Skills)');
-    }
-
-    // Length analysis
-    if (words.length < 200) {
-      score -= 20;
-      issues.push('Resume appears too short (less than 200 words)');
-    } else if (words.length > 1000) {
-      score -= 10;
-      issues.push('Resume might be too long (over 1000 words)');
-    }
-
-    // Contact information
-    const emailPattern = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
-    const phonePattern = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b|\b\(\d{3}\)\s?\d{3}[-.]?\d{4}\b/;
-    
-    if (!emailPattern.test(text)) {
-      score -= 15;
-      issues.push('No email address found');
-    }
-    
-    if (!phonePattern.test(text)) {
-      score -= 10;
-      issues.push('No phone number found');
-    }
-
-    // Date validation
-    const datePattern = /\b(19|20)\d{2}\b/g;
-    const dates = text.match(datePattern) || [];
-    if (dates.length < 2) {
-      score -= 10;
-      issues.push('Insufficient date information for work experience');
-    }
-
-    // Action verbs
-    const actionVerbCount = actionVerbs.filter(verb => textLower.includes(verb)).length;
-    if (actionVerbCount < 3) {
-      score -= 10;
-      issues.push('Few action verbs found - use more dynamic language');
-    }
-
-    // Quantifiable achievements
-    const numberPattern = /\b\d+(%|\+|k|m|million|thousand|dollars?|\$)\b/g;
-    const achievements = text.match(numberPattern) || [];
-    if (achievements.length < 2) {
-      score -= 8;
-      issues.push('Include more quantifiable achievements with specific numbers');
-    }
-
-    // Keywords
-    const techKeywordCount = techKeywords.filter(keyword => textLower.includes(keyword)).length;
-    const businessKeywordCount = businessKeywords.filter(keyword => textLower.includes(keyword)).length;
-    if (techKeywordCount + businessKeywordCount < 3) {
-      score -= 12;
-      issues.push('Consider adding more industry-relevant keywords');
-    }
-
-    return {
-      file_name: filename,
-      ats_score: Math.max(score, 0),
-      issues: issues,
-      word_count: words.length,
-      sections_found: sectionsFound,
-      keywords_found: techKeywordCount + businessKeywordCount
-    };
-  }, []);
-
-  const extractTextFromFile = useCallback((file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const text = e.target.result;
-          resolve(text);
-        } catch (error) {
-          reject(new Error('Failed to read file content'));
-        }
-      };
-      reader.onerror = () => reject(new Error('File reading failed'));
-      
-      if (file.type === 'text/plain') {
-        reader.readAsText(file);
-      } else {
-        // For demo purposes, we'll treat other files as text
-        // In a real app, you'd use libraries like pdf-lib or mammoth
-        reader.readAsText(file);
-      }
+  const markLastStepComplete = () => {
+    setSteps((prev) => {
+      const updated = [...prev];
+      updated[updated.length - 1].status = "done";
+      return updated;
     });
-  }, []);
+  };
 
-  const handleFiles = useCallback(async (files) => {
-    const file = files[0];
-    if (!file) return;
-
-    // Validate file type
-    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
-    if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|docx|txt)$/i)) {
-      setError('Please upload a PDF, DOCX, or TXT file only.');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!resumeFile || !jobDescription) {
+      setError("⚠️ Please upload resume and enter job description");
+      console.warn(
+        "Form submission blocked: Missing resume or job description"
+      );
       return;
     }
 
-    // Validate file size (5MB limit)
-    if (file.size > 5 * 1024 * 1024) {
-      setError('File size must be less than 5MB.');
-      return;
-    }
-
-    setError('');
-    setIsLoading(true);
+    const formData = new FormData();
+    formData.append("resume", resumeFile);
+    formData.append("jobDescription", jobDescription);
 
     try {
-      const textContent = await extractTextFromFile(file);
-      const analysisResult = analyzeResume(textContent, file.name);
+      setLoading(true);
+      setError("");
+      setAnalysis(null);
+      setSteps([]);
+
+      updateStep("Uploading resume and job description...");
+
+      console.log("Submitting resume and job description for analysis...");
+      const res = await fetch("http://localhost:5000/api/ats/upload", {
+        method: "POST",
+        body: formData
+      });
       
-      // Simulate processing time for better UX
-      setTimeout(() => {
-        setResults(analysisResult);
-        setIsLoading(false);
-      }, 1500);
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const data = await res.json();
+
+      markLastStepComplete();
+      updateStep("Running keyword analysis...");
+      await new Promise((r) => setTimeout(r, 800)); // simulate time
+
+      markLastStepComplete();
+      updateStep("Checking grammar and readability...");
+      await new Promise((r) => setTimeout(r, 800)); // simulate time
+
+      markLastStepComplete();
+      updateStep("Generating Gemini AI insights...");
+      await new Promise((r) => setTimeout(r, 800)); // simulate time
+
+      markLastStepComplete();
+      setAnalysis(data);
+
+      console.log("Analysis response received:", data);
     } catch (err) {
-      setError('Failed to process the file. Please try again.');
-      setIsLoading(false);
-    }
-  }, [extractTextFromFile, analyzeResume]);
-
-  const handleDrag = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  }, []);
-
-  const handleDrop = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFiles(e.dataTransfer.files);
-    }
-  }, [handleFiles]);
-
-  const onButtonClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const onFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      handleFiles(e.target.files);
+      setError("❌ Failed to analyze resume. Try again later.");
+      console.error("Error during resume analysis:", err);
+    } finally {
+      setLoading(false);
+      console.log("Analysis request completed.");
     }
   };
 
   const getScoreColor = (score) => {
-    if (score >= 80) return 'from-green-500 to-emerald-600';
-    if (score >= 60) return 'from-yellow-500 to-orange-500';
-    return 'from-red-500 to-pink-600';
+    if (score >= 80) return "text-emerald-600";
+    if (score >= 60) return "text-yellow-600";
+    if (score >= 40) return "text-orange-600";
+    return "text-red-600";
   };
 
-  const getScoreTextColor = (score) => {
-    if (score >= 80) return 'text-green-600 dark:text-green-400';
-    if (score >= 60) return 'text-yellow-600 dark:text-yellow-400';
-    return 'text-red-600 dark:text-red-400';
+  const getScoreBgColor = (score) => {
+    if (score >= 80) return "bg-emerald-50 border-emerald-200";
+    if (score >= 60) return "bg-yellow-50 border-yellow-200";
+    if (score >= 40) return "bg-orange-50 border-orange-200";
+    return "bg-red-50 border-red-200";
   };
 
-  const getScoreMessage = (score) => {
-    if (score >= 80) return 'Excellent! Your resume is ATS-optimized';
-    if (score >= 60) return 'Good, but there\'s room for improvement';
-    return 'Needs significant improvements for ATS compatibility';
-  };
-
-  return (
-    <div className={`min-h-screen transition-all duration-300 ${
-      isDarkMode 
-        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-slate-900 text-white' 
-        : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-gray-900'
-    }`}>
-      {/* Theme Toggle */}
-      <div className="fixed top-6 right-6 z-50">
-        <button
-          onClick={toggleTheme}
-          className={`p-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 ${
-            isDarkMode 
-              ? 'bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400' 
-              : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700'
-          }`}
-        >
-          {isDarkMode ? (
-            <Sun className="w-6 h-6 text-white drop-shadow-lg" />
-          ) : (
-            <Moon className="w-6 h-6 text-white drop-shadow-lg" />
-          )}
-        </button>
+  const ScoreCard = ({ title, score, icon, children, className = "" }) => (
+    <div className={`p-6 rounded-xl border-2 ${getScoreBgColor(score)} ${className} transition-all duration-300 hover:shadow-md`}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">{icon}</span>
+          <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+        </div>
+        <div className={`text-3xl font-bold ${getScoreColor(score)}`}>
+          {score}%
+        </div>
       </div>
+      {children}
+    </div>
+  );
 
-      {/* Hero Section */}
-      <section className="relative pt-20 pb-20 px-4 overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className={`absolute top-20 left-10 w-72 h-72 rounded-full opacity-20 animate-pulse ${
-            isDarkMode ? 'bg-gradient-to-r from-blue-500 to-purple-600' : 'bg-gradient-to-r from-blue-400 to-purple-500'
-          }`}></div>
-          <div className={`absolute bottom-20 right-10 w-96 h-96 rounded-full opacity-10 animate-bounce ${
-            isDarkMode ? 'bg-gradient-to-r from-purple-500 to-pink-600' : 'bg-gradient-to-r from-purple-400 to-pink-500'
-          }`} style={{animationDuration: '3s'}}></div>
-        </div>
-
-        <div className="max-w-6xl mx-auto text-center relative z-10">
-          <div className="relative">
-            <div className={`absolute inset-0 rounded-3xl blur-3xl opacity-30 ${
-              isDarkMode ? 'bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500' : 'bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400'
-            }`}></div>
-            <div className={`relative rounded-3xl shadow-2xl border backdrop-blur-sm p-12 ${
-              isDarkMode 
-                ? 'bg-gray-800/80 border-gray-700' 
-                : 'bg-white/80 border-white/50'
-            }`}>
-              <div className="flex justify-center mb-6">
-                <div className={`p-4 rounded-full ${
-                  isDarkMode 
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600' 
-                    : 'bg-gradient-to-r from-blue-600 to-purple-600'
-                }`}>
-                  <Sparkles className="w-8 h-8 text-white" />
-                </div>
-              </div>
-              
-              <h1 className={`text-6xl font-bold mb-6 bg-gradient-to-r ${
-                isDarkMode 
-                  ? 'from-blue-400 via-purple-400 to-indigo-400' 
-                  : 'from-blue-600 via-purple-600 to-indigo-600'
-              } bg-clip-text text-transparent`}>
-                ATS Resume Checker
-              </h1>
-              
-              <p className={`text-xl max-w-3xl mx-auto leading-relaxed mb-8 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                Transform your resume with AI-powered analysis. Get instant feedback on formatting, 
-                keywords, and ATS compatibility to land your dream job faster.
-              </p>
-              
-              <div className="flex justify-center space-x-8 text-sm">
-                {[
-                  { icon: <Star className="w-5 h-5" />, text: "AI-Powered Analysis" },
-                  { icon: <Target className="w-5 h-5" />, text: "98% ATS Success Rate" },
-                  { icon: <Zap className="w-5 h-5" />, text: "Instant Results" }
-                ].map((feature, index) => (
-                  <div key={index} className={`flex items-center space-x-2 ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}>
-                    <div className={`${
-                      isDarkMode ? 'text-purple-400' : 'text-purple-600'
-                    }`}>
-                      {feature.icon}
-                    </div>
-                    <span>{feature.text}</span>
-                  </div>
-                ))}
-              </div>
+  // Enhanced Step Loader Component
+  const StepLoader = () => (
+    <div className="max-w-2xl mx-auto mb-8">
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-bold text-white flex items-center gap-3">
+              <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+              Analysis in Progress
+            </h3>
+            <div className="text-white/80 text-sm font-medium">
+              {steps.filter(s => s.status === "done").length} / {steps.length}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Upload Section */}
-      <section className="px-4 pb-20">
-        <div className="max-w-4xl mx-auto">
-          <div className={`rounded-3xl shadow-2xl border overflow-hidden ${
-            isDarkMode 
-              ? 'bg-gray-800/90 border-gray-700 backdrop-blur-sm' 
-              : 'bg-white/90 border-white/50 backdrop-blur-sm'
-          }`}>
-            <div className={`p-8 text-center text-white ${
-              isDarkMode 
-                ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600' 
-                : 'bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600'
-            }`}>
-              <h2 className="text-3xl font-bold mb-3">Upload Your Resume</h2>
-              <p className="text-blue-100 text-lg">
-                Get detailed analysis and personalized recommendations in seconds
-              </p>
-            </div>
-            
-            <div className="p-8 relative">
-              {/* Loading Overlay */}
-              {isLoading && (
-                <div className={`absolute inset-0 backdrop-blur-sm flex items-center justify-center z-10 rounded-3xl ${
-                  isDarkMode ? 'bg-gray-800/90' : 'bg-white/90'
-                }`}>
-                  <div className="text-center">
-                    <div className="relative">
-                      <div className="w-20 h-20 border-4 border-purple-200 rounded-full animate-spin mx-auto mb-6"></div>
-                      <div className="w-20 h-20 border-4 border-purple-600 border-t-transparent rounded-full animate-spin absolute top-0 left-1/2 transform -translate-x-1/2"></div>
-                    </div>
-                    <p className={`text-lg font-semibold ${
-                      isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}>
-                      🧠 AI is analyzing your resume...
-                    </p>
-                    <p className={`text-sm mt-2 ${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                    }`}>
-                      This usually takes a few seconds
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Upload Area */}
-              <div
-                className={`border-3 border-dashed rounded-3xl p-12 text-center transition-all duration-300 cursor-pointer relative overflow-hidden group ${
-                  dragActive 
-                    ? `border-purple-500 scale-105 shadow-2xl ${
-                        isDarkMode ? 'bg-purple-900/30' : 'bg-purple-50'
-                      }` 
-                    : `${
-                        isDarkMode 
-                          ? 'border-gray-600 hover:border-purple-500 hover:bg-gray-700/50' 
-                          : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50'
-                      }`
-                }`}
-                onDragEnter={handleDrag}
-                onDragLeave={handleDrag}
-                onDragOver={handleDrag}
-                onDrop={handleDrop}
-                onClick={onButtonClick}
-              >
-                <div className="relative z-10">
-                  <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl transition-all duration-300 group-hover:scale-110 ${
-                    isDarkMode 
-                      ? 'bg-gradient-to-r from-purple-500 to-indigo-600' 
-                      : 'bg-gradient-to-r from-purple-600 to-indigo-600'
-                  }`}>
-                    <Upload className="w-12 h-12 text-white" />
-                  </div>
-                  
-                  <h3 className={`text-2xl font-bold mb-3 ${
-                    isDarkMode ? 'text-white' : 'text-gray-800'
-                  }`}>
-                    Drag and drop your resume here
-                  </h3>
-                  
-                  <p className={`mb-6 text-lg ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    or click to browse and select your file
-                  </p>
-                  
-                  <button className={`px-8 py-4 rounded-2xl font-semibold text-lg text-white shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
-                    isDarkMode 
-                      ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500' 
-                      : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700'
-                  }`}>
-                    Choose File
-                  </button>
-                  
-                  <div className="flex justify-center gap-4 mt-8">
-                    {['PDF', 'DOCX', 'TXT'].map(format => (
-                      <span key={format} className={`px-4 py-2 rounded-xl font-semibold shadow-lg transition-all duration-300 hover:scale-105 ${
-                        isDarkMode 
-                          ? 'bg-gradient-to-r from-purple-800 to-indigo-800 text-purple-200' 
-                          : 'bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-700'
-                      }`}>
-                        {format}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Animated background pattern */}
-                <div className="absolute inset-0 opacity-5">
-                  <div className="absolute top-4 left-4 w-8 h-8 border-2 border-current rounded animate-ping"></div>
-                  <div className="absolute bottom-4 right-4 w-6 h-6 border-2 border-current rounded-full animate-pulse"></div>
-                  <div className="absolute top-1/2 right-8 w-4 h-4 bg-current rounded-full animate-bounce"></div>
-                </div>
-              </div>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".pdf,.docx,.txt"
-                onChange={onFileChange}
-                className="hidden"
-              />
-
-              {/* Error Message */}
-              {error && (
-                <div className={`mt-6 border rounded-2xl p-4 text-center animate-shake ${
-                  isDarkMode 
-                    ? 'bg-red-900/50 border-red-700 text-red-300' 
-                    : 'bg-red-100 border-red-300 text-red-700'
-                }`}>
-                  <AlertTriangle className="w-5 h-5 inline-block mr-2" />
-                  {error}
-                </div>
-              )}
-            </div>
+          
+          {/* Progress Bar */}
+          <div className="mt-4 bg-white/20 rounded-full h-2 overflow-hidden">
+            <div 
+              className="bg-white h-full transition-all duration-1000 ease-out rounded-full"
+              style={{ 
+                width: `${(steps.filter(s => s.status === "done").length / steps.length) * 100}%` 
+              }}
+            ></div>
           </div>
         </div>
-      </section>
 
-      {/* Results Section */}
-      {results && (
-        <section className="px-4 pb-20">
-          <div className="max-w-4xl mx-auto">
-            <div className={`rounded-3xl shadow-2xl border overflow-hidden animate-fadeIn ${
-              isDarkMode 
-                ? 'bg-gray-800/90 border-gray-700 backdrop-blur-sm' 
-                : 'bg-white/90 border-white/50 backdrop-blur-sm'
-            }`}>
-              {/* Results Header */}
-              <div className={`p-8 text-white ${
-                isDarkMode 
-                  ? 'bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600' 
-                  : 'bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600'
-              }`}>
-                <div className="flex flex-col md:flex-row items-center justify-between">
-                  <div className="text-center md:text-left mb-4 md:mb-0">
-                    <h3 className="text-3xl font-bold mb-2">Analysis Complete! 🎉</h3>
-                    <p className="text-purple-100 text-lg">{results.file_name}</p>
-                    <p className="text-purple-200 text-sm mt-1">{getScoreMessage(results.ats_score)}</p>
-                  </div>
-                  
-                  <div className={`w-32 h-32 rounded-full flex flex-col items-center justify-center text-white shadow-2xl bg-gradient-to-r ${getScoreColor(results.ats_score)}`}>
-                    <div className="text-4xl font-bold">{results.ats_score}</div>
-                    <div className="text-sm opacity-90">ATS Score</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-8">
-                {/* Issues Section */}
-                <div className="mb-8">
-                  <div className="flex items-center mb-6">
-                    <div className={`p-2 rounded-lg mr-3 ${
-                      isDarkMode ? 'bg-orange-900/50' : 'bg-orange-100'
-                    }`}>
-                      <AlertTriangle className="w-6 h-6 text-orange-500" />
-                    </div>
-                    <h4 className={`text-xl font-bold ${
-                      isDarkMode ? 'text-white' : 'text-gray-800'
-                    }`}>
-                      Areas for Improvement ({results.issues.length})
-                    </h4>
-                  </div>
-                  
-                  {results.issues.length === 0 ? (
-                    <div className={`text-center py-12 rounded-2xl ${
-                      isDarkMode ? 'bg-green-900/30' : 'bg-green-50'
-                    }`}>
-                      <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-4" />
-                      <p className="text-xl font-semibold text-green-600 dark:text-green-400 mb-2">
-                        Outstanding! 🌟
-                      </p>
-                      <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                        Your resume meets all ATS requirements. You're ready to apply!
-                      </p>
-                    </div>
+        {/* Steps */}
+        <div className="p-6">
+          <div className="space-y-4">
+            {steps.map((step, idx) => (
+              <div key={idx} className="flex items-center gap-4 group">
+                {/* Step Icon */}
+                <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 ${
+                  step.status === "done" 
+                    ? "bg-emerald-100 text-emerald-600 shadow-lg shadow-emerald-100" 
+                    : "bg-blue-100 text-blue-600 shadow-lg shadow-blue-100"
+                }`}>
+                  {step.status === "done" ? (
+                    <svg className="w-5 h-5 animate-in zoom-in duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
                   ) : (
-                    <div className="space-y-4">
-                      {results.issues.map((issue, index) => (
-                        <div key={index} className={`flex items-start p-6 rounded-xl border transition-all duration-300 hover:shadow-lg ${
-                          isDarkMode 
-                            ? 'bg-orange-900/20 border-orange-800 hover:bg-orange-900/30' 
-                            : 'bg-orange-50 border-orange-200 hover:bg-orange-100'
-                        }`}>
-                          <AlertTriangle className="w-5 h-5 text-orange-500 mr-4 mt-1 flex-shrink-0" />
-                          <div>
-                            <p className={`font-medium ${
-                              isDarkMode ? 'text-gray-200' : 'text-gray-700'
-                            }`}>
-                              {issue}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                   )}
                 </div>
                 
-                {/* Statistics */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  {[
-                    {
-                      icon: <FileText className="w-8 h-8 text-blue-500" />,
-                      value: results.word_count,
-                      label: 'Words',
-                      color: 'blue'
-                    },
-                    {
-                      icon: <Target className="w-8 h-8 text-green-500" />,
-                      value: results.sections_found,
-                      label: 'Sections Found',
-                      color: 'green'
-                    },
-                    {
-                      icon: <BarChart3 className="w-8 h-8 text-purple-500" />,
-                      value: results.keywords_found,
-                      label: 'Keywords',
-                      color: 'purple'
-                    },
-                    {
-                      icon: <Star className="w-8 h-8 text-yellow-500" />,
-                      value: `${results.ats_score}%`,
-                      label: 'ATS Score',
-                      color: 'yellow'
-                    }
-                  ].map((stat, index) => (
-                    <div key={index} className={`text-center p-6 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg ${
-                      isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'
-                    }`}>
-                      <div className="flex justify-center mb-3">
-                        {stat.icon}
-                      </div>
-                      <p className={`text-2xl font-bold mb-1 ${
-                        stat.label === 'ATS Score' ? getScoreTextColor(results.ats_score) : 
-                        isDarkMode ? 'text-white' : 'text-gray-800'
-                      }`}>
-                        {stat.value}
-                      </p>
-                      <p className={`text-sm ${
-                        isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                      }`}>
-                        {stat.label}
-                      </p>
-                    </div>
-                  ))}
+                {/* Step Content */}
+                <div className="flex-1 min-w-0">
+                  <div className={`font-medium transition-all duration-300 ${
+                    step.status === "done" 
+                      ? "text-gray-800" 
+                      : "text-blue-600"
+                  }`}>
+                    {step.message}
+                  </div>
+                  
+                  {/* Step Status */}
+                  <div className={`text-sm mt-1 transition-all duration-300 ${
+                    step.status === "done" 
+                      ? "text-emerald-600" 
+                      : "text-gray-500"
+                  }`}>
+                    {step.status === "done" ? "Completed" : "Processing..."}
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
 
-      {/* Features Section */}
-      <section className="px-4 pb-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className={`text-4xl font-bold mb-4 ${
-              isDarkMode ? 'text-white' : 'text-gray-800'
-            }`}>
-              Why Choose Our ATS Checker?
-            </h2>
-            <p className={`text-xl max-w-3xl mx-auto ${
-              isDarkMode ? 'text-gray-400' : 'text-gray-600'
-            }`}>
-              Advanced AI algorithms analyze your resume against industry standards and real ATS requirements
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <Target className="w-8 h-8" />,
-                title: "ATS Compatibility",
-                description: "Ensure your resume passes through Applicant Tracking Systems used by 99% of Fortune 500 companies.",
-                gradient: "from-blue-500 to-cyan-600"
-              },
-              {
-                icon: <Zap className="w-8 h-8" />,
-                title: "Smart Keyword Analysis", 
-                description: "AI-powered keyword optimization that matches your resume to job descriptions across industries.",
-                gradient: "from-purple-500 to-pink-600"
-              },
-              {
-                icon: <BarChart3 className="w-8 h-8" />,
-                title: "Instant Detailed Scoring",
-                description: "Get comprehensive feedback with actionable recommendations to improve your chances by up to 70%.",
-                gradient: "from-green-500 to-teal-600"
-              }
-            ].map((feature, index) => (
-              <div key={index} className={`p-8 rounded-3xl shadow-xl border transition-all duration-500 hover:shadow-2xl hover:-translate-y-3 group ${
-                isDarkMode 
-                  ? 'bg-gray-800/60 border-gray-700 backdrop-blur-sm' 
-                  : 'bg-white/80 border-white/50 backdrop-blur-sm'
-              }`}>
-                <div className={`w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition-all duration-300`}>
-                  {feature.icon}
-                </div>
-                <h3 className={`text-xl font-bold mb-4 ${
-                  isDarkMode ? 'text-white' : 'text-gray-800'
-                }`}>
-                  {feature.title}
-                </h3>
-                <p className={`leading-relaxed ${
-                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  {feature.description}
-                </p>
+                {/* Connection Line */}
+                {idx < steps.length - 1 && (
+                  <div className="absolute left-11 mt-10 w-0.5 h-6 bg-gray-200"></div>
+                )}
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className={`py-12 px-4 border-t ${
-        isDarkMode 
-          ? 'bg-gray-800/50 border-gray-700' 
-          : 'bg-white/50 border-gray-200'
-      }`}>
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="flex justify-center mb-6">
-            <div className={`p-3 rounded-full ${
-              isDarkMode 
-                ? 'bg-gradient-to-r from-purple-500 to-indigo-600' 
-                : 'bg-gradient-to-r from-purple-600 to-indigo-600'
-            }`}>
-              <Sparkles className="w-6 h-6 text-white" />
+          
+          {/* Fun Loading Message */}
+          <div className="mt-6 text-center p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+            <div className="text-gray-600 text-sm">
+              ⚡ Our AI is working hard to optimize your resume...
             </div>
           </div>
-          
-          <h3 className={`text-2xl font-bold mb-4 ${
-            isDarkMode ? 'text-white' : 'text-gray-800'
-          }`}>
-            Ready to optimize your resume?
-          </h3>
-          
-          <p className={`mb-8 max-w-2xl mx-auto ${
-            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}>
-            Join thousands of job seekers who have improved their ATS compatibility and landed their dream jobs.
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      {/* Floating Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-32 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-32 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/10 to-cyan-400/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-6 py-12 space-y-12">
+        {/* Enhanced Header */}
+        <div className="text-center space-y-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-lg mb-6">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+            Resume ATS Checker
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            Optimize your resume for Applicant Tracking Systems with AI-powered analysis and actionable insights
           </p>
-          
-          <div className="flex justify-center space-x-6 text-sm">
-            {['🚀 Fast Analysis', '🎯 99% Accuracy', '💼 Industry Standard', '🔒 Secure & Private'].map((feature, index) => (
-              <span key={index} className={`${
-                isDarkMode ? 'text-gray-400' : 'text-gray-500'
-              }`}>
-                {feature}
-              </span>
-            ))}
-          </div>
-          
-          <div className={`mt-8 pt-8 border-t text-sm ${
-            isDarkMode 
-              ? 'border-gray-700 text-gray-500' 
-              : 'border-gray-200 text-gray-400'
-          }`}>
-            <p>© 2024 ATS Resume Checker. Built with ❤️ for job seekers everywhere.</p>
-          </div>
         </div>
-      </footer>
+
+        {/* Enhanced Upload Form */}
+        <div className="max-w-2xl mx-auto">
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/50 hover:shadow-3xl transition-all duration-300"
+          >
+            <div className="space-y-8">
+              {/* Resume Upload */}
+              <div className="space-y-3">
+                <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                  </svg>
+                  Upload Resume
+                </label>
+                <div className="relative group">
+                  <input
+                    type="file"
+                    accept=".pdf,.txt"
+                    onChange={(e) => setResumeFile(e.target.files[0])}
+                    className="block w-full px-4 py-4 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 file:mr-4 file:py-2 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-blue-50 file:to-purple-50 file:text-blue-700 hover:file:from-blue-100 hover:file:to-purple-100 group-hover:border-blue-300"
+                  />
+                  {resumeFile && (
+                    <div className="mt-2 flex items-center gap-2 text-sm text-emerald-600">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      {resumeFile.name}
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Job Description */}
+              <div className="space-y-3">
+                <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  Job Description
+                </label>
+                <div className="relative">
+                  <textarea
+                    placeholder="Paste the complete job description here for accurate ATS analysis..."
+                    value={jobDescription}
+                    onChange={(e) => setJobDescription(e.target.value)}
+                    className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 min-h-[140px] resize-none placeholder-gray-400"
+                  />
+                  <div className="absolute bottom-3 right-3 text-xs text-gray-400">
+                    {jobDescription.length} characters
+                  </div>
+                </div>
+              </div>
+              
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading || !resumeFile || !jobDescription.trim()}
+                className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-500/20"
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center gap-3">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Analyzing Resume...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-3">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    <span>Analyze Resume</span>
+                  </div>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Enhanced Error Display */}
+        {error && (
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-red-50 border-l-4 border-red-400 rounded-lg p-6 shadow-lg">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-red-700 font-medium">{error}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Enhanced Step Loader */}
+        {loading && steps.length > 0 && <StepLoader />}
+
+        {/* Analysis Results */}
+        {analysis && (
+          <div className="space-y-12 animate-in fade-in duration-1000">
+            {/* Overall Score - Enhanced */}
+            <div className="text-center">
+              <div className="relative inline-block">
+                <div className={`flex items-center justify-center w-40 h-40 rounded-full ${getScoreBgColor(analysis.overallScore ?? 0)} border-4 shadow-2xl relative overflow-hidden`}>
+                  {/* Animated background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+                  <div className="text-center relative z-10">
+                    <div className={`text-5xl font-bold ${getScoreColor(analysis.overallScore ?? 0)} drop-shadow-sm`}>
+                      {analysis.multiFactor.overallScore ?? 0}%
+                    </div>
+                    <div className="text-sm text-gray-600 font-semibold">Overall Score</div>
+                  </div>
+                </div>
+      
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Enhanced Bento Grid Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Keywords Analysis - Large Card */}
+              <div className="lg:col-span-2">
+                {(() => {
+                  const k = getFactor("keywords");
+                  return (
+                    <ScoreCard
+                      title="Keyword Analysis"
+                      score={k?.score ?? 0}
+                      icon="🔍"
+                      className="h-full"
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow">
+                          <div className="text-3xl font-bold text-emerald-600">{k?.matched?.length ?? 0}</div>
+                          <div className="text-sm text-gray-600 font-medium">Matched</div>
+                        </div>
+                        <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow">
+                          <div className="text-3xl font-bold text-red-600">{k?.missing?.length ?? 0}</div>
+                          <div className="text-sm text-gray-600 font-medium">Missing</div>
+                        </div>
+                        <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow">
+                          <div className="text-3xl font-bold text-blue-600">{k?.total ?? 0}</div>
+                          <div className="text-sm text-gray-600 font-medium">Total</div>
+                        </div>
+                      </div>
+                      {k?.missing && k.missing.length > 0 && (
+                        <div className="mt-4 p-4 bg-white/70 backdrop-blur-sm rounded-lg shadow-sm">
+                          <div className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                            <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                            Missing Keywords:
+                          </div>
+                          <div className="text-sm text-gray-600 max-h-24 overflow-y-auto bg-gray-50 rounded p-2">
+                            {k.missing.slice(0, 10).join(", ")}
+                            {k.missing.length > 10 && "..."}
+                          </div>
+                        </div>
+                      )}
+                    </ScoreCard>
+                  );
+                })()}
+              </div>
+
+              {/* Grammar Score */}
+              {(() => {
+                const grammar = getFactor("grammar");
+                return (
+                  <ScoreCard
+                    title="Grammar"
+                    score={grammar?.score ?? 0}
+                    icon="📝"
+                  >
+                    <div className="space-y-4">
+                      <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+                        <div className="text-2xl font-bold text-gray-700">{grammar?.totalIssues ?? 0}</div>
+                        <div className="text-sm text-gray-600 font-medium">Total Issues</div>
+                      </div>
+                      {grammar?.issues && (
+                        <div className="space-y-2 text-xs">
+                          {Object.entries(grammar.issues).map(([key, value]) => (
+                            <div key={key} className="flex justify-between items-center bg-white/50 rounded px-3 py-2">
+                              <span className="capitalize text-gray-600 font-medium">{key}:</span>
+                              <span className="font-bold text-gray-800">{value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </ScoreCard>
+                );
+              })()}
+
+              {/* Structure Score */}
+              {(() => {
+                const structure = getFactor("structure");
+                return (
+                  <ScoreCard
+                    title="Structure"
+                    score={structure?.score ?? 0}
+                    icon="🏗️"
+                  >
+                    <div className="space-y-4">
+                      <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+                        <div className="text-2xl font-bold text-gray-700">{structure?.bulletRatio ?? 0}</div>
+                        <div className="text-sm text-gray-600 font-medium">Bullet Ratio</div>
+                      </div>
+                      {structure?.sections && (
+                        <div className="space-y-2 text-xs">
+                          {Object.entries(structure.sections).map(([key, value]) => (
+                            <div key={key} className="flex justify-between items-center bg-white/50 rounded px-3 py-2">
+                              <span className="capitalize text-gray-600 font-medium">{key}:</span>
+                              <span className={`font-bold ${value ? 'text-emerald-600' : 'text-red-600'}`}>
+                                {value ? '✓' : '✗'}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </ScoreCard>
+                );
+              })()}
+
+              {/* Semantic Score */}
+              {(() => {
+                const semantic = getFactor("semantic");
+                return (
+                  <ScoreCard
+                    title="Semantic Match"
+                    score={semantic?.score ?? 0}
+                    icon="🎯"
+                  >
+                    <div className="space-y-4">
+                      <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+                        <div className="text-sm font-semibold text-gray-700">Cosine Similarity</div>
+                        <div className="text-xl font-bold text-blue-600">
+                          {semantic?.cosine ? (semantic.cosine * 100).toFixed(1) + '%' : 'N/A'}
+                        </div>
+                      </div>
+                      <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+                        <div className="text-sm font-semibold text-gray-700">Jaccard Index</div>
+                        <div className="text-xl font-bold text-purple-600">
+                          {semantic?.jac ? (semantic.jac * 100).toFixed(1) + '%' : 'N/A'}
+                        </div>
+                      </div>
+                    </div>
+                  </ScoreCard>
+                );
+              })()}
+
+              {/* Recency Score */}
+              {(() => {
+                const recency = getFactor("recency");
+                return (
+                  <ScoreCard
+                    title="Recency"
+                    score={recency?.score ?? 0}
+                    icon="📅"
+                  >
+                    <div className="space-y-4">
+                      <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+                        <div className="text-xl font-bold text-gray-700">{recency?.mostRecentYear ?? 'N/A'}</div>
+                        <div className="text-sm text-gray-600 font-medium">Most Recent Year</div>
+                      </div>
+                      <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+                        <div className="text-xl font-bold text-gray-700">{recency?.yearsSinceRecent ?? 'N/A'}</div>
+                        <div className="text-sm text-gray-600 font-medium">Years Since</div>
+                      </div>
+                    </div>
+                  </ScoreCard>
+                );
+              })()}
+
+              {/* Action Impact Score */}
+              {(() => {
+                const actionImpact = getFactor("actionImpact");
+                return (
+                  <ScoreCard
+                    title="Action Impact"
+                    score={actionImpact?.score ?? 0}
+                    icon="⚡"
+                  >
+                    <div className="space-y-4">
+                      <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+                        <div className="text-xl font-bold text-gray-700">{actionImpact?.actionVerbRatio ?? 0}</div>
+                        <div className="text-sm text-gray-600 font-medium">Action Verb Ratio</div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="bg-white/50 rounded p-3 text-center">
+                          <div className="font-bold text-lg">{actionImpact?.bulletsTotal ?? 0}</div>
+                          <div className="text-gray-600">Total Bullets</div>
+                        </div>
+                        <div className="bg-white/50 rounded p-3 text-center">
+                          <div className="font-bold text-lg">{actionImpact?.bulletsWithNumbers ?? 0}</div>
+                          <div className="text-gray-600">With Numbers</div>
+                        </div>
+                      </div>
+                    </div>
+                  </ScoreCard>
+                );
+              })()}
+
+              {/* Parseability Score */}
+              {(() => {
+                const parseability = getFactor("parseability");
+                return (
+                  <ScoreCard
+                    title="Parseability"
+                    score={parseability?.score ?? 0}
+                    icon="🔄"
+                  >
+                    <div className="space-y-4">
+                      <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+                        <div className="text-xl font-bold text-gray-700">
+                          {analysis.resumeChars ?? parseability?.chars ?? 'N/A'}
+                        </div>
+                        <div className="text-sm text-gray-600 font-medium">Characters</div>
+                      </div>
+                      {parseability?.note && (
+                        <div className="text-xs text-gray-600 bg-white/50 rounded p-3">
+                          {parseability.note}
+                        </div>
+                      )}
+                    </div>
+                  </ScoreCard>
+                );
+              })()}
+            </div>
+
+            {/* Gemini AI Insights - Full Width */}
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+              <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-6">
+                <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+                  <span className="text-3xl">🤖</span>
+                  Gemini AI Insights
+                </h3>
+              </div>
+              <div className="p-6">
+                {analysis.geminiAnalysis?.fitScore !== undefined ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="bg-gradient-to-r from-emerald-50 to-blue-50 rounded-lg p-4">
+                        <div className="text-center">
+                          <div className="text-4xl font-bold text-emerald-600 mb-2">
+                            {analysis.geminiAnalysis.fitScore}%
+                          </div>
+                          <div className="text-gray-600 font-medium">Job Fit Score</div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-emerald-50 rounded-lg p-4">
+                        <h4 className="font-semibold text-emerald-800 mb-2 flex items-center gap-2">
+                          <span>💪</span> Strengths
+                        </h4>
+                        <ul className="space-y-1 text-sm text-emerald-700">
+                          {analysis.geminiAnalysis.strengths?.map((strength, idx) => (
+                            <li key={idx} className="flex items-start gap-2">
+                              <span className="text-emerald-500 mt-1">•</span>
+                              {strength}
+                            </li>
+                          )) || <li>No specific strengths identified</li>}
+                        </ul>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="bg-red-50 rounded-lg p-4">
+                        <h4 className="font-semibold text-red-800 mb-2 flex items-center gap-2">
+                          <span>⚠️</span> Areas for Improvement
+                        </h4>
+                        <ul className="space-y-1 text-sm text-red-700">
+                          {analysis.geminiAnalysis.weaknesses?.map((weakness, idx) => (
+                            <li key={idx} className="flex items-start gap-2">
+                              <span className="text-red-500 mt-1">•</span>
+                              {weakness}
+                            </li>
+                          )) || <li>No specific weaknesses identified</li>}
+                        </ul>
+                      </div>
+                      
+                      <div className="bg-blue-50 rounded-lg p-4">
+                        <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                          <span>💡</span> Suggestions
+                        </h4>
+                        <ul className="space-y-1 text-sm text-blue-700">
+                          {analysis.geminiAnalysis.suggestions?.map((suggestion, idx) => (
+                            <li key={idx} className="flex items-start gap-2">
+                              <span className="text-blue-500 mt-1">•</span>
+                              {suggestion}
+                            </li>
+                          )) || <li>No specific suggestions available</li>}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="text-6xl mb-4">🤖</div>
+                    <h4 className="text-xl font-semibold text-gray-800 mb-2">
+                      Gemini Analysis Unavailable
+                    </h4>
+                    <div className="max-w-2xl mx-auto text-gray-600 space-y-2">
+                      <p>The AI analysis couldn't be completed. This might be due to:</p>
+                      <div className="bg-yellow-50 rounded-lg p-4 text-left">
+                        <ul className="space-y-1 text-sm">
+                          <li className="flex items-start gap-2">
+                            <span className="text-yellow-500 mt-1">•</span>
+                            API quota exceeded or rate limiting
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-yellow-500 mt-1">•</span>
+                            Missing or misconfigured API key
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-yellow-500 mt-1">•</span>
+                            Temporary service issues
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    {analysis.geminiAnalysis?.error && (
+                      <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3 text-red-700">
+                        <strong>Error:</strong> {analysis.geminiAnalysis.error}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Status Message */}
+            {analysis.message && (
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-2">
+                  <span className="text-emerald-600">✅</span>
+                  <span className="text-emerald-800 font-medium">{analysis.message}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default ATSResumeChecker;
+export default ResumeATS;

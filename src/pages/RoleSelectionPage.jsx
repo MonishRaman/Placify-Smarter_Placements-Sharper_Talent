@@ -94,8 +94,8 @@ const RoleSelectionPage = () => {
   ];
 
   const handleLogoClick = () => {
-    navigate('/');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigate("/");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -111,7 +111,7 @@ const RoleSelectionPage = () => {
         <div className="max-w-7xl w-full">
           {/* Header Section */}
           <motion.div
-            className="text-center mb-12"
+            className="text-center mb-12 mt-20"
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
@@ -290,6 +290,8 @@ const RoleSelectionPage = () => {
               </motion.div>
             ))}
           </motion.div>
+        </div>
+      </div>
 
           {/* Enhanced Bottom CTA */}
           <motion.div

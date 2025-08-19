@@ -1,12 +1,11 @@
-import { motion } from 'framer-motion';
-import { Brain, Eye, EyeOff, Lock, Mail } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Mail, Lock, Eye, EyeOff, Brain } from 'lucide-react';
+// Import our new apiClient instead of axios directly
+import apiClient from '../api/apiClient'; // <-- CHANGE HERE
 import { useAuth } from '../context/AuthContext';
-import axios from "axios";
-
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { motion } from 'framer-motion';
+import { jwtDecode } from 'jwt-decode';
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -25,20 +24,28 @@ const AuthPage = () => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      // --- REFACTORED API CALL ---
+      // No more hardcoded URL or headers!
+      const response = await apiClient.post('/auth/login', {
+        email,
+        password,
+      });
+
       const { token, user } = response.data;
 
-      localStorage.setItem('token', token || 'dummy-token');
+      // Store token & user info
+      localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
-
       console.log('Token stored:', token);
-      console.log('User data stored:', user);
 
-      const userRole = user.role?.toLowerCase();
+      const decoded = jwtDecode(token);
+      const role = decoded.role;
+      console.log('User role:', role);
+
       setIsAuthenticated(true);
-      toast.success('Login successful!');
 
-      switch (userRole) {
+      // Redirect based on role
+      switch (role) {
         case 'student':
           navigate('/dashboard');
           break;
@@ -52,25 +59,19 @@ const AuthPage = () => {
           navigate('/dashboard/company');
           break;
         default:
-          console.warn('Unknown role:', userRole);
+          console.warn('Unknown role:', role);
           navigate('/dashboard');
       }
     } catch (err) {
-      console.error('Login error:', err);
-      const errorMessage = err.response?.data?.message || 'Login failed';
-      toast.error(errorMessage);
-      setError(errorMessage);
+      // The global interceptor will show an alert, but we can still set a local error if we want
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogoClick = () => {
-    navigate('/');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
+    // ... the rest of your JSX remains exactly the same
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -88,9 +89,17 @@ const AuthPage = () => {
           animate={{ y: 0, opacity: 1 }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.99 }}
-          transition={{ duration: 0.8, delay: 0.2, type: 'spring', stiffness: 200, damping: 12, mass: 0.5 }}
+          transition={{
+            duration: 0.8,
+            delay: 0.2,
+            type: 'spring',
+            stiffness: 200,
+            damping: 12,
+            mass: 0.5,
+          }}
           className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 hover:shadow-2xl transition-shadow duration-300"
         >
+          {/* Header */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -100,12 +109,18 @@ const AuthPage = () => {
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.5, type: 'spring', stiffness: 200 }}
-              onClick={handleLogoClick}
+              transition={{
+                duration: 0.6,
+                delay: 0.5,
+                type: 'spring',
+                stiffness: 200,
+              }}
               className="flex items-center justify-center space-x-2 mb-4"
             >
               <Brain className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">Placify</span>
+              <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                Placify
+              </span>
             </motion.div>
             <motion.h2
               initial={{ y: 10, opacity: 0 }}
@@ -125,6 +140,19 @@ const AuthPage = () => {
             </motion.p>
           </motion.div>
 
+          {error && (
+            <motion.p
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="text-red-500 text-center mb-4"
+            >
+              {error}
+            </motion.p>
+          )}
+
+          {/* Form */}
           <motion.form
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -133,7 +161,11 @@ const AuthPage = () => {
             className="space-y-6"
           >
             {/* Email */}
-            <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5, delay: 0.9 }}>
+            <motion.div
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.9 }}
+            >
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Email address
               </label>
@@ -149,14 +181,21 @@ const AuthPage = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent transition-all duration-200"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-700 rounded-xl 
+                             bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+                             focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent
+                             transition-all duration-200"
                   placeholder="Enter your email"
                 />
               </div>
             </motion.div>
 
             {/* Password */}
-            <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5, delay: 1.0 }}>
+            <motion.div
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 1.0 }}
+            >
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Password
               </label>
@@ -165,14 +204,17 @@ const AuthPage = () => {
                   <Lock className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                 </div>
                 <motion.input
-                  whileFocus={{ scale: 1.02 }}
+                  whileFocus={{ scale:  1.02 }}
                   transition={{ duration: 0.2 }}
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent transition-all duration-200"
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-700 rounded-xl 
+                             bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+                             focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent
+                             transition-all duration-200"
                   placeholder="Enter your password"
                 />
                 <motion.button
@@ -196,7 +238,9 @@ const AuthPage = () => {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="w-full bg-purple-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50"
+              className="w-full bg-purple-600 text-white py-3 px-4 rounded-xl font-semibold
+                         hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
+                         transition-all duration-200 disabled:opacity-50"
             >
               {loading ? (
                 <motion.div
@@ -209,7 +253,7 @@ const AuthPage = () => {
             </motion.button>
           </motion.form>
 
-          {/* Switch Link */}
+          {/* Switch to Sign Up/Sign In */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -230,18 +274,6 @@ const AuthPage = () => {
           </motion.div>
         </motion.div>
       </motion.div>
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
     </motion.div>
   );
 };

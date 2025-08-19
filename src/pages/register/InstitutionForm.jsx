@@ -1,12 +1,11 @@
 import { School } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../../context/UserContext';
+import { motion } from 'framer-motion';
 import FormInput from '../../components/FormInput';
 import RegistrationHeader from '../../components/RegistrationHeader';
 import Header from '../../components/Header';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import apiClient from '../../api/apiClient';
 
 export default function InstitutionForm() {
   const navigate = useNavigate();
@@ -30,22 +29,12 @@ export default function InstitutionForm() {
     setError('');
     setLoading(true);
 
-    // Basic validation
+    // Validation
     if (!formData.institutionName || !formData.website || !formData.contactPerson || !formData.email || !formData.password) {
       setError('All fields are required');
       setLoading(false);
       return;
     }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError('Please enter a valid email address');
-      setLoading(false);
-      return;
-    }
-
-    // Website validation
     try {
       new URL(formData.website);
     } catch {
@@ -112,14 +101,15 @@ export default function InstitutionForm() {
           userType="institution"
         />
       </div>
-
       <div className="py-12 px-4">
         <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 transition-colors duration-200">
           {error && (
             <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md border border-red-200 dark:border-red-800">
               {error}
-            </div>
+            </motion.div>
           )}
+
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <FormInput 
               label="Institution Name" 
@@ -164,15 +154,23 @@ export default function InstitutionForm() {
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
-            <button
+            {/* Submit */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white py-2 px-4 rounded-md transition duration-200 disabled:bg-blue-400 dark:disabled:bg-blue-400"
               disabled={loading}
+              className="w-full flex justify-center items-center gap-2 
+                         bg-gradient-to-r from-blue-500 to-indigo-500 text-white py-2 px-4 
+                         rounded-md shadow-lg hover:from-blue-600 hover:to-indigo-600 
+                         focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-70"
             >
+              {loading && <Loader2 className="animate-spin w-5 h-5" />}
               {loading ? 'Registering...' : 'Register Institution'}
-            </button>
+            </motion.button>
           </form>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

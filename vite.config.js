@@ -3,9 +3,11 @@ import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/', // Optional: use './' if deploying to subpath, '/' is fine for Netlify root
   plugins: [react()],
-  optimizeDeps: {
-    exclude: ['lucide-react'], // Only affects dev server
+  server: {
+    // This proxy forwards all requests starting with '/api' to your backend server
+    proxy: {
+      '/api': 'http://localhost:5000',
+    },
   },
 });

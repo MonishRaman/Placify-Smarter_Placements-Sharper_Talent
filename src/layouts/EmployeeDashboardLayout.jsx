@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import EmployeeSidebar from "../components/EmployeeSidebar";
 import { User, LogOut, ChevronDown } from "lucide-react";
+import apiClient from "../api/apiClient";
 
 const EmployeeDashboardLayout = () => {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -20,23 +21,18 @@ const EmployeeDashboardLayout = () => {
         if (!token) return;
         console.log("Fetching employee profile with token:", token);
     
-        const res = await fetch("http://localhost:5000/api/auth/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        // With our new request interceptor, we don't need to explicitly set the token
+        const response = await apiClient.get("/auth/profile");
 
-        console.log("Raw Response Status:", res.status);
+        console.log("Raw Response Status:", response.status);
+        console.log("Employee Profile Response Data:", response.data);
 
-        const data = await res.json().catch(() => null);
-        console.log("Employee Profile Response Data:", data);
-
-        if (res.ok) {
-          setUserData(data);
+        if (response.status === 200) {
+          setUserData(response.data);
         } else {
           console.error(
             "Failed to fetch employee profile:",
-            data?.message || "Unknown error"
+            response.data?.message || "Unknown error"
           );
         }
       } catch (error) {

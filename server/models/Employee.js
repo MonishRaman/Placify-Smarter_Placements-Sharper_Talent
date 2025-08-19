@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import User from "./User.js";
 const employeeSchema = new mongoose.Schema({
-
   currentCompany: { type: String, required: true },
   jobTitle: { type: String, required: true },
   phone: { type: String },
