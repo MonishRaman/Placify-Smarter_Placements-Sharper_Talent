@@ -85,7 +85,7 @@ export default function CompanyForm() {
           {error && (
             <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md border border-red-200 dark:border-red-800">
               {error}
-            </motion.div>
+            </div>
           )}
 
           {/* Form */}
@@ -135,18 +135,14 @@ export default function CompanyForm() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               type="submit"
-              className="w-full bg-orange-600 hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-600 text-white py-2 px-4 rounded-md transition duration-200 disabled:bg-orange-400 dark:disabled:bg-orange-400"
               disabled={loading}
-              className="w-full flex justify-center items-center gap-2 
-                         bg-gradient-to-r from-orange-500 to-yellow-500 text-white py-2 px-4 
-                         rounded-md shadow-lg hover:from-orange-600 hover:to-yellow-600 
-                         focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-70"
+              className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-white py-2 px-4 rounded-md shadow-lg hover:from-orange-600 hover:to-yellow-600 focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-70 bg-orange-600 hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-600 transition duration-200 disabled:bg-orange-400 dark:disabled:bg-orange-400"
             >
               {loading && <Loader2 className="animate-spin w-5 h-5" />}
               {loading ? 'Registering...' : 'Register Company'}
             </motion.button>
           </form>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
