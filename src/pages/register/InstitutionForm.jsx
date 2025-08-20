@@ -106,7 +106,7 @@ export default function InstitutionForm() {
           {error && (
             <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md border border-red-200 dark:border-red-800">
               {error}
-            </motion.div>
+            </div>
           )}
 
           {/* Form */}
@@ -170,7 +170,7 @@ export default function InstitutionForm() {
               {loading ? 'Registering...' : 'Register Institution'}
             </motion.button>
           </form>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
