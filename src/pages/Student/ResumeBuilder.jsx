@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { FaFileAlt } from "react-icons/fa";
 
 const ResumeBuilder = () => {
+  const [isDark, setIsDark] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",

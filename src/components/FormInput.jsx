@@ -11,7 +11,15 @@ export default function FormInput({
 }) {
   const [showPassword, setShowPassword] = useState(false);
 
+  // Map of allowed focus colors (Tailwind safe)
+  const focusColors = {
+    purple: 'focus:border-purple-500 focus:ring-2 focus:ring-purple-500',
+    blue: 'focus:border-blue-500 focus:ring-2 focus:ring-blue-500',
+    green: 'focus:border-green-500 focus:ring-2 focus:ring-green-500',
+    red: 'focus:border-red-500 focus:ring-2 focus:ring-red-500'
+  };
 
+  const focusClass = focusColors[focusColor] || focusColors.purple;
 
   return (
     <div className="mb-4">
@@ -28,7 +36,7 @@ export default function FormInput({
             w-full px-3 py-2 border border-gray-300 rounded-md
             dark:bg-slate-700 dark:border-slate-600 dark:text-gray-200
             transition-all duration-300 outline-none
-            focus:border-${focusColor}-500 focus:ring-2 focus:ring-${focusColor}-500 focus-visible:ring-offset-0
+            ${focusClass}
           `}
         />
         {type === 'password' && (

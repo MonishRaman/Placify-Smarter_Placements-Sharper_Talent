@@ -1,8 +1,10 @@
+// src/components/ThemeToggle.jsx
+import React from 'react';
 import { useTheme } from "../context/ThemeContext";
 import { Sun, Moon } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function ThemeToggle() {
+const ThemeToggle = () => {
   const { darkMode, setDarkMode } = useTheme();
 
   return (
@@ -41,4 +43,6 @@ export default function ThemeToggle() {
       />
     </motion.button>
   );
-}
+};
+
+export default ThemeToggle;

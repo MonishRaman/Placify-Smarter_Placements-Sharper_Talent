@@ -166,7 +166,10 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    // Fixed positioning with increased bottom spacing
+    // Changed from bottom-6 to bottom-20 to add more height from bottom
+    // This prevents the chatbot from being too close to the browser edge
+    <div className="fixed bottom-20 right-6 z-50">
       {!open && (
         <button
           onClick={toggleChat}

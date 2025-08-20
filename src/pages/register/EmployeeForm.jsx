@@ -85,18 +85,21 @@ export default function EmployeeForm() {
               value={formData.fullName}
               onChange={(e) => setFormData({...formData, fullName: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
               label="Current Company"
               value={formData.currentCompany}
               onChange={(e) => setFormData({...formData, currentCompany: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
               label="Job Title"
               value={formData.jobTitle}
               onChange={(e) => setFormData({...formData, jobTitle: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
               type="email"
@@ -104,6 +107,7 @@ export default function EmployeeForm() {
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
               type="password"
@@ -111,6 +115,7 @@ export default function EmployeeForm() {
               value={formData.password}
               onChange={(e) => setFormData({...formData, password: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <button
               type="submit"
