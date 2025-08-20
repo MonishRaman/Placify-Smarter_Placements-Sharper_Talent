@@ -2,6 +2,9 @@ import { Building2, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import FormInput from '../../components/FormInput';
 import RegistrationHeader from '../../components/RegistrationHeader';
 import Header from '../../components/Header';
@@ -12,6 +15,7 @@ export default function CompanyForm() {
   const [formData, setFormData] = useState({
     companyName: '',
     industry: '',
+    website: '',
     hrEmail: '',
     password: '',
     role: 'company'
@@ -25,17 +29,19 @@ export default function CompanyForm() {
     setLoading(true);
 
     // Validation
-    if (!formData.companyName || !formData.industry || !formData.hrEmail || !formData.password) {
+    if (!formData.companyName || !formData.industry || !formData.website || !formData.hrEmail || !formData.password) {
       setError('All fields are required');
       setLoading(false);
       return;
     }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.hrEmail)) {
       setError('Please enter a valid email address for the HR contact');
       setLoading(false);
       return;
     }
+
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long');
       setLoading(false);
@@ -43,12 +49,10 @@ export default function CompanyForm() {
     }
 
     try {
-      console.log('Sending company registration data:', formData);
       await apiClient.post('/auth/register/company', formData);
-      alert('Company registration successful! Please login.');
+      toast.success('Company registration successful! Please login.');
       navigate('/auth');
     } catch (err) {
-      console.error('Registration error:', err);
       if (err.response) {
         setError(err.response?.data?.message || `Server error: ${err.response.status}`);
       } else if (err.request) {
@@ -60,7 +64,7 @@ export default function CompanyForm() {
       setLoading(false);
     }
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       <Header />
@@ -80,8 +84,10 @@ export default function CompanyForm() {
           userType="company"
         />
       </div>
+
       <div className="py-12 px-4">
         <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 transition-colors duration-200">
+          
           {error && (
             <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md border border-red-200 dark:border-red-800">
               {error}
@@ -90,6 +96,7 @@ export default function CompanyForm() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
+            
             <FormInput
               label="Company Name"
               value={formData.companyName}
@@ -97,6 +104,7 @@ export default function CompanyForm() {
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
+
             <FormInput
               label="Industry"
               value={formData.industry}
@@ -104,7 +112,7 @@ export default function CompanyForm() {
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
-            
+
             <FormInput
               label="Website"
               value={formData.website}
@@ -116,11 +124,12 @@ export default function CompanyForm() {
             <FormInput
               type="email"
               label="HR Contact Email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              value={formData.hrEmail}
+              onChange={(e) => setFormData({ ...formData, hrEmail: e.target.value })}
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
+
             <FormInput
               type="password"
               label="Password"
