@@ -2,15 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Download, Eye, Edit3, Plus, Trash2, GripVertical, Palette, Moon, Sun, Upload, X } from 'lucide-react';
 
 const ResumeBuilder = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => JSON.parse(localStorage.getItem('resumeBuilderTheme')) || false);
   const [activeTemplate, setActiveTemplate] = useState(0);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [primaryColor, setPrimaryColor] = useState('#3B82F6');
   const [profileImage, setProfileImage] = useState(null);
   const fileInputRef = useRef(null);
 
-  // We moved your initial data into a constant
-  const defaultResumeData = {
+  const [resumeData, setResumeData] = useState({
     personal: {
       name: 'John Smith',
       title: 'Senior Software Engineer',
@@ -75,19 +74,12 @@ const ResumeBuilder = () => {
         phone: '+1 (555) 987-6543'
       }
     ]
-  };
-
-  // Load saved data from localStorage when the component starts
-  const [resumeData, setResumeData] = useState(() => {
-    const savedData = localStorage.getItem('resumeBuilderData');
-    return savedData ? JSON.parse(savedData) : defaultResumeData;
   });
 
-  // Save data to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('resumeBuilderData', JSON.stringify(resumeData));
-  }, [resumeData]);
-
+  useEffect(()=>{
+    localStorage.setItem('resumeBuilderTheme', JSON.stringify(isDarkMode));
+  },[isDarkMode]);
+  
   const [sectionOrder, setSectionOrder] = useState([
     'personal', 'experience', 'education', 'skills', 'projects', 'achievements', 'hobbies', 'references'
   ]);
