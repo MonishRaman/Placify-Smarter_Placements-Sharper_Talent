@@ -1,10 +1,5 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { UserProvider } from "./context/UserContext"
 
 // The paths below are relative to this App.jsx file, which should be in the 'src' directory.
 // If you are getting 'Could not resolve' errors, please ensure you are running the build command
@@ -79,6 +74,7 @@ import EmployeeSettings from './pages/employee/Settings';
 
 
 import { motion } from "framer-motion";
+import API from "./api/api";
 
 import UserJobs from "./pages/Student/UserJobs";
 
@@ -262,15 +258,13 @@ const AppWrapper = () => {
   );
 };
 
-// ✅ Actual App that wraps AppWrapper inside Router
 function App() {
   return (
-    // wrapped entire app with the ThemeProvider
-    <ThemeProvider> 
+    <UserProvider>
       <Router>
         <AppWrapper />
       </Router>
-    </ThemeProvider>
+    </UserProvider>
   );
 }
 

@@ -60,10 +60,16 @@ export default function CompanyForm() {
       setLoading(false);
     }
   };
-
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-yellow-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       <Header />
+      <ToastContainer 
+        position="top-center" 
+        theme="colored"
+        toastClassName="dark:bg-gray-800 dark:text-white"
+      />
+
       <div className="pt-16">
         <RegistrationHeader
           title="Company Registration"
@@ -75,26 +81,9 @@ export default function CompanyForm() {
         />
       </div>
       <div className="py-12 px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="relative max-w-md mx-auto p-6 rounded-2xl shadow-xl 
-                     bg-white dark:bg-slate-800 border border-transparent 
-                     transition-all
-                     before:absolute before:inset-0 before:rounded-2xl before:p-[2px]
-                     before:bg-gradient-to-r before:from-orange-500 before:via-yellow-500 before:to-orange-600
-                     before:animate-gradient-move before:-z-10"
-        >
-          {/* Error Alert */}
+        <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 transition-colors duration-200">
           {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="mb-4 p-3 bg-red-100 text-red-700 rounded-md border border-red-200 
-                         dark:bg-red-900/50 dark:text-red-300 dark:border-red-500/50"
-            >
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md border border-red-200 dark:border-red-800">
               {error}
             </motion.div>
           )}
@@ -106,22 +95,31 @@ export default function CompanyForm() {
               value={formData.companyName}
               onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
               required
-              focusColor="orange"
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
               label="Industry"
               value={formData.industry}
               onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
               required
-              focusColor="orange"
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
+            
+            <FormInput
+              label="Website"
+              value={formData.website}
+              onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+              required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+            />
+
             <FormInput
               type="email"
               label="HR Contact Email"
-              value={formData.hrEmail}
-              onChange={(e) => setFormData({ ...formData, hrEmail: e.target.value })}
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
-              focusColor="orange"
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
               type="password"
@@ -129,7 +127,7 @@ export default function CompanyForm() {
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               required
-              focusColor="orange"
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
             {/* Submit */}
@@ -137,6 +135,7 @@ export default function CompanyForm() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               type="submit"
+              className="w-full bg-orange-600 hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-600 text-white py-2 px-4 rounded-md transition duration-200 disabled:bg-orange-400 dark:disabled:bg-orange-400"
               disabled={loading}
               className="w-full flex justify-center items-center gap-2 
                          bg-gradient-to-r from-orange-500 to-yellow-500 text-white py-2 px-4 
