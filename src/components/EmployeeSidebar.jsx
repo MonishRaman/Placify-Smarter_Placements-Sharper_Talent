@@ -13,6 +13,7 @@ import {
   Users, 
   BarChart3, 
   Settings, 
+  Bot ,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -194,12 +195,39 @@ const EmployeeSidebar = ({ isExpanded, setIsExpanded }) => {
             </NavLink>
             
             {!isExpanded && (
+
               <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 bg-gray-800 dark:bg-slate-800 text-white dark:text-slate-100 text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg border border-gray-600 dark:border-slate-700">
                 Settings
               </div>
             )}
           </div>
           
+          <div className="relative mb-1">
+            <NavLink
+              to="/dashboard/employee/Ai_Interview"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
+                  isActive 
+                    ? "bg-blue-600 dark:bg-blue-500 text-white" 
+                    : "text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
+                }`
+              }
+            >
+              <Bot  className="w-5 h-5 flex-shrink-0" />
+              <span className={`text-sm font-medium transition-all duration-300 ${
+                isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'
+              }`}>
+                Roast Your Resume
+              </span>
+            </NavLink>
+            
+            {!isExpanded && (
+              <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 bg-gray-800 dark:bg-slate-800 text-white dark:text-slate-100 text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg border border-gray-600 dark:border-slate-700">
+                Roast Your Resume
+              </div>
+            )}
+          </div>
+
           {/* Logout */}
           <div className="relative">
             <button
