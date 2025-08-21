@@ -250,13 +250,12 @@ const RoleSelectionPage = () => {
                     ))}
                   </div>
 
-                  {/* Enhanced CTA Button */}
-                  <div className="flex items-center justify-between">
-                    <div className={`inline-flex items-center space-x-2 ${role.textColor} font-bold text-lg group-hover:translate-x-2 transition-all duration-300`}>
-                      <span>Get Started</span>
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                    </div>
-                    <Star className={`w-5 h-5 ${role.textColor} opacity-0 group-hover:opacity-100 group-hover:rotate-12 transition-all duration-300`} />
+                  {/* Registration Button */}
+                  <div className="flex justify-center">
+                    <button className={`w-full bg-gradient-to-r ${role.gradient} text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2`}>
+                      <span>Register as {role.title === "College/University" ? "Institution" : role.title}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
 
