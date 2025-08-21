@@ -275,7 +275,6 @@ const ApplicantsTracker = () => {
     hired: mockApplicants.filter(a => a.status === 'hired').length,
     rejected: mockApplicants.filter(a => a.status === 'rejected').length
   };
-
   return (
     <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div className="p-6 w-full h-full overflow-y-auto">
@@ -308,7 +307,6 @@ const ApplicantsTracker = () => {
               <div className="text-sm text-gray-600 dark:text-gray-300">Rejected</div>
             </div>
           </div>
-
           {/* Controls */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
             <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
