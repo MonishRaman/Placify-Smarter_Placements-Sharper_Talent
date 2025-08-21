@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import FormInput from '../../components/FormInput';
 import RegistrationHeader from '../../components/RegistrationHeader';
 import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 import apiClient from '../../api/apiClient'; // Import the new apiClient
 
 export default function EmployeeForm() {
@@ -127,6 +128,7 @@ export default function EmployeeForm() {
           </form>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

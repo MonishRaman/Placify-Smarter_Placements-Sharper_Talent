@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import FormInput from '../../components/FormInput';
 import RegistrationHeader from '../../components/RegistrationHeader';
 import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 import apiClient from '../../api/apiClient';
 
 export default function CompanyForm() {
@@ -153,6 +154,7 @@ export default function CompanyForm() {
           </form>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

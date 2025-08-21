@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'; // Animation library
 import FormInput from '../../components/FormInput';
 import RegistrationHeader from '../../components/RegistrationHeader';
 import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 import apiClient from '../../api/apiClient';
 
 export default function StudentForm() {
@@ -152,6 +153,7 @@ export default function StudentForm() {
           </form>
         </motion.div>
       </div>
+      <Footer />
     </div>
   );
 }

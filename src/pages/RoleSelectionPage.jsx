@@ -13,6 +13,7 @@ import {
   Star,
   Sparkles,
 } from "lucide-react";
+import Footer from '../components/Footer';
 
 const RoleSelectionPage = () => {
   const [isDark, setIsDark] = useState(false);
@@ -281,6 +282,7 @@ const RoleSelectionPage = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

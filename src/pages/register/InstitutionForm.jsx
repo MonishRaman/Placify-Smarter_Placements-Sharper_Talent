@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import FormInput from '../../components/FormInput';
 import RegistrationHeader from '../../components/RegistrationHeader';
 import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 import apiClient from '../../api/apiClient';
 
 export default function InstitutionForm() {
@@ -172,6 +173,7 @@ export default function InstitutionForm() {
           </form>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
