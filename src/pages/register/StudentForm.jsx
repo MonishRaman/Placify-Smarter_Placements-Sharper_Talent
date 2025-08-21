@@ -16,6 +16,7 @@ export default function StudentForm() {
     major: '',
     email: '',
     password: '',
+    confirmPassword: '',
     role: 'student'
   });
   const [error, setError] = useState('');
@@ -27,7 +28,7 @@ export default function StudentForm() {
     setLoading(true);
 
     // Validation
-    if (!formData.fullName || !formData.university || !formData.major || !formData.email || !formData.password) {
+    if (!formData.fullName || !formData.university || !formData.major || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('All fields are required');
       setLoading(false);
       return;
@@ -40,6 +41,11 @@ export default function StudentForm() {
     }
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
       setLoading(false);
       return;
     }
@@ -136,6 +142,13 @@ export default function StudentForm() {
               label="Password"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              required
+            />
+            <FormInput
+              type="password"
+              label="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
               required
             />
 

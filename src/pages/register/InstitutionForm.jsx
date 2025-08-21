@@ -18,6 +18,7 @@ export default function InstitutionForm() {
     contactPerson: '',
     email: '',
     password: '',
+    confirmPassword: '',
     role: 'institution'
   });
 
@@ -31,7 +32,7 @@ export default function InstitutionForm() {
     setLoading(true);
 
     // Validation
-    if (!formData.institutionName || !formData.website || !formData.contactPerson || !formData.email || !formData.password) {
+    if (!formData.institutionName || !formData.website || !formData.contactPerson || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('All fields are required');
       setLoading(false);
       return;
@@ -47,6 +48,12 @@ export default function InstitutionForm() {
     // Password length check
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
       setLoading(false);
       return;
     }
@@ -151,6 +158,15 @@ export default function InstitutionForm() {
               label="Password" 
               value={formData.password} 
               onChange={(e) => setFormData({ ...formData, password: e.target.value })} 
+              required 
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+            />
+            
+            <FormInput 
+              type="password" 
+              label="Confirm Password" 
+              value={formData.confirmPassword} 
+              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} 
               required 
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />

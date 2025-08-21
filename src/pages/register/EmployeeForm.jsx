@@ -15,6 +15,7 @@ export default function EmployeeForm() {
     jobTitle: '',
     email: '',
     password: '',
+    confirmPassword: '',
     role: 'employee' // Role is important
   });
   const [error, setError] = useState('');
@@ -24,6 +25,18 @@ export default function EmployeeForm() {
     e.preventDefault();
     setError('');
     setLoading(true);
+
+    // Validation
+    if (!formData.fullName || !formData.currentCompany || !formData.jobTitle || !formData.email || !formData.password || !formData.confirmPassword) {
+      setError('All fields are required');
+      setLoading(false);
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
 
     try {
       // REFACTORED API CALL - Fixed endpoint to match server routes
@@ -115,6 +128,14 @@ export default function EmployeeForm() {
               label="Password"
               value={formData.password}
               onChange={(e) => setFormData({...formData, password: e.target.value})}
+              required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+            />
+            <FormInput
+              type="password"
+              label="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
