@@ -19,6 +19,7 @@ export default function CompanyForm() {
     website: '',
     hrEmail: '',
     password: '',
+    confirmPassword: '',
     role: 'company'
   });
   const [error, setError] = useState('');
@@ -30,7 +31,7 @@ export default function CompanyForm() {
     setLoading(true);
 
     // Validation
-    if (!formData.companyName || !formData.industry || !formData.website || !formData.hrEmail || !formData.password) {
+    if (!formData.companyName || !formData.industry || !formData.website || !formData.hrEmail || !formData.password || !formData.confirmPassword) {
       setError('All fields are required');
       setLoading(false);
       return;
@@ -45,6 +46,12 @@ export default function CompanyForm() {
 
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
       setLoading(false);
       return;
     }
@@ -136,6 +143,15 @@ export default function CompanyForm() {
               label="Password"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+            />
+
+            <FormInput
+              type="password"
+              label="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
