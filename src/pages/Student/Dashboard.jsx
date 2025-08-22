@@ -129,7 +129,7 @@ const StudentDashboard = () => {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${themeClasses}`}>
       {/* Theme Toggle */}
-      <div className="absolute top-4 right-4 z-10">
+      {/*<div className="absolute top-4 right-4 z-10">
         <button
           onClick={toggleTheme}
           className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 border dark:border-gray-700"
@@ -140,7 +140,7 @@ const StudentDashboard = () => {
             <Moon className="w-5 h-5 text-gray-700" />
           )}
         </button>
-      </div>
+      </div>*/}
 
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-6 py-4">
@@ -156,11 +156,30 @@ const StudentDashboard = () => {
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <Bell className="w-6 h-6 text-gray-600 dark:text-gray-400 cursor-pointer hover:text-purple-600" />
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
+            <div className="flex items-center gap-4">
+             <div className="relative">
+             <Bell className="w-6 h-6 text-gray-600 dark:text-gray-400 cursor-pointer hover:text-purple-600" />
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
             </div>
-            <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all duration-300">
+            {/*<button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all duration-300">
+            <RefreshCw className="w-4 h-4" />
+            Sync Data
+            </button>*/}
+
+            {/* Theme Toggle */}
+            <button
+            onClick={toggleTheme}
+            className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 border dark:border-gray-700"
+            >
+           {isDarkMode ? (
+           <Sun className="w-5 h-5 text-yellow-500" />
+           ) : (
+           <Moon className="w-5 h-5 text-gray-700" />
+          )}
+         </button>
+         </div>
+
+              <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all duration-300">
               <RefreshCw className="w-4 h-4" />
               Sync Data
             </button>
