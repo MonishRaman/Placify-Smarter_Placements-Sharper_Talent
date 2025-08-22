@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import FormInput from '../../components/FormInput';
 import RegistrationHeader from '../../components/RegistrationHeader';
 import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 import apiClient from '../../api/apiClient'; // Import the new apiClient
 
 export default function EmployeeForm() {
@@ -14,6 +15,7 @@ export default function EmployeeForm() {
     jobTitle: '',
     email: '',
     password: '',
+    confirmPassword: '',
     role: 'employee' // Role is important
   });
   const [error, setError] = useState('');
@@ -23,6 +25,18 @@ export default function EmployeeForm() {
     e.preventDefault();
     setError('');
     setLoading(true);
+
+    // Validation
+    if (!formData.fullName || !formData.currentCompany || !formData.jobTitle || !formData.email || !formData.password || !formData.confirmPassword) {
+      setError('All fields are required');
+      setLoading(false);
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
 
     try {
       // REFACTORED API CALL - Fixed endpoint to match server routes
@@ -85,18 +99,21 @@ export default function EmployeeForm() {
               value={formData.fullName}
               onChange={(e) => setFormData({...formData, fullName: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
               label="Current Company"
               value={formData.currentCompany}
               onChange={(e) => setFormData({...formData, currentCompany: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
               label="Job Title"
               value={formData.jobTitle}
               onChange={(e) => setFormData({...formData, jobTitle: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
               type="email"
@@ -104,6 +121,7 @@ export default function EmployeeForm() {
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
               type="password"
@@ -111,6 +129,15 @@ export default function EmployeeForm() {
               value={formData.password}
               onChange={(e) => setFormData({...formData, password: e.target.value})}
               required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+            />
+            <FormInput
+              type="password"
+              label="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+              required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <button
               type="submit"
@@ -122,6 +149,7 @@ export default function EmployeeForm() {
           </form>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

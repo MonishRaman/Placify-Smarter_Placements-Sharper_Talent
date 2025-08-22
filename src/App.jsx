@@ -1,10 +1,5 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { UserProvider } from "./context/UserContext"
 
 // The paths below are relative to this App.jsx file, which should be in the 'src' directory.
 // If you are getting 'Could not resolve' errors, please ensure you are running the build command
@@ -16,6 +11,7 @@ import AuthPage from "./pages/AuthPage";
 import FeedbackPage from "./pages/FeedbackPage";
 import LandingPage from "./pages/LandingPage";
 import ProfilePage from "./pages/ProfilePage";
+import Resume from "./pages/Resume";
 import ResultsPage from "./pages/ResultsPage";
 
 import RoleSelectionPage from "./pages/RoleSelectionPage";
@@ -78,6 +74,7 @@ import EmployeeSettings from './pages/employee/Settings';
 
 
 import { motion } from "framer-motion";
+import API from "./api/api";
 
 import UserJobs from "./pages/Student/UserJobs";
 
@@ -109,6 +106,7 @@ const AppWrapper = () => {
             <Route path="/" element={<LandingPage />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/register" element={<RoleSelectionPage />} />
+            <Route path="/resume" element={<Resume />} />
             <Route path="/register/student" element={<StudentForm />} />
             <Route path="/register/institution" element={<InstitutionForm />} />
             <Route path="/register/employee" element={<EmployeeForm />} />
@@ -260,15 +258,13 @@ const AppWrapper = () => {
   );
 };
 
-// ✅ Actual App that wraps AppWrapper inside Router
 function App() {
   return (
-    // wrapped entire app with the ThemeProvider
-    <ThemeProvider> 
+    <UserProvider>
       <Router>
         <AppWrapper />
       </Router>
-    </ThemeProvider>
+    </UserProvider>
   );
 }
 

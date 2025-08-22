@@ -9,7 +9,7 @@ import {
   updateProfile
 } from "../controllers/authController.js";
 import verifyToken from "../middleware/authMiddleware.js";
-import { upload } from "../middleware/upload.js";
+import { upload } from "../middleware/uploadImage.js";
 
 const router = express.Router();
 

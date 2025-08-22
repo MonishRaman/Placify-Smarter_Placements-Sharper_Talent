@@ -262,4 +262,4 @@ This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for m
 
 ---
 
-> *"If we can transform recruitment for 500 students in hours instead of weeks, imagine what we can do for a nation."*
+> *"If we can transform recruitment for 500 students in hours instead of weeks, imagine what we can do for a nation.."*

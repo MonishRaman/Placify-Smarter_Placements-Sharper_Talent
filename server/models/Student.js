@@ -15,4 +15,7 @@ const studentSchema = new mongoose.Schema({
   failedInterviews: { type: Number, default: 0 }, // ✅ Add this
 });
 
-export default User.discriminator("Student", studentSchema);
+const Student = User.discriminator("Student", studentSchema);
+
+export default Student;
+

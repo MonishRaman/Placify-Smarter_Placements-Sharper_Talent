@@ -1,12 +1,63 @@
-import apiClient from "../../api/apiClient";
-import { Briefcase, CalendarDays, MapPin, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { 
+  Briefcase, 
+  CalendarDays, 
+  MapPin, 
+  Search, 
+  Moon, 
+  Sun, 
+  Star,
+  FileText,
+  Filter,
+  Users,
+  Building2,
+  Clock,
+  ChevronLeft,
+  ChevronRight
+} from "lucide-react";
 
+// Theme Context
+const ThemeContext = createContext();
+
+const ThemeProvider = ({ children }) => {
+  const [isDark, setIsDark] = useState(false);
+
+  const toggleTheme = () => setIsDark(!isDark);
+
+  return (
+    <ThemeContext.Provider value={{ isDark, toggleTheme }}>
+      <div className={isDark ? 'dark' : ''}>
+        {children}
+      </div>
+    </ThemeContext.Provider>
+  );
+};
+
+const useTheme = () => useContext(ThemeContext);
+
+// Theme Toggle Component
+const ThemeToggle = () => {
+  const { isDark, toggleTheme } = useTheme();
+  
+  return (
+    <button
+      onClick={toggleTheme}
+      className="fixed top-4 right-4 z-50 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700"
+      aria-label="Toggle theme"
+    >
+      {isDark ? (
+        <Sun className="w-5 h-5 text-yellow-500" />
+      ) : (
+        <Moon className="w-5 h-5 text-gray-700" />
+      )}
+    </button>
+  );
+};
+
+// Jobs Component
 const Jobs = () => {
   const [jobsData, setJobsData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("All");
@@ -14,121 +65,177 @@ const Jobs = () => {
   const [selectedLocation, setSelectedLocation] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [dateFilter, setDateFilter] = useState("All");
+  const [showFilters, setShowFilters] = useState(false);
 
-  const jobsPerPage = 5;
+  const jobsPerPage = 6;
   const today = new Date();
 
   const defaultStaticJobs = [
-    { id: "static1", title: "Frontend Developer Intern", company: "Tech Studio", type: "Internship", domain: "Web Development", location: "Remote", status: "Open", date: "2025-08-10" },
-    { id: "static2", title: "Machine Learning Trainee", company: "AIWorks", type: "Full-Time", domain: "AI/ML", location: "Bangalore", status: "Open", date: "2025-08-15" },
-    { id: "static3", title: "UI/UX Intern", company: "DesignHive", type: "Internship", domain: "UI/UX", location: "Delhi", status: "Open", date: "2025-08-20" },
-    { id: "static4", title: "Backend Developer", company: "CodeNest", type: "Full-Time", domain: "Web Development", location: "Mumbai", status: "Open", date: "2025-08-18" },
-    { id: "static5", title: "Cybersecurity Analyst Intern", company: "SecureNet", type: "Internship", domain: "Cybersecurity", location: "Hyderabad", status: "Open", date: "2025-08-12" },
-    { id: "static6", title: "Cloud DevOps Engineer", company: "CloudOps Tech", type: "Full-Time", domain: "DevOps", location: "Chennai", status: "Open", date: "2025-08-14" },
-    { id: "static7", title: "NLP Research Intern", company: "DeepLang AI", type: "Internship", domain: "AI/ML", location: "Remote", status: "Open", date: "2025-08-21" },
-    { id: "static8", title: "Mobile App Developer", company: "AppSpark", type: "Full-Time", domain: "Web Development", location: "Delhi", status: "Open", date: "2025-08-16" },
-    { id: "static9", title: "Data Analyst Intern", company: "InsightData", type: "Internship", domain: "Data Science", location: "Bangalore", status: "Open", date: "2025-08-17" },
-    { id: "static10", title: "React.js Developer", company: "FrontendHub", type: "Full-Time", domain: "Web Development", location: "Remote", status: "Open", date: "2025-08-22" },
+    {
+      id: "static1",
+      title: "Frontend Developer Intern",
+      company: "Tech Studio",
+      type: "Internship",
+      domain: "Web Development",
+      location: "Remote",
+      status: "Open",
+      date: "2025-08-10",
+      salary: "₹25,000/month",
+      description: "Build modern web applications using React and TypeScript"
+    },
+    {
+      id: "static2",
+      title: "Machine Learning Trainee",
+      company: "AIWorks",
+      type: "Full-Time",
+      domain: "AI/ML",
+      location: "Bangalore",
+      status: "Open",
+      date: "2025-08-15",
+      salary: "₹8,00,000/year",
+      description: "Work on cutting-edge AI models and deep learning projects"
+    },
+    {
+      id: "static3",
+      title: "UI/UX Design Intern",
+      company: "DesignHive",
+      type: "Internship",
+      domain: "UI/UX",
+      location: "Delhi",
+      status: "Open",
+      date: "2025-08-20",
+      salary: "₹20,000/month",
+      description: "Create beautiful and intuitive user experiences"
+    },
+    {
+      id: "static4",
+      title: "Backend Developer",
+      company: "CodeNest",
+      type: "Full-Time",
+      domain: "Web Development",
+      location: "Mumbai",
+      status: "Open",
+      date: "2025-08-18",
+      salary: "₹12,00,000/year",
+      description: "Build scalable server-side applications and APIs"
+    },
+    {
+      id: "static5",
+      title: "Cybersecurity Analyst Intern",
+      company: "SecureNet",
+      type: "Internship",
+      domain: "Cybersecurity",
+      location: "Hyderabad",
+      status: "Open",
+      date: "2025-08-12",
+      salary: "₹30,000/month",
+      description: "Protect digital assets and analyze security threats"
+    },
+    {
+      id: "static6",
+      title: "Cloud DevOps Engineer",
+      company: "CloudOps Tech",
+      type: "Full-Time",
+      domain: "DevOps",
+      location: "Chennai",
+      status: "Open",
+      date: "2025-08-14",
+      salary: "₹15,00,000/year",
+      description: "Manage cloud infrastructure and deployment pipelines"
+    }
   ];
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await apiClient.get("/jobs");
-        const apiJobs = response.data || [];
-        const mergedJobs = [...defaultStaticJobs, ...apiJobs];
-        setJobsData(mergedJobs);
-      } catch (err) {
-        setError("Failed to fetch jobs.");
-        setJobsData(defaultStaticJobs);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchJobs();
+    const timer = setTimeout(() => {
+      setJobsData(defaultStaticJobs);
+      setLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
   }, []);
 
-  const defaultDomains = ["Web Development", "Data Science", "AI/ML", "DevOps", "UI/UX", "Cybersecurity"];
-  const defaultLocations = ["Remote", "Bangalore", "Hyderabad", "Delhi", "Mumbai", "Chennai"];
-
-  const domains = Array.from(new Set([...defaultDomains, ...jobsData.map((job) => job.domain)]));
-  const locations = Array.from(new Set([...defaultLocations, ...jobsData.map((job) => job.location)]));
+  const domains = ["Web Development", "Data Science", "AI/ML", "DevOps", "UI/UX", "Cybersecurity"];
+  const locations = ["Remote", "Bangalore", "Hyderabad", "Delhi", "Mumbai", "Chennai"];
   const statuses = ["Open", "Applied", "Selected", "Rejected"];
 
   const filteredJobs = jobsData.filter((job) => {
-    const matchesSearch =
-      job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.company.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         job.company.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === "All" || job.type === selectedType;
     const matchesDomain = selectedDomain === "All" || job.domain === selectedDomain;
     const matchesLocation = selectedLocation === "All" || job.location === selectedLocation;
     const matchesStatus = selectedStatus === "All" || job.status === selectedStatus;
-
+    
     const jobDate = new Date(job.date);
-    const matchesDate =
-      dateFilter === "All" ||
-      (dateFilter === "Upcoming" && jobDate >= today) ||
-      (dateFilter === "Past" && jobDate < today);
+    const matchesDate = dateFilter === "All" ||
+                       (dateFilter === "Upcoming" && jobDate >= today) ||
+                       (dateFilter === "Past" && jobDate < today);
 
-    return (
-      matchesSearch &&
-      matchesType &&
-      matchesDomain &&
-      matchesLocation &&
-      matchesStatus &&
-      matchesDate
-    );
+    return matchesSearch && matchesType && matchesDomain && matchesLocation && matchesStatus && matchesDate;
   });
 
-  const indexOfLastJob = currentPage * jobsPerPage;
-  const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
   const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+  const currentJobs = filteredJobs.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
 
-  const selectClass =
-    "px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-700 " +
-    "bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 " +
-    "shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 " +
-    "hover:border-blue-400 dark:hover:border-blue-500 " +
-    "transition-colors duration-200";
+  const resetFilters = () => {
+    setSearchTerm("");
+    setSelectedType("All");
+    setSelectedDomain("All");
+    setSelectedLocation("All");
+    setSelectedStatus("All");
+    setDateFilter("All");
+    setCurrentPage(1);
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full p-6 bg-gray-50 dark:bg-slate-900">
-        <h2 className="text-3xl font-bold mb-2 text-gray-800 dark:text-gray-100">Jobs</h2>
-        <p className="text-gray-500 dark:text-gray-400 mb-6">Welcome back! Here's what's happening.</p>
-        <div className="text-center mt-20 text-lg text-gray-700 dark:text-gray-300">
-          Loading Jobs Page... Please wait.
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-lg text-gray-700 dark:text-gray-300">Loading amazing opportunities...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen w-full p-8 bg-gray-50 dark:bg-slate-900">
-      <div className="bg-white dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-slate-700">
-        <div className="mb-6">
-          <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Explore Opportunities</h2>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
-            Find internships and full-time roles across domains.
-          </p>
-        </div>
-
-        {error && (
-          <div className="mb-5 rounded-lg border border-red-300 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300 px-4 py-3">
-            {error}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-800 dark:to-blue-800 text-white py-12">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-4 flex items-center justify-center gap-3">
+              <Briefcase className="w-10 h-10" />
+              Explore Opportunities
+            </h1>
+            <p className="text-xl opacity-90 max-w-2xl mx-auto">
+              Discover your next career move with our curated job listings from top companies
+            </p>
+            <div className="mt-6 flex justify-center gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <Building2 className="w-4 h-4" />
+                <span>{jobsData.length} Jobs Available</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                <span>Top Companies</span>
+              </div>
+            </div>
           </div>
-        )}
+        </div>
+      </div>
 
-        <div className="flex flex-wrap gap-4 mb-6">
-          <div className="relative w-full sm:w-1/2 lg:w-1/3">
-            <Search className="absolute left-3 top-3 text-gray-500 dark:text-gray-300" />
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Search and Filters */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8 transition-colors duration-300">
+          {/* Search Bar */}
+          <div className="relative mb-6">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search title or company..."
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500
-                         bg-white border-gray-300 text-gray-900
-                         dark:bg-slate-800 dark:border-slate-700 dark:text-gray-100"
+              placeholder="Search jobs, companies, or skills..."
+              className="w-full pl-12 pr-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-lg transition-colors duration-300"
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -137,113 +244,213 @@ const Jobs = () => {
             />
           </div>
 
-          <select value={selectedType} onChange={(e) => { setSelectedType(e.target.value); setCurrentPage(1); }} className={selectClass}>
-            <option value="All">All Types</option>
-            <option value="Internship">Internship</option>
-            <option value="Full-Time">Full-Time</option>
-          </select>
+          {/* Filter Toggle */}
+          <div className="flex items-center justify-between mb-4">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors duration-300"
+            >
+              <Filter className="w-4 h-4" />
+              {showFilters ? 'Hide Filters' : 'Show Filters'}
+            </button>
+            
+            <button
+              onClick={resetFilters}
+              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-300"
+            >
+              Clear all filters
+            </button>
+          </div>
 
-          <select value={selectedDomain} onChange={(e) => { setSelectedDomain(e.target.value); setCurrentPage(1); }} className={selectClass}>
-            <option value="All">All Domains</option>
-            {domains.map((domain, index) => (
-              <option key={index} value={domain}>
-                {domain}
-              </option>
-            ))}
-          </select>
+          {/* Filters */}
+          {showFilters && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 animate-in slide-in-from-top duration-300">
+              <select
+                value={selectedType}
+                onChange={(e) => {
+                  setSelectedType(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300"
+              >
+                <option value="All">All Types</option>
+                <option value="Internship">Internship</option>
+                <option value="Full-Time">Full-Time</option>
+              </select>
 
-          <select value={selectedLocation} onChange={(e) => { setSelectedLocation(e.target.value); setCurrentPage(1); }} className={selectClass}>
-            <option value="All">All Locations</option>
-            {locations.map((loc, idx) => (
-              <option key={idx} value={loc}>
-                {loc}
-              </option>
-            ))}
-          </select>
+              <select
+                value={selectedDomain}
+                onChange={(e) => {
+                  setSelectedDomain(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300"
+              >
+                <option value="All">All Domains</option>
+                {domains.map((domain, index) => (
+                  <option key={index} value={domain}>{domain}</option>
+                ))}
+              </select>
 
-          <select value={selectedStatus} onChange={(e) => { setSelectedStatus(e.target.value); setCurrentPage(1); }} className={selectClass}>
-            <option value="All">Status</option>
-            {statuses.map((status, index) => (
-              <option key={index} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
+              <select
+                value={selectedLocation}
+                onChange={(e) => {
+                  setSelectedLocation(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300"
+              >
+                <option value="All">All Locations</option>
+                {locations.map((loc, idx) => (
+                  <option key={idx} value={loc}>{loc}</option>
+                ))}
+              </select>
 
-          <select value={dateFilter} onChange={(e) => { setDateFilter(e.target.value); setCurrentPage(1); }} className={selectClass}>
-            <option value="All">All Drives</option>
-            <option value="Upcoming">Upcoming Drives</option>
-            <option value="Past">Past Drives</option>
-          </select>
+              <select
+                value={selectedStatus}
+                onChange={(e) => {
+                  setSelectedStatus(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300"
+              >
+                <option value="All">All Status</option>
+                {statuses.map((status, index) => (
+                  <option key={index} value={status}>{status}</option>
+                ))}
+              </select>
+
+              <select
+                value={dateFilter}
+                onChange={(e) => {
+                  setDateFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300"
+              >
+                <option value="All">All Drives</option>
+                <option value="Upcoming">Upcoming</option>
+                <option value="Past">Past</option>
+              </select>
+            </div>
+          )}
         </div>
 
-        <ul className="space-y-5">
-          {currentJobs.length === 0 && (
-            <li className="text-center text-gray-500 dark:text-gray-400">No jobs found.</li>
-          )}
+        {/* Results Summary */}
+        <div className="mb-6 flex items-center justify-between">
+          <p className="text-gray-600 dark:text-gray-400">
+            Showing {currentJobs.length} of {filteredJobs.length} jobs
+          </p>
+        </div>
 
-          {currentJobs.map((job) => (
-            <li key={job.id} className="group bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-800
-                         rounded-2xl p-5 shadow-lg hover:shadow-2xl dark:hover:shadow-lg
-                         transition-all duration-300 border border-gray-200 dark:border-slate-700
-                         hover:scale-[1.02] cursor-default">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
-                    <Briefcase className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    {job.title}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300">{job.company}</p>
-                  <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2 mt-1">
-                    <MapPin className="w-4 h-4" />
-                    {job.location}
+        {/* Job Cards */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          {currentJobs.length === 0 ? (
+            <div className="col-span-full text-center py-12">
+              <Briefcase className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">No jobs found</h3>
+              <p className="text-gray-500 dark:text-gray-400">Try adjusting your search criteria</p>
+            </div>
+          ) : (
+            currentJobs.map((job) => (
+              <div
+                key={job.id}
+                className="group bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden"
+              >
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                        {job.title}
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400 font-medium text-lg">{job.company}</p>
+                      <p className="text-gray-500 dark:text-gray-500 text-sm mt-1">{job.description}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-green-600 dark:text-green-400">{job.salary}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      {job.location}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <CalendarDays className="w-4 h-4" />
+                      {job.date}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-full text-sm font-medium">
+                      {job.type}
+                    </span>
+                    <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium">
+                      {job.domain}
+                    </span>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      job.status === 'Open' 
+                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
+                        : job.status === 'Applied'
+                        ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300'
+                        : job.status === 'Selected'
+                        ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300'
+                        : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
+                    }`}>
+                      {job.status}
+                    </span>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-300">
+                      Apply Now
+                    </button>
+                    <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300">
+                      Save
+                    </button>
                   </div>
                 </div>
               </div>
+            ))
+          )}
+        </div>
 
-              <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                <span className="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
-                  {job.type}
-                </span>
-                <span className="px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-200">
-                  {job.domain}
-                </span>
-                <span className="px-2.5 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-800/40 dark:text-green-300">
-                  {job.status}
-                </span>
-                <span className="px-2.5 py-1 rounded-full flex items-center gap-1 bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300">
-                  <CalendarDays className="w-3 h-3" />
-                  {job.date}
-                </span>
-              </div>
-            </li>
-          ))}
-        </ul>
-
+        {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-6 flex justify-center space-x-2">
-            <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1}
-              className="px-4 py-2 rounded-lg disabled:opacity-50
-                         bg-gray-200 text-gray-900
-                         dark:bg-slate-700 dark:text-gray-100">
-              Prev
+          <div className="mt-12 flex items-center justify-center gap-2">
+            <button
+              onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
+              disabled={currentPage === 1}
+              className="flex items-center gap-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Previous
             </button>
+            
+            <div className="flex gap-1">
+              {[...Array(totalPages)].map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentPage(index + 1)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
+                    currentPage === index + 1
+                      ? 'bg-purple-600 text-white'
+                      : 'border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
 
-            {[...Array(totalPages)].map((_, index) => (
-              <button key={index} onClick={() => setCurrentPage(index + 1)}
-                className={`px-3 py-1 rounded-lg transition
-                  ${currentPage === index + 1
-                    ? "bg-blue-600 text-white dark:bg-blue-500"
-                    : "bg-gray-200 text-gray-900 dark:bg-slate-700 dark:text-gray-100"}`}>
-                {index + 1}
-              </button>
-            ))}
-
-            <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}
-              className="px-4 py-2 rounded-lg disabled:opacity-50
-                         bg-gray-200 text-gray-900
-                         dark:bg-slate-700 dark:text-gray-100">
+            <button
+              onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="flex items-center gap-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
+            >
               Next
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -252,4 +459,648 @@ const Jobs = () => {
   );
 };
 
-export default Jobs;
+// Resume Builder Component
+const ResumeBuilder = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    summary: "",
+    skills: "",
+    education: "",
+    experience: "",
+  });
+
+  const [previewMode, setPreviewMode] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Resume Data:", formData);
+    setPreviewMode(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <FileText className="text-blue-600 dark:text-blue-400 text-4xl" />
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Resume Builder</h1>
+          </div>
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Create a professional resume that stands out to employers
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Form Section */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 transition-colors duration-300">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              Enter Your Details
+            </h2>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Personal Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700 pb-2">
+                  Personal Information
+                </h3>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="e.g. John Doe"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="e.g. john@example.com"
+                      className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Phone Number *
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="e.g. +91 1234567890"
+                      className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Professional Summary */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Professional Summary
+                </label>
+                <textarea
+                  name="summary"
+                  value={formData.summary}
+                  onChange={handleChange}
+                  rows="4"
+                  placeholder="Write a brief summary about your professional background and career goals..."
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                />
+              </div>
+
+              {/* Skills */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Skills (comma separated)
+                </label>
+                <input
+                  type="text"
+                  name="skills"
+                  value={formData.skills}
+                  onChange={handleChange}
+                  placeholder="e.g. JavaScript, React, Node.js, Python, MongoDB"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                />
+              </div>
+
+              {/* Education */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Education
+                </label>
+                <textarea
+                  name="education"
+                  value={formData.education}
+                  onChange={handleChange}
+                  rows="3"
+                  placeholder="e.g. Bachelor of Technology in Computer Science, XYZ University, 2020-2024"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                />
+              </div>
+
+              {/* Experience */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Work Experience
+                </label>
+                <textarea
+                  name="experience"
+                  value={formData.experience}
+                  onChange={handleChange}
+                  rows="4"
+                  placeholder="e.g. Software Developer Intern at ABC Company (Jun 2023 - Aug 2023): Developed web applications using React and Node.js..."
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                />
+              </div>
+
+              {/* Submit Buttons */}
+              <div className="flex gap-4 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center gap-2"
+                >
+                  <FileText className="w-5 h-5" />
+                  Generate Resume
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewMode(!previewMode)}
+                  className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold transition-colors duration-300"
+                >
+                  Preview
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Preview Section */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 transition-colors duration-300">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              Resume Preview
+            </h2>
+            
+            {previewMode || formData.name ? (
+              <div className="space-y-6 text-sm">
+                {/* Header */}
+                <div className="text-center border-b border-gray-200 dark:border-gray-700 pb-6">
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {formData.name || "Your Name"}
+                  </h1>
+                  <div className="mt-2 text-gray-600 dark:text-gray-400">
+                    <p>{formData.email || "your.email@example.com"}</p>
+                    <p>{formData.phone || "+91 1234567890"}</p>
+                  </div>
+                </div>
+
+                {/* Summary */}
+                {formData.summary && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      Professional Summary
+                    </h3>
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                      {formData.summary}
+                    </p>
+                  </div>
+                )}
+
+                {/* Skills */}
+                {formData.skills && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      Skills
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.skills.split(',').map((skill, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium"
+                        >
+                          {skill.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Education */}
+                {formData.education && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      Education
+                    </h3>
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                      {formData.education}
+                    </p>
+                  </div>
+                )}
+
+                {/* Experience */}
+                {formData.experience && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      Work Experience
+                    </h3>
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                      {formData.experience}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500 dark:text-gray-400">
+                  Fill out the form to see your resume preview
+                </p>
+              </div>
+            )}
+
+            {/* Download Button */}
+            {(previewMode || formData.name) && (
+              <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <button className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center gap-2">
+                  <FileText className="w-5 h-5" />
+                  Download PDF
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Interview Experience Component
+const InterviewExperience = () => {
+  const [selectedCompany, setSelectedCompany] = useState(null);
+  
+  const experiences = [
+    {
+      id: 1,
+      company: "Google",
+      role: "Software Engineer Intern",
+      difficulty: "Hard",
+      rating: 4.5,
+      date: "March 2024",
+      rounds: ["Online Assessment", "Technical Interview 1", "Technical Interview 2", "HR Round"],
+      content: "The process included an online assessment followed by two rounds focused on DSA and system design. Interviewers were supportive and provided hints when needed. The questions were challenging but fair.",
+      tips: [
+        "Practice data structures and algorithms thoroughly",
+        "Be ready to explain your thought process",
+        "System design basics are important",
+        "Don't panic if you get stuck - ask clarifying questions"
+      ],
+      color: "from-yellow-400 to-orange-500",
+      duration: "3 weeks",
+      salary: "₹1,20,000/month"
+    },
+    {
+      id: 2,
+      company: "TCS",
+      role: "Graduate Trainee",
+      difficulty: "Medium",
+      rating: 4.0,
+      date: "January 2024",
+      rounds: ["Aptitude Test", "Technical Interview", "HR Interview"],
+      content: "Aptitude + technical round with Java and SQL. HR tested communication skills and teamwork scenarios. The process was well-organized and the interviewers were friendly.",
+      tips: [
+        "Focus on core programming concepts",
+        "Prepare for basic SQL queries",
+        "Practice aptitude questions",
+        "Be confident during HR round"
+      ],
+      color: "from-green-400 to-teal-500",
+      duration: "2 weeks",
+      salary: "₹3,50,000/year"
+    },
+    {
+      id: 3,
+      company: "Infosys",
+      role: "System Engineer",
+      difficulty: "Easy",
+      rating: 3.8,
+      date: "February 2024",
+      rounds: ["Online Test", "Technical + HR Interview"],
+      content: "Online test included verbal and aptitude. Interview revolved around my final year project and basic coding. The overall experience was smooth and stress-free.",
+      tips: [
+        "Prepare your projects well",
+        "Basic coding skills are sufficient",
+        "Communication skills matter a lot",
+        "Be honest about your knowledge"
+      ],
+      color: "from-purple-400 to-indigo-500",
+      duration: "1 week",
+      salary: "₹4,00,000/year"
+    },
+    {
+      id: 4,
+      company: "Microsoft",
+      role: "Software Developer Intern",
+      difficulty: "Hard",
+      rating: 4.8,
+      date: "April 2024",
+      rounds: ["Online Assessment", "Phone Screen", "Virtual Onsite (4 rounds)", "HR Discussion"],
+      content: "Very thorough process with multiple coding rounds and system design. Interviewers were excellent and the questions were thoughtfully designed. Great learning experience overall.",
+      tips: [
+        "Master leetcode medium/hard problems",
+        "System design is crucial",
+        "Behavioral questions are important",
+        "Be prepared for follow-up questions"
+      ],
+      color: "from-blue-400 to-cyan-500",
+      duration: "4 weeks",
+      salary: "₹1,80,000/month"
+    },
+    {
+      id: 5,
+      company: "Amazon",
+      role: "SDE Intern",
+      difficulty: "Hard",
+      rating: 4.3,
+      date: "February 2024",
+      rounds: ["Online Assessment", "Technical Interview 1", "Technical Interview 2", "Bar Raiser"],
+      content: "Focus on leadership principles and problem-solving approach. Heavy emphasis on past experiences and how you handled challenges. Technical rounds were algorithm-heavy.",
+      tips: [
+        "Know Amazon's leadership principles",
+        "Prepare STAR format stories",
+        "Practice tree and graph problems",
+        "Be ready for behavioral deep dives"
+      ],
+      color: "from-orange-400 to-red-500",
+      duration: "3 weeks",
+      salary: "₹1,50,000/month"
+    },
+    {
+      id: 6,
+      company: "Flipkart",
+      role: "Software Engineer",
+      difficulty: "Medium",
+      rating: 4.2,
+      date: "March 2024",
+      rounds: ["Machine Test", "Technical Interview 1", "Technical Interview 2", "Hiring Manager Round"],
+      content: "Good mix of coding and system design questions. Machine test was time-bound with multiple coding problems. Interviewers focused on optimization and scalability.",
+      tips: [
+        "Practice coding under time pressure",
+        "Focus on optimization techniques",
+        "Understand database concepts",
+        "Be ready to discuss trade-offs"
+      ],
+      color: "from-indigo-400 to-purple-500",
+      duration: "2 weeks",
+      salary: "₹18,00,000/year"
+    }
+  ];
+
+  const getDifficultyColor = (difficulty) => {
+    switch (difficulty) {
+      case 'Easy': return 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900';
+      case 'Medium': return 'text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900';
+      case 'Hard': return 'text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900';
+      default: return 'text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-900';
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 dark:from-blue-800 dark:to-indigo-900 text-white py-16">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <Users className="w-12 h-12" />
+            <h1 className="text-5xl font-bold">Interview Experiences</h1>
+          </div>
+          <p className="text-xl max-w-3xl mx-auto leading-relaxed opacity-90">
+            Learn from real interview experiences shared by candidates who successfully cracked technical and HR rounds at top companies. Get insights, tips, and prepare better for your dream job.
+          </p>
+          <div className="mt-8 flex justify-center gap-6 text-sm">
+            <div className="flex items-center gap-2">
+              <Star className="w-5 h-5 text-yellow-400" />
+              <span>Real Experiences</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Building2 className="w-5 h-5" />
+              <span>Top Companies</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="w-5 h-5" />
+              <span>Recent Updates</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        {/* Experience Cards */}
+        <div className="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
+          {experiences.map((exp) => (
+            <div
+              key={exp.id}
+              className="group bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700 overflow-hidden"
+            >
+              {/* Card Header */}
+              <div className={`bg-gradient-to-r ${exp.color} p-6 text-white relative overflow-hidden`}>
+                <div className="absolute inset-0 bg-black opacity-10"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-2xl font-bold">{exp.company}</h3>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-yellow-300 fill-current" />
+                      <span className="text-sm font-medium">{exp.rating}</span>
+                    </div>
+                  </div>
+                  <p className="text-lg opacity-90 mb-2">{exp.role}</p>
+                  <div className="flex items-center justify-between text-sm opacity-80">
+                    <span>{exp.date}</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getDifficultyColor(exp.difficulty)}`}>
+                      {exp.difficulty}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card Body */}
+              <div className="p-6">
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Duration</span>
+                    <span className="text-sm font-semibold text-gray-900 dark:text-white">{exp.duration}</span>
+                  </div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Package</span>
+                    <span className="text-sm font-bold text-green-600 dark:text-green-400">{exp.salary}</span>
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Interview Rounds</h4>
+                  <div className="flex flex-wrap gap-1">
+                    {exp.rounds.map((round, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs"
+                      >
+                        {round}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-4">
+                  {exp.content}
+                </p>
+
+                <button
+                  onClick={() => setSelectedCompany(selectedCompany === exp.id ? null : exp.id)}
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-2 px-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02]"
+                >
+                  {selectedCompany === exp.id ? 'Hide Details' : 'View Tips & Details'}
+                </button>
+
+                {/* Expandable Tips Section */}
+                {selectedCompany === exp.id && (
+                  <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg animate-in slide-in-from-top duration-300">
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                      <Star className="w-4 h-4 text-yellow-500" />
+                      Interview Tips
+                    </h4>
+                    <ul className="space-y-2">
+                      {exp.tips.map((tip, index) => (
+                        <li key={index} className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
+                          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                          {tip}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Call to Action */}
+        <div className="mt-16 text-center bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-12 transition-colors duration-300">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              🎯 Ready to Share Your Experience?
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+              Help future candidates by sharing your interview journey. Your experience could be the key to someone's success story!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button className="px-8 py-4 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                Share Your Experience
+              </button>
+              <button className="px-8 py-4 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300">
+                Browse More Stories
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main App Component with Navigation
+const App = () => {
+  const [currentPage, setCurrentPage] = useState('jobs');
+
+  const navigation = [
+    { id: 'jobs', label: 'Jobs', icon: Briefcase },
+    { id: 'resume', label: 'Resume Builder', icon: FileText },
+    { id: 'interviews', label: 'Interview Experience', icon: Users }
+  ];
+
+  const renderCurrentPage = () => {
+    switch (currentPage) {
+      case 'jobs':
+        return <Jobs />;
+      case 'resume':
+        return <ResumeBuilder />;
+      case 'interviews':
+        return <InterviewExperience />;
+      default:
+        return <Jobs />;
+    }
+  };
+
+  return (
+    <ThemeProvider>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+        <ThemeToggle />
+        
+        {/* Navigation */}
+        <nav className="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center gap-8">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">CareerPortal</span>
+                </div>
+                
+                <div className="hidden md:flex items-center gap-1">
+                  {navigation.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => setCurrentPage(item.id)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
+                          currentPage === item.id
+                            ? 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300'
+                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+            
+            {/* Mobile Navigation */}
+            <div className="md:hidden pb-4">
+              <div className="flex gap-1">
+                {navigation.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setCurrentPage(item.id)}
+                      className={`flex-1 flex flex-col items-center gap-1 py-2 rounded-lg font-medium transition-colors duration-300 ${
+                        currentPage === item.id
+                          ? 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300'
+                          : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span className="text-xs">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        {/* Page Content */}
+        {renderCurrentPage()}
+      </div>
+    </ThemeProvider>
+  );
+};
+
+export default App;

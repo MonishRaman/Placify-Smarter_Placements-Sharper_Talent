@@ -5,7 +5,7 @@ const isDev = import.meta.env.MODE === 'development' || !import.meta.env.PROD;
 
 // Create a new instance of axios with a custom configuration
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: `${import.meta.env.VITE_API_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
   },

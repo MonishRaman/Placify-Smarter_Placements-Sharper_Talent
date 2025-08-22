@@ -7,18 +7,20 @@ import Employee from "../models/Employee.js";
 import Institution from "../models/Institution.js";
 
 const generateToken = (id, role) =>
-  jwt.sign({ userId: id, role: role }, process.env.JWT_SECRET, { expiresIn: "7d" });
+  jwt.sign({ userId: id, role: role }, process.env.JWT_SECRET, {
+    expiresIn: "7d",
+  });
 
 // Helper function to get the correct model based on role
 const getModelByRole = (role) => {
   switch (role?.toLowerCase()) {
-    case 'student':
+    case "student":
       return Student;
-    case 'institution':
+    case "institution":
       return Institution;
-    case 'company':
+    case "company":
       return Company;
-    case 'employee':
+    case "employee":
       return Employee;
     default:
       return User;
@@ -34,13 +36,13 @@ export const registerStudent = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await Student.create({ 
+    await Student.create({
       name: fullName, // Map to base schema field
-      university, 
-      major, 
-      email, 
+      university,
+      major,
+      email,
       password: hashedPassword,
-      role: 'Student' // Explicitly set role
+      role: "Student", // Explicitly set role
     });
 
     res.status(201).json({ message: "Student registered successfully" });
@@ -53,18 +55,26 @@ export const registerStudent = async (req, res) => {
 export const registerInstitution = async (req, res) => {
   try {
     const { institutionName, website, contactPerson, email, password } = req.body;
+    await Institution.create({
+      name: institutionName,
+      website,
+      contactPerson,
+      email,
+      password: hashedPassword,
+      role: "Institution",
+    });
 
     if (await User.findOne({ email }))
       return res.status(400).json({ message: "Email already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await Institution.create({ 
+    await Institution.create({
       name: institutionName, // Map to base schema field
-      website, 
-      contactPerson, 
-      email, 
+      website,
+      contactPerson,
+      email,
       password: hashedPassword,
-      role: 'Institution' // Explicitly set role
+      role: "Institution", // Explicitly set role
     });
 
     res.status(201).json({ message: "Institution registered successfully" });
@@ -81,11 +91,11 @@ export const registerEmployee = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await Employee.create({ 
+    await Employee.create({
       name: fullName, // Map to base schema field
-      currentCompany, 
-      jobTitle, 
-      email, 
+      currentCompany,
+      jobTitle,
+      email,
       password: hashedPassword,
       role: 'Employee' 
     });
@@ -105,13 +115,13 @@ export const registerCompany = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await Company.create({ 
+    await Company.create({
       name: companyName, // Only use base schema field - no more companyName duplication
-      industry, 
-      website, 
-      email, 
+      industry,
+      website,
+      email,
       password: hashedPassword,
-      role: 'Company' // Explicitly set role
+      role: "Company", // Explicitly set role
     });
 
     res.status(201).json({ message: "Company registered successfully" });
@@ -126,14 +136,17 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password)
-      return res.status(400).json({ message: "Email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
 
     // Find user using base User model (will include discriminated fields)
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+    if (!isMatch)
+      return res.status(400).json({ message: "Invalid credentials" });
 
     const token = generateToken(user._id, user.role?.toLowerCase());
 
@@ -161,7 +174,7 @@ export const getProfile = async (req, res) => {
     // Get the appropriate model and fetch with all fields
     const UserModel = getModelByRole(baseUser.role);
     const user = await UserModel.findById(req.user.userId).select("-password");
-    
+
     if (!user) return res.status(404).json({ message: "User not found" });
 
     res.json(user);
@@ -174,7 +187,7 @@ export const getProfile = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const userId = req.user.userId;
-    
+
     // First get the user to determine their role
     const baseUser = await User.findById(userId).select("role");
     if (!baseUser) {
@@ -183,15 +196,15 @@ export const updateProfile = async (req, res) => {
 
     // Get the appropriate model
     const UserModel = getModelByRole(baseUser.role);
-    
+
     // Define allowed fields based on user role
     let allowedFields = [];
-    
+
     switch (baseUser.role?.toLowerCase()) {
-      case 'student':
+      case "student":
         allowedFields = [
           // Base User schema fields
-          "name", 
+          "name",
           "phone",
           "dob",
           "address",
@@ -199,14 +212,14 @@ export const updateProfile = async (req, res) => {
           "education",
           // Student-specific discriminator fields
           "major",
-          "university"
+          "university",
         ];
         break;
-        
-      case 'institution':
+
+      case "institution":
         allowedFields = [
           // Base User schema fields
-          "name", 
+          "name",
           "phone",
           "address",
           // Institution-specific discriminator fields
@@ -215,14 +228,14 @@ export const updateProfile = async (req, res) => {
           "establishedYear",
           "description",
           "accreditation",
-          "totalStudents"
+          "totalStudents",
         ];
         break;
-        
-      case 'company':
+
+      case "company":
         allowedFields = [
           // Base User schema fields
-          "name", 
+          "name",
           "phone",
           "address",
           // Company-specific discriminator fields
@@ -230,14 +243,14 @@ export const updateProfile = async (req, res) => {
           "industry",
           "description",
           "foundedYear",
-          "employeeCount"
+          "employeeCount",
         ];
         break;
-        
-      case 'employee':
+
+      case "employee":
         allowedFields = [
           // Base User schema fields
-          "name", 
+          "name",
           "phone",
           "dob",
           "address",
@@ -247,19 +260,19 @@ export const updateProfile = async (req, res) => {
           "currentCompany",
           "jobTitle",
           "experience",
-          "skills"
+          "skills",
         ];
         break;
-        
+
       default:
         allowedFields = [
           // Base User schema fields only
-          "name", 
-          "phone", 
-          "dob", 
-          "address", 
-          "gender", 
-          "education"
+          "name",
+          "phone",
+          "dob",
+          "address",
+          "gender",
+          "education",
         ];
     }
 
@@ -271,12 +284,18 @@ export const updateProfile = async (req, res) => {
     });
 
     // Handle frontend sending 'companyName' -> map to 'name' for company users
-    if (baseUser.role?.toLowerCase() === 'company' && req.body.companyName !== undefined) {
+    if (
+      baseUser.role?.toLowerCase() === "company" &&
+      req.body.companyName !== undefined
+    ) {
       updateData.name = req.body.companyName;
     }
 
     // Handle frontend sending 'institutionName' -> map to 'name' for institution users
-    if (baseUser.role?.toLowerCase() === 'institution' && req.body.institutionName !== undefined) {
+    if (
+      baseUser.role?.toLowerCase() === "institution" &&
+      req.body.institutionName !== undefined
+    ) {
       updateData.name = req.body.institutionName;
     }
 

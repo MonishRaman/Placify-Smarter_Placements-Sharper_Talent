@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
@@ -14,11 +15,40 @@ import {
 import ThemeToggle from "../components/ThemeToggle";
 import { motion, AnimatePresence } from "framer-motion";
 import Chatbot from "../components/Chatbot";
+import { useAuth } from "../context/AuthContext";
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, loading, user } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Helper function to get dashboard route based on user role
+  const getDashboardRoute = () => {
+    if (!user?.role) return "/register";
+
+    switch (user.role.toLowerCase()) {
+      case "student":
+        return "/dashboard";
+      case "institution":
+        return "/dashboard/institution";
+      case "company":
+        return "/dashboard/company";
+      case "employee":
+        return "/dashboard/employee";
+      default:
+        return "/register";
+    }
+  };
+
+  // Handle Get Started button click
+  const handleGetStarted = () => {
+    if (isAuthenticated && user) {
+      navigate(getDashboardRoute());
+    } else {
+      navigate("/register");
+    }
+  };
 
   // Handle scroll effect for dynamic navbar
   useEffect(() => {
@@ -34,6 +64,13 @@ const LandingPage = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   const features = [
     {
@@ -64,7 +101,7 @@ const LandingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       {/* Enhanced Navbar */}
       <AnimatePresence>
         <motion.nav
@@ -73,12 +110,12 @@ const LandingPage = () => {
           transition={{ duration: 0.3 }}
           className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
             isScrolled
-              ? "backdrop-blur-xs bg-white/80 dark:bg-gray-900/80 shadow-lg border-b border-gray-200/50 dark:border-gray-700/50"
-              : "backdrop-blur-xs bg-purple-600/20 dark:bg-purple-800/20 border-b border-purple-300/30 dark:border-purple-600/30"
+              ? "backdrop-blur-lg bg-white/90 dark:bg-gray-900/90 shadow-lg border-b border-gray-200/80 dark:border-gray-700/80"
+              : "backdrop-blur-md bg-purple-600/20 dark:bg-purple-800/30 border-b border-purple-300/30 dark:border-purple-600/40"
           }`}
           style={{
-            backdropFilter: isScrolled ? "blur(12px)" : "blur(8px)",
-            WebkitBackdropFilter: isScrolled ? "blur(12px)" : "blur(8px)",
+            backdropFilter: isScrolled ? "blur(16px)" : "blur(12px)",
+            WebkitBackdropFilter: isScrolled ? "blur(16px)" : "blur(12px)",
           }}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -90,22 +127,22 @@ const LandingPage = () => {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className="flex items-center space-x-3"
               >
-                {/* Added onClick to scroll to top when Brain icon is clicked */}
+                {/* onClick and cursor-pointer are on the icon's div */}
                 <motion.div
                   whileHover={{ rotate: 360 }}
                   transition={{ duration: 0.6 }}
                   className="p-2 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg cursor-pointer"
-                  onClick={() =>
-                    window.scrollTo({ top: 0, behavior: "smooth" })
-                  }
+                  onClick={() => (window.location.href = "/")}
                 >
                   <Brain className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
                 </motion.div>
+                {/* onClick and cursor-pointer are also on the text's span */}
                 <span
-                  className={`text-2xl lg:text-3xl font-bold transition-all duration-500 ${
+                  onClick={() => (window.location.href = "/")}
+                  className={`text-2xl lg:text-3xl font-bold transition-all duration-500 cursor-pointer ${
                     isScrolled
                       ? "bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 bg-clip-text text-transparent"
-                      : "text-white"
+                      : "text-white dark:text-gray-100"
                   }`}
                 >
                   Placify
@@ -119,40 +156,46 @@ const LandingPage = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="hidden lg:flex items-center space-x-6"
               >
-                {/* Sign In Button */}
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  className={`relative px-6 py-2.5 font-medium rounded-xl transition-all duration-300 hover-lift will-change-transform
-                           ${
-                             isScrolled
-                               ? "text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 before:absolute before:inset-0 before:rounded-xl before:bg-gray-100 dark:before:bg-gray-800 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
-                               : "text-white/90 hover:text-white before:absolute before:inset-0 before:rounded-xl before:bg-white/10 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
-                           }`}
-                  onClick={() => navigate("/auth")}
-                >
-                  <span className="relative z-10 flex items-center space-x-2">
-                    <User className="w-4 h-4" />
-                    <span>Sign In</span>
-                  </span>
-                </motion.button>
+                {/* Sign In Button - Only show if not authenticated */}
+                {!loading && !isAuthenticated && (
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    className={`relative px-6 py-2.5 font-medium rounded-xl transition-all duration-300 hover-lift will-change-transform
+                             ${
+                               isScrolled
+                                 ? "text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 before:absolute before:inset-0 before:rounded-xl before:bg-gray-100 dark:before:bg-gray-800 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
+                                 : "text-white/90 dark:text-gray-100/90 hover:text-white dark:hover:text-white before:absolute before:inset-0 before:rounded-xl before:bg-white/10 dark:before:bg-white/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
+                             }`}
+                    onClick={() => navigate("/auth")}
+                  >
+                    <span className="relative z-10 flex items-center space-x-2">
+                      <User className="w-4 h-4" />
+                      <span>Sign In</span>
+                    </span>
+                  </motion.button>
+                )}
 
                 {/* Get Started Button */}
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   className={`relative px-6 py-2.5 font-semibold rounded-xl shadow-lg transition-all duration-300 overflow-hidden group btn-hover ${
                     isScrolled
-                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
-                      : "bg-white text-purple-600"
+                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 text-white"
+                      : "bg-white dark:bg-gray-100 text-purple-600 dark:text-purple-700"
                   }`}
-                  onClick={() => navigate("/register")}
+                  onClick={handleGetStarted}
                 >
                   <span className="relative z-10 flex items-center space-x-2">
                     <Zap className="w-4 h-4" />
-                    <span>Get Started</span>
+                    <span>
+                      {!loading && isAuthenticated
+                        ? "Go to Dashboard"
+                        : "Get Started"}
+                    </span>
                   </span>
                   {isScrolled && (
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-purple-700 to-indigo-700"
+                      className="absolute inset-0 bg-gradient-to-r from-purple-700 to-indigo-700 dark:from-purple-600 dark:to-indigo-600"
                       initial={{ x: "100%" }}
                       whileHover={{ x: 0 }}
                       transition={{ duration: 0.3 }}
@@ -173,7 +216,7 @@ const LandingPage = () => {
                 className={`lg:hidden p-2 rounded-xl transition-all duration-300 will-change-transform hover-lift ${
                   isScrolled
                     ? "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
-                    : "bg-white/10 hover:bg-white/20"
+                    : "bg-white/10 dark:bg-white/20 hover:bg-white/20 dark:hover:bg-white/30"
                 }`}
               >
                 <AnimatePresence mode="wait">
@@ -189,7 +232,7 @@ const LandingPage = () => {
                         className={`w-5 h-5 ${
                           isScrolled
                             ? "text-gray-600 dark:text-gray-300"
-                            : "text-white"
+                            : "text-white dark:text-gray-100"
                         }`}
                       />
                     </motion.div>
@@ -205,7 +248,7 @@ const LandingPage = () => {
                         className={`w-5 h-5 ${
                           isScrolled
                             ? "text-gray-600 dark:text-gray-300"
-                            : "text-white"
+                            : "text-white dark:text-gray-100"
                         }`}
                       />
                     </motion.div>
@@ -223,33 +266,36 @@ const LandingPage = () => {
                   transition={{ duration: 0.3 }}
                   className={`lg:hidden overflow-hidden border-t transition-colors duration-300 ${
                     isScrolled
-                      ? "border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-900/90"
-                      : "border-purple-300/30 dark:border-purple-600/30 bg-purple-600/20 dark:bg-purple-800/20"
+                      ? "border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95"
+                      : "border-purple-300/30 dark:border-purple-600/40 bg-purple-600/20 dark:bg-purple-800/30"
                   }`}
                   style={{
-                    backdropFilter: "blur(12px)",
-                    WebkitBackdropFilter: "blur(12px)",
+                    backdropFilter: "blur(16px)",
+                    WebkitBackdropFilter: "blur(16px)",
                   }}
                 >
                   <div className="py-4 space-y-3">
-                    <motion.button
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.1 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => {
-                        navigate("/auth");
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 flex items-center space-x-3 will-change-transform hover-lift ${
-                        isScrolled
-                          ? "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-                          : "text-white/90 hover:bg-white/10"
-                      }`}
-                    >
-                      <User className="w-5 h-5" />
-                      <span>Sign In</span>
-                    </motion.button>
+                    {/* Sign In Button - Only show if not authenticated */}
+                    {!loading && !isAuthenticated && (
+                      <motion.button
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.1 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                          navigate("/auth");
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 flex items-center space-x-3 will-change-transform hover-lift ${
+                          isScrolled
+                            ? "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                            : "text-white/90 dark:text-gray-100/90 hover:bg-white/10 dark:hover:bg-white/20"
+                        }`}
+                      >
+                        <User className="w-5 h-5" />
+                        <span>Sign In</span>
+                      </motion.button>
+                    )}
 
                     <motion.button
                       initial={{ x: -20, opacity: 0 }}
@@ -257,17 +303,21 @@ const LandingPage = () => {
                       transition={{ delay: 0.2 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => {
-                        navigate("/register");
+                        handleGetStarted();
                         setIsMobileMenuOpen(false);
                       }}
                       className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 flex items-center space-x-3 will-change-transform hover-lift ${
                         isScrolled
-                          ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
-                          : "bg-white text-purple-600"
+                          ? "bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 text-white"
+                          : "bg-white dark:bg-gray-100 text-purple-600 dark:text-purple-700"
                       }`}
                     >
                       <Zap className="w-5 h-5" />
-                      <span>Get Started</span>
+                      <span>
+                        {!loading && isAuthenticated
+                          ? "Go to Dashboard"
+                          : "Get Started"}
+                      </span>
                     </motion.button>
                     <motion.div
                       initial={{ x: -20, opacity: 0 }}
@@ -279,7 +329,7 @@ const LandingPage = () => {
                         className={`transition-colors duration-300 ${
                           isScrolled
                             ? "text-gray-700 dark:text-gray-200"
-                            : "text-white/90"
+                            : "text-white/90 dark:text-gray-100/90"
                         }`}
                       >
                         Theme
@@ -303,14 +353,14 @@ const LandingPage = () => {
         className="relative min-h-screen bg-gradient-to-br from-black via-purple-700 to-black dark:from-purple-800 dark:via-purple-900 dark:to-indigo-950 text-white transition-colors duration-300 pt-24 lg:pt-28 overflow-hidden"
       >
         {/* Background Pattern/Decoration */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
-          <div className="absolute bottom-20 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-4000"></div>
+        <div className="absolute inset-0 opacity-10 dark:opacity-5">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-white dark:bg-purple-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+          <div className="absolute top-40 right-10 w-72 h-72 bg-yellow-200 dark:bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
+          <div className="absolute bottom-20 left-20 w-72 h-72 bg-pink-200 dark:bg-purple-400 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-4000"></div>
         </div>
 
         {/* Grid Pattern Overlay */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className="absolute inset-0 bg-grid-pattern opacity-5 dark:opacity-3"></div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-15 pb-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-200px)]">
@@ -326,7 +376,7 @@ const LandingPage = () => {
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.8 }}
-                className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm font-medium"
+                className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 dark:bg-white/20 backdrop-blur-sm border border-white/20 dark:border-white/30 text-sm font-medium"
               >
                 <Brain className="w-4 h-4 mr-2" />
                 AI-Powered Recruitment & Skill Assessment
@@ -340,7 +390,7 @@ const LandingPage = () => {
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
               >
                 <span className="block">Placify:</span>
-                <span className="block bg-gradient-to-r from-purple-600 to-orange-500 bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-yellow-300 to-orange-300 dark:from-yellow-400 dark:to-orange-400 bg-clip-text text-transparent">
                   Smarter Placements.
                 </span>
                 <span className="block text-purple-200 dark:text-purple-300 text-3xl md:text-4xl lg:text-5xl mt-2">
@@ -368,18 +418,28 @@ const LandingPage = () => {
                 className="flex flex-wrap justify-center lg:justify-start gap-8 text-sm"
               >
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-yellow-400">
+                  <div className="text-2xl font-bold text-yellow-300 dark:text-yellow-400">
                     60-70%
                   </div>
-                  <div className="text-purple-200">Process Automation</div>
+                  <div className="text-purple-200 dark:text-purple-300">
+                    Process Automation
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400">10x</div>
-                  <div className="text-purple-200">Faster Screening</div>
+                  <div className="text-2xl font-bold text-green-300 dark:text-green-400">
+                    10x
+                  </div>
+                  <div className="text-purple-200 dark:text-purple-300">
+                    Faster Screening
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-300">500+</div>
-                  <div className="text-purple-200">Students per Day</div>
+                  <div className="text-2xl font-bold text-blue-300 dark:text-blue-400">
+                    500+
+                  </div>
+                  <div className="text-purple-200 dark:text-purple-300">
+                    Students per Day
+                  </div>
                 </div>
               </motion.div>
 
@@ -390,30 +450,34 @@ const LandingPage = () => {
                 transition={{ duration: 0.8, delay: 1.4 }}
                 className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
               >
-                {/* Primary CTA Button - Optimized for performance */}
+                {/* Primary CTA Button */}
                 <button
-                  onClick={() => navigate("/register")}
-                  className="group relative inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-purple-700 bg-white rounded-2xl shadow-xl transition-all duration-200 overflow-hidden btn-hover"
+                  onClick={handleGetStarted}
+                  className="group relative inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-purple-700 dark:text-purple-800 bg-white dark:bg-gray-100 rounded-2xl shadow-xl transition-all duration-200 overflow-hidden btn-hover"
                 >
                   <span className="relative z-10 flex items-center space-x-2">
                     <Zap className="w-5 h-5" />
-                    <span>Transform Your Placements</span>
+                    <span>
+                      {!loading && isAuthenticated
+                        ? "Go to Dashboard"
+                        : "Transform Your Placements"}
+                    </span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
                   </span>
                 </button>
 
-                {/* Secondary CTA Button - Optimized for performance */}
+                {/* Secondary CTA Button */}
                 <button
                   onClick={() => {
                     document
                       .getElementById("works")
                       ?.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white border-2 border-white/30 rounded-2xl hover:bg-white/10 hover:border-white/50 transition-all duration-200 backdrop-blur-sm hover-lift will-change-transform"
+                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white border-2 border-white/30 dark:border-white/40 rounded-2xl hover:bg-white/10 dark:hover:bg-white/20 hover:border-white/50 dark:hover:border-white/60 transition-all duration-200 backdrop-blur-sm hover-lift will-change-transform"
                 >
                   <span className="flex items-center space-x-2">
                     <Target className="w-5 h-5" />
-                    <span>See How It Works</span>
+                    <span>Try Our New Resume Builder</span>
                   </span>
                 </button>
               </motion.div>
@@ -423,18 +487,18 @@ const LandingPage = () => {
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, delay: 1.6 }}
-                className="flex items-center justify-center lg:justify-start space-x-6 text-sm text-purple-200"
+                className="flex items-center justify-center lg:justify-start space-x-6 text-sm text-purple-200 dark:text-purple-300"
               >
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-300" />
+                  <CheckCircle className="w-4 h-4 text-green-300 dark:text-green-400" />
                   <span>AI-Powered Screening</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-300" />
+                  <CheckCircle className="w-4 h-4 text-green-300 dark:text-green-400" />
                   <span>Adaptive Assessments</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-300" />
+                  <CheckCircle className="w-4 h-4 text-green-300 dark:text-green-400" />
                   <span>Real-time Analytics</span>
                 </div>
               </motion.div>
@@ -450,7 +514,7 @@ const LandingPage = () => {
               <div className="relative">
                 {/* Glowing background effect */}
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-300 to-black rounded-3xl blur-3xl opacity-30"
+                  className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-300 to-indigo-400 dark:from-purple-500 dark:via-pink-400 dark:to-indigo-500 rounded-3xl blur-3xl opacity-30 dark:opacity-20"
                   animate={{
                     scale: [1, 1.1, 1],
                     rotate: [0, 5, 0],
@@ -462,12 +526,12 @@ const LandingPage = () => {
                   }}
                 />
                 {/* AI Generated Image Placeholder */}
-                <div className="relative bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl transition-all duration-200 hover:-translate-y-2 will-change-transform">
+                <div className="relative bg-gradient-to-br from-white/20 to-white/5 dark:from-white/10 dark:to-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/20 dark:border-white/30 shadow-2xl transition-all duration-200 hover:-translate-y-2 will-change-transform">
                   {/* Mock AI Interview Scene */}
-                  <div className="aspect-square bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100 rounded-2xl p-6 relative overflow-hidden">
+                  <div className="aspect-square bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100 dark:from-purple-900/40 dark:via-blue-900/40 dark:to-indigo-900/40 rounded-2xl p-6 relative overflow-hidden">
                     {/* Floating AI Elements */}
                     <motion.div
-                      className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center"
+                      className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 dark:from-purple-400 dark:to-indigo-400 rounded-full flex items-center justify-center"
                       animate={{ rotate: 360 }}
                       transition={{
                         duration: 20,
@@ -481,65 +545,65 @@ const LandingPage = () => {
                     <div className="space-y-4">
                       {/* User Avatar */}
                       <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                        <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 dark:from-purple-500 dark:to-pink-500 rounded-full flex items-center justify-center">
                           <User className="w-6 h-6 text-white" />
                         </div>
                         <div className="flex-1">
-                          <div className="h-3 bg-purple-200 rounded-full mb-2"></div>
-                          <div className="h-2 bg-purple-100 rounded-full w-3/4"></div>
+                          <div className="h-3 bg-purple-200 dark:bg-purple-600 rounded-full mb-2"></div>
+                          <div className="h-2 bg-purple-100 dark:bg-purple-700 rounded-full w-3/4"></div>
                         </div>
                       </div>
 
                       {/* AI Analysis Bars */}
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between text-xs text-purple-700">
+                        <div className="flex items-center justify-between text-xs text-purple-700 dark:text-purple-300">
                           <span>Technical Skills</span>
                           <span>92%</span>
                         </div>
                         <motion.div
-                          className="h-2 bg-purple-100 rounded-full overflow-hidden"
+                          className="h-2 bg-purple-100 dark:bg-purple-800 rounded-full overflow-hidden"
                           initial={{ width: 0 }}
                           animate={{ width: "100%" }}
                           transition={{ duration: 2, delay: 2 }}
                         >
                           <motion.div
-                            className="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"
+                            className="h-full bg-gradient-to-r from-green-400 to-emerald-500 dark:from-green-500 dark:to-emerald-600 rounded-full"
                             initial={{ width: "0%" }}
                             animate={{ width: "92%" }}
                             transition={{ duration: 2, delay: 2.5 }}
                           />
                         </motion.div>
 
-                        <div className="flex items-center justify-between text-xs text-purple-700">
+                        <div className="flex items-center justify-between text-xs text-purple-700 dark:text-purple-300">
                           <span>Communication</span>
                           <span>88%</span>
                         </div>
                         <motion.div
-                          className="h-2 bg-purple-100 rounded-full overflow-hidden"
+                          className="h-2 bg-purple-100 dark:bg-purple-800 rounded-full overflow-hidden"
                           initial={{ width: 0 }}
                           animate={{ width: "100%" }}
                           transition={{ duration: 2, delay: 2.2 }}
                         >
                           <motion.div
-                            className="h-full bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full"
+                            className="h-full bg-gradient-to-r from-blue-400 to-cyan-500 dark:from-blue-500 dark:to-cyan-600 rounded-full"
                             initial={{ width: "0%" }}
                             animate={{ width: "88%" }}
                             transition={{ duration: 2, delay: 2.7 }}
                           />
                         </motion.div>
 
-                        <div className="flex items-center justify-between text-xs text-purple-700">
+                        <div className="flex items-center justify-between text-xs text-purple-700 dark:text-purple-300">
                           <span>Industry Readiness</span>
                           <span>95%</span>
                         </div>
                         <motion.div
-                          className="h-2 bg-purple-100 rounded-full overflow-hidden"
+                          className="h-2 bg-purple-100 dark:bg-purple-800 rounded-full overflow-hidden"
                           initial={{ width: 0 }}
                           animate={{ width: "100%" }}
                           transition={{ duration: 2, delay: 2.4 }}
                         >
                           <motion.div
-                            className="h-full bg-gradient-to-r from-purple-400 to-pink-500 rounded-full"
+                            className="h-full bg-gradient-to-r from-purple-400 to-pink-500 dark:from-purple-500 dark:to-pink-600 rounded-full"
                             initial={{ width: "0%" }}
                             animate={{ width: "95%" }}
                             transition={{ duration: 2, delay: 2.9 }}
@@ -549,12 +613,12 @@ const LandingPage = () => {
 
                       {/* Success Indicator */}
                       <motion.div
-                        className="mt-6 p-3 bg-green-100 rounded-xl border-2 border-green-200"
+                        className="mt-6 p-3 bg-green-100 dark:bg-green-900/40 rounded-xl border-2 border-green-200 dark:border-green-700"
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.5, delay: 3.5 }}
                       >
-                        <div className="flex items-center space-x-2 text-green-700">
+                        <div className="flex items-center space-x-2 text-green-700 dark:text-green-300">
                           <CheckCircle className="w-5 h-5" />
                           <span className="text-sm font-medium">
                             Interview Success!
@@ -566,7 +630,7 @@ const LandingPage = () => {
                     {[...Array(6)].map((_, i) => (
                       <motion.div
                         key={i}
-                        className="absolute w-2 h-2 bg-purple-300 rounded-full"
+                        className="absolute w-2 h-2 bg-purple-300 dark:bg-purple-500 rounded-full"
                         style={{
                           top: `${Math.random() * 100}%`,
                           left: `${Math.random() * 100}%`,
@@ -585,16 +649,16 @@ const LandingPage = () => {
                   </div>
 
                   {/* Tech Stack Icons */}
-                  <div className="absolute -bottom-4 -left-4 bg-white rounded-xl p-3 shadow-lg">
+                  <div className="absolute -bottom-4 -left-4 bg-white dark:bg-gray-800 rounded-xl p-3 shadow-lg">
                     <div className="flex space-x-2">
-                      <div className="w-6 h-6 bg-blue-500 rounded"></div>
-                      <div className="w-6 h-6 bg-green-500 rounded"></div>
-                      <div className="w-6 h-6 bg-purple-500 rounded"></div>
+                      <div className="w-6 h-6 bg-blue-500 dark:bg-blue-400 rounded"></div>
+                      <div className="w-6 h-6 bg-green-500 dark:bg-green-400 rounded"></div>
+                      <div className="w-6 h-6 bg-purple-500 dark:bg-purple-400 rounded"></div>
                     </div>
                   </div>
 
-                  <div className="absolute -top-4 -right-4 bg-white rounded-xl p-3 shadow-lg">
-                    <Zap className="w-6 h-6 text-yellow-500" />
+                  <div className="absolute -top-4 -right-4 bg-white dark:bg-gray-800 rounded-xl p-3 shadow-lg">
+                    <Zap className="w-6 h-6 text-yellow-500 dark:text-yellow-400" />
                   </div>
                 </div>
               </div>
@@ -637,11 +701,9 @@ const LandingPage = () => {
                 whileInView={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.6, delay: index * 0.2 }}
                 viewport={{ once: true }}
-                className="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl transition-all duration-300 
-           hover:bg-purple-100 dark:hover:bg-gray-700 
-           border border-transparent hover:border-purple-300 
-           dark:hover:border-purple-400 card-hover"
-
+                className="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl transition-all duration-200 
+                           hover:bg-white dark:hover:bg-gray-750 border border-transparent hover:border-purple-100 
+                           dark:hover:border-purple-700 hover:shadow-lg dark:hover:shadow-2xl card-hover"
               >
                 <div className="text-purple-600 dark:text-purple-400 mb-4">
                   {feature.icon}
@@ -657,15 +719,15 @@ const LandingPage = () => {
           </div>
         </div>
       </motion.section>
+
       {/* How it works? */}
-    
       <motion.section
-      id="works"
+        id="works"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true, margin: "-100px" }}
-className="py-20 bg-gradient-to-tr from-[#B566FF] to-[#FFFFFF] dark:from-gray-900 dark:to-gray-900"
+        className="py-20 bg-gray-100 dark:bg-gray-800 transition-colors duration-300"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -712,7 +774,7 @@ className="py-20 bg-gradient-to-tr from-[#B566FF] to-[#FFFFFF] dark:from-gray-90
                 key={index}
                 className="relative flex flex-col items-center text-center w-1/3"
               >
-                <div className="flex items-center justify-center w-14 h-14 rounded-full bg-white dark:bg-gray-800 shadow-lg z-10">
+                <div className="flex items-center justify-center w-14 h-14 rounded-full bg-white dark:bg-gray-700 shadow-lg z-10 border border-gray-200 dark:border-gray-600">
                   {step.icon}
                 </div>
                 <div className="mt-4">
@@ -740,7 +802,7 @@ className="py-20 bg-gradient-to-tr from-[#B566FF] to-[#FFFFFF] dark:from-gray-90
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true, margin: "-100px" }}
-        className="py-20 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300"
+        className="py-20 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-gray-850 transition-colors duration-300"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -780,11 +842,7 @@ className="py-20 bg-gradient-to-tr from-[#B566FF] to-[#FFFFFF] dark:from-gray-90
               whileInView={{ x: 0, opacity: 1, scale: 1 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-className="p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 will-change-transform 
-  bg-gradient-to-br from-[#EFDDFF] to-[#FFFFFF] 
-  dark:from-gray-900 dark:to-gray-900 
-  border border-transparent hover:border-[#B566FF] 
-  hover:shadow-[0_0_25px_#B566FF]/70"
+              className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:scale-105 will-change-transform"
             >
               <div className="text-center">
                 <motion.div
@@ -835,7 +893,7 @@ className="p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true, margin: "-100px" }}
-        className="py-20 bg-gradient-to-br from-[#B566FF] to-[#FFFFFF] dark:from-black dark:to-black text-white transition-colors duration-300"
+        className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300"
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.h2
@@ -843,7 +901,7 @@ className="p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-4xl dark:text-white text-black font-bold mb-6"
+            className="text-4xl font-bold text-gray-900 dark:text-white mb-6"
           >
             Ready to Ace Your Next Interview?
           </motion.h2>
@@ -852,7 +910,7 @@ className="p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
-            className="text-xl text-gray-700 dark:text-gray-400 mb-8"
+            className="text-xl text-gray-600 dark:text-gray-300 mb-8"
           >
             Start your journey today and join the ranks of successful
             professionals
@@ -863,17 +921,24 @@ className="p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => navigate("/register")}
-            className="bg-purple-600 dark:bg-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg 
-                       hover:bg-purple-700 dark:hover:bg-purple-800 transition-all duration-200 
+            onClick={handleGetStarted}
+            className="bg-purple-600 dark:bg-purple-500 text-white px-8 py-4 rounded-xl font-semibold text-lg 
+                       hover:bg-purple-700 dark:hover:bg-purple-600 transition-all duration-200 
                        shadow-xl hover:shadow-2xl inline-flex items-center space-x-2 btn-hover"
           >
-            <span>Start Free Trial</span>
+            <span>
+              {!loading && isAuthenticated
+                ? "Go to Dashboard"
+                : "Start Free Trial"}
+            </span>
             <ArrowRight className="w-5 h-5" />
           </motion.button>
         </div>
       </motion.section>
-      <Chatbot />
+
+      <div style={{ position: "fixed", right: "20px", bottom: "15rem" }}>
+        <Chatbot />
+      </div>
     </div>
   );
 };

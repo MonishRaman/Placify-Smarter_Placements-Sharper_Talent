@@ -1,5 +1,8 @@
+import React from 'react';
+import AptitudePreparation from '../../components/AptitudePreparation';
+
 const Aptitude = () => {
-  return <div className="p-4 text-xl">Aptitude Questions Page</div>;
+  return <AptitudePreparation />;
 };
 
 export default Aptitude;
