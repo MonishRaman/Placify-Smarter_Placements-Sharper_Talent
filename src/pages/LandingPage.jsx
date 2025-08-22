@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
@@ -15,11 +15,40 @@ import {
 import ThemeToggle from "../components/ThemeToggle";
 import { motion, AnimatePresence } from "framer-motion";
 import Chatbot from "../components/Chatbot";
+import { useAuth } from "../context/AuthContext";
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, loading, user } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Helper function to get dashboard route based on user role
+  const getDashboardRoute = () => {
+    if (!user?.role) return "/register";
+
+    switch (user.role.toLowerCase()) {
+      case "student":
+        return "/dashboard";
+      case "institution":
+        return "/dashboard/institution";
+      case "company":
+        return "/dashboard/company";
+      case "employee":
+        return "/dashboard/employee";
+      default:
+        return "/register";
+    }
+  };
+
+  // Handle Get Started button click
+  const handleGetStarted = () => {
+    if (isAuthenticated && user) {
+      navigate(getDashboardRoute());
+    } else {
+      navigate("/register");
+    }
+  };
 
   // Handle scroll effect for dynamic navbar
   useEffect(() => {
@@ -98,20 +127,18 @@ const LandingPage = () => {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className="flex items-center space-x-3"
               >
-
                 {/* onClick and cursor-pointer are on the icon's div */}
                 <motion.div
                   whileHover={{ rotate: 360 }}
                   transition={{ duration: 0.6 }}
                   className="p-2 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg cursor-pointer"
-                  onClick={() => window.location.href = "/"}
-
+                  onClick={() => (window.location.href = "/")}
                 >
                   <Brain className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
                 </motion.div>
                 {/* onClick and cursor-pointer are also on the text's span */}
                 <span
-                  onClick={() => window.location.href = "/"}
+                  onClick={() => (window.location.href = "/")}
                   className={`text-2xl lg:text-3xl font-bold transition-all duration-500 cursor-pointer ${
                     isScrolled
                       ? "bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 bg-clip-text text-transparent"
@@ -129,22 +156,24 @@ const LandingPage = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="hidden lg:flex items-center space-x-6"
               >
-                {/* Sign In Button */}
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  className={`relative px-6 py-2.5 font-medium rounded-xl transition-all duration-300 hover-lift will-change-transform
-                           ${
-                             isScrolled
-                               ? "text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 before:absolute before:inset-0 before:rounded-xl before:bg-gray-100 dark:before:bg-gray-800 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
-                               : "text-white/90 dark:text-gray-100/90 hover:text-white dark:hover:text-white before:absolute before:inset-0 before:rounded-xl before:bg-white/10 dark:before:bg-white/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
-                           }`}
-                  onClick={() => navigate("/auth")}
-                >
-                  <span className="relative z-10 flex items-center space-x-2">
-                    <User className="w-4 h-4" />
-                    <span>Sign In</span>
-                  </span>
-                </motion.button>
+                {/* Sign In Button - Only show if not authenticated */}
+                {!loading && !isAuthenticated && (
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    className={`relative px-6 py-2.5 font-medium rounded-xl transition-all duration-300 hover-lift will-change-transform
+                             ${
+                               isScrolled
+                                 ? "text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 before:absolute before:inset-0 before:rounded-xl before:bg-gray-100 dark:before:bg-gray-800 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
+                                 : "text-white/90 dark:text-gray-100/90 hover:text-white dark:hover:text-white before:absolute before:inset-0 before:rounded-xl before:bg-white/10 dark:before:bg-white/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
+                             }`}
+                    onClick={() => navigate("/auth")}
+                  >
+                    <span className="relative z-10 flex items-center space-x-2">
+                      <User className="w-4 h-4" />
+                      <span>Sign In</span>
+                    </span>
+                  </motion.button>
+                )}
 
                 {/* Get Started Button */}
                 <motion.button
@@ -154,11 +183,15 @@ const LandingPage = () => {
                       ? "bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 text-white"
                       : "bg-white dark:bg-gray-100 text-purple-600 dark:text-purple-700"
                   }`}
-                  onClick={() => navigate("/register")}
+                  onClick={handleGetStarted}
                 >
                   <span className="relative z-10 flex items-center space-x-2">
                     <Zap className="w-4 h-4" />
-                    <span>Get Started</span>
+                    <span>
+                      {!loading && isAuthenticated
+                        ? "Go to Dashboard"
+                        : "Get Started"}
+                    </span>
                   </span>
                   {isScrolled && (
                     <motion.div
@@ -242,24 +275,27 @@ const LandingPage = () => {
                   }}
                 >
                   <div className="py-4 space-y-3">
-                    <motion.button
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.1 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => {
-                        navigate("/auth");
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 flex items-center space-x-3 will-change-transform hover-lift ${
-                        isScrolled
-                          ? "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-                          : "text-white/90 dark:text-gray-100/90 hover:bg-white/10 dark:hover:bg-white/20"
-                      }`}
-                    >
-                      <User className="w-5 h-5" />
-                      <span>Sign In</span>
-                    </motion.button>
+                    {/* Sign In Button - Only show if not authenticated */}
+                    {!loading && !isAuthenticated && (
+                      <motion.button
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.1 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                          navigate("/auth");
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 flex items-center space-x-3 will-change-transform hover-lift ${
+                          isScrolled
+                            ? "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                            : "text-white/90 dark:text-gray-100/90 hover:bg-white/10 dark:hover:bg-white/20"
+                        }`}
+                      >
+                        <User className="w-5 h-5" />
+                        <span>Sign In</span>
+                      </motion.button>
+                    )}
 
                     <motion.button
                       initial={{ x: -20, opacity: 0 }}
@@ -267,7 +303,7 @@ const LandingPage = () => {
                       transition={{ delay: 0.2 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => {
-                        navigate("/register");
+                        handleGetStarted();
                         setIsMobileMenuOpen(false);
                       }}
                       className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 flex items-center space-x-3 will-change-transform hover-lift ${
@@ -277,7 +313,11 @@ const LandingPage = () => {
                       }`}
                     >
                       <Zap className="w-5 h-5" />
-                      <span>Get Started</span>
+                      <span>
+                        {!loading && isAuthenticated
+                          ? "Go to Dashboard"
+                          : "Get Started"}
+                      </span>
                     </motion.button>
                     <motion.div
                       initial={{ x: -20, opacity: 0 }}
@@ -381,15 +421,25 @@ const LandingPage = () => {
                   <div className="text-2xl font-bold text-yellow-300 dark:text-yellow-400">
                     60-70%
                   </div>
-                  <div className="text-purple-200 dark:text-purple-300">Process Automation</div>
+                  <div className="text-purple-200 dark:text-purple-300">
+                    Process Automation
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-300 dark:text-green-400">10x</div>
-                  <div className="text-purple-200 dark:text-purple-300">Faster Screening</div>
+                  <div className="text-2xl font-bold text-green-300 dark:text-green-400">
+                    10x
+                  </div>
+                  <div className="text-purple-200 dark:text-purple-300">
+                    Faster Screening
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-300 dark:text-blue-400">500+</div>
-                  <div className="text-purple-200 dark:text-purple-300">Students per Day</div>
+                  <div className="text-2xl font-bold text-blue-300 dark:text-blue-400">
+                    500+
+                  </div>
+                  <div className="text-purple-200 dark:text-purple-300">
+                    Students per Day
+                  </div>
                 </div>
               </motion.div>
 
@@ -402,12 +452,16 @@ const LandingPage = () => {
               >
                 {/* Primary CTA Button */}
                 <button
-                  onClick={() => navigate("/register")}
+                  onClick={handleGetStarted}
                   className="group relative inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-purple-700 dark:text-purple-800 bg-white dark:bg-gray-100 rounded-2xl shadow-xl transition-all duration-200 overflow-hidden btn-hover"
                 >
                   <span className="relative z-10 flex items-center space-x-2">
                     <Zap className="w-5 h-5" />
-                    <span>Transform Your Placements</span>
+                    <span>
+                      {!loading && isAuthenticated
+                        ? "Go to Dashboard"
+                        : "Transform Your Placements"}
+                    </span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
                   </span>
                 </button>
@@ -867,12 +921,16 @@ const LandingPage = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => navigate("/register")}
+            onClick={handleGetStarted}
             className="bg-purple-600 dark:bg-purple-500 text-white px-8 py-4 rounded-xl font-semibold text-lg 
                        hover:bg-purple-700 dark:hover:bg-purple-600 transition-all duration-200 
                        shadow-xl hover:shadow-2xl inline-flex items-center space-x-2 btn-hover"
           >
-            <span>Start Free Trial</span>
+            <span>
+              {!loading && isAuthenticated
+                ? "Go to Dashboard"
+                : "Start Free Trial"}
+            </span>
             <ArrowRight className="w-5 h-5" />
           </motion.button>
         </div>
