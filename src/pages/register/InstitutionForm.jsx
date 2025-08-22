@@ -176,12 +176,8 @@ export default function InstitutionForm() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white py-2 px-4 rounded-md transition duration-200 disabled:bg-blue-400 dark:disabled:bg-blue-400"
               disabled={loading}
-              className="w-full flex justify-center items-center gap-2 
-                         bg-gradient-to-r from-blue-500 to-indigo-500 text-white py-2 px-4 
-                         rounded-md shadow-lg hover:from-blue-600 hover:to-indigo-600 
-                         focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-70"
+              className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white py-2 px-4 rounded-md shadow-lg hover:from-blue-600 hover:to-indigo-600 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-70"
             >
               {loading && <Loader2 className="animate-spin w-5 h-5" />}
               {loading ? 'Registering...' : 'Register Institution'}
