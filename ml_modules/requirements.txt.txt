@@ -5,4 +5,3 @@ librosa
 transformers
 scikit-learn
 speechrecognition
-numpy
