@@ -2,6 +2,26 @@
 
 This module mimics real-world interviews by analyzing candidate responses via video and audio. It evaluates candidates based on facial expressions, vocal cues, and the technical accuracy of their answers.
 
+## 🎯 Quick Start - Main Analyzer
+
+For easy integration, use the **main analyzer** that orchestrates all ML modules:
+
+```python
+from ml_modules.main_analyzer import generate_analysis_report
+
+# Analyze a complete interview session
+report = generate_analysis_report(
+    audio_path="interview_audio.wav",
+    user_answer="User's transcribed answer",
+    ideal_answer="Expected answer for comparison",
+    keywords=["python", "django", "api"],
+    image_path="candidate_photo.jpg"  # Optional
+)
+
+print(f"Overall Score: {report['overall_score']}/100")
+print(f"Recommendations: {report['recommendations']}")
+```
+
 ---
 
 ## 🔍 Sub-Modules
@@ -43,3 +63,47 @@ This module mimics real-world interviews by analyzing candidate responses via vi
 ```bash
 cd ml_modules
 pip install -r requirements.txt
+```
+
+## 🚀 Usage Examples
+
+### Single Interview Analysis
+```python
+from main_analyzer import generate_analysis_report
+
+report = generate_analysis_report(
+    audio_path="audio.wav",
+    user_answer="I have experience with Python and Django...",
+    ideal_answer="Candidate should demonstrate Python knowledge...",
+    keywords=["python", "django", "web development"]
+)
+```
+
+### Batch Interview Analysis
+```python
+from main_analyzer import batch_analyze_interviews
+
+sessions = [
+    {
+        "audio_path": "session1.wav",
+        "user_answer": "Answer 1",
+        "ideal_answer": "Expected 1",
+        "keywords": ["python", "api"]
+    },
+    # ... more sessions
+]
+
+batch_results = batch_analyze_interviews(sessions)
+```
+
+### Enhanced Session Analysis
+```python
+from main_analyzer import analyze_interview_session
+
+enhanced_report = analyze_interview_session(
+    audio_path="audio.wav",
+    user_answer="User response",
+    ideal_answer="Expected response",
+    question="Tell me about your experience",
+    candidate_info={"name": "John Doe", "role": "Software Engineer"}
+)
