@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   GraduationCap,
   School,
@@ -17,6 +18,7 @@ import Footer from '../components/Footer';
 
 const RoleSelectionPage = () => {
   const [isDark, setIsDark] = useState(false);
+  const navigate = useNavigate();
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -46,8 +48,7 @@ const RoleSelectionPage = () => {
   };
 
   const handleNavigation = (route) => {
-    console.log(`Navigating to: ${route}`);
-    // Replace with your navigation logic
+    navigate(route);
   };
 
   const handleLogoClick = () => {
