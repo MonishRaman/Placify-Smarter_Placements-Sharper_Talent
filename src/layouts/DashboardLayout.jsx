@@ -1,10 +1,10 @@
 // DashboardLayout.jsx
-import React, { useState, useEffect, useRef } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Outlet, useLocation, useNavigate, Link } from "react-router-dom";
 import Sidebar from "../components/SideBarStudent";
 import { User, LogOut, ChevronDown } from "lucide-react";
 import apiClient from "../api/apiClient";
-
+import axios from "axios";
 const DashboardLayout = () => {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -21,10 +21,14 @@ const DashboardLayout = () => {
         if (!token) return;
         console.log("Fetching profile with token:", token);
     
-        // With our new request interceptor, we don't need to explicitly set the token
-        const response = await apiClient.get("/auth/profile");
+        // Using axios directly with authorization header
+        console.log("Profile Request:");
+        const response = await axios.get("http://localhost:5000/api/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
 
-        console.log("Raw Response Status:", response.status);
         console.log("Profile Response Data:", response.data);
 
         if (response.status === 200) {
@@ -37,6 +41,7 @@ const DashboardLayout = () => {
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
+        console.error("Error details:", error.response?.data || error.message);
       }
     };
 
@@ -72,13 +77,9 @@ const DashboardLayout = () => {
     return titleMap[path] || "";
   };
 
-  const handleProfileClick = () => {
-    setDropdownOpen(false);
-    navigate("/dashboard/profile");
-  };
+
 
   const handleLogout = () => {
-    setDropdownOpen(false);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/auth");
@@ -112,14 +113,13 @@ const DashboardLayout = () => {
                   : "Welcome back! Here's what's happening."}
               </p>
             </div>
-
-            <div className="relative" >
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={toggleDropdown}
                 className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
               >
                 <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
+                  <User className="w-5 h-5 text-white" />
                 </div>
                 <ChevronDown
                   className={`w-4 h-4 text-slate-600 dark:text-slate-400 transition-transform ${
@@ -131,23 +131,23 @@ const DashboardLayout = () => {
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700 py-2 z-50">
                   <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
-                    <p className="font-semibold">{userData?.fullName||userData.institutionName || "User"}</p>
-                    <p className="text-xs">{userData?.email || ""}</p>
+                    Signed in as {userData?.fullName || userData?.institutionName || userData?.email}
                   </div>
                   <hr className="my-1 border-gray-200 dark:border-slate-600" />
-                  <button
-                    onClick={handleProfileClick}
+                  <Link
+                    to="/dashboard/profile"
                     className="w-full flex items-center gap-3 px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                    onClick={() => setDropdownOpen(false)}
                   >
                     <User className="w-4 h-4" />
                     <span className="text-sm">Profile</span>
-                  </button>
+                  </Link>
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-2 text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    className="w-full flex items-center gap-3 px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span className="text-sm">Logout</span>
+                    <span className="text-sm">Sign out</span>
                   </button>
                 </div>
               )}

@@ -17,7 +17,7 @@ export default function StudentForm() {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'student'
+    role: 'candidate'
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -51,6 +51,7 @@ export default function StudentForm() {
     }
 
     try {
+      console.log("Sending registration request with data:", formData);
       await apiClient.post('/auth/register/student', formData);
       alert('Registration successful! Please login.');
       navigate('/auth');
