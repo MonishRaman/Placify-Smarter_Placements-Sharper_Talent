@@ -84,6 +84,8 @@ import useLenis from "./components/useLenis";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+// ✅ Import your Cursor effect:
+import CursorTrail from "./components/CursorTrail";
 
 // ✅ Wrapper to allow useLocation inside Router
 const AppWrapper = () => {
@@ -253,6 +255,7 @@ const AppWrapper = () => {
 
         {/* Conditional Footer */}
         {!shouldHideFooter && <Footer />}
+        <CursorTrail/>
       </div>
     </>
   );
