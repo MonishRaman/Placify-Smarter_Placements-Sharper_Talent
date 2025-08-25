@@ -364,6 +364,7 @@ const CodingPractice = () => {
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
+  
 
   // Filter problems
   const filteredProblems = useMemo(() => {
