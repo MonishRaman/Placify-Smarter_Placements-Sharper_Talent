@@ -1,67 +1,83 @@
-import { GraduationCap, Loader2 } from 'lucide-react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion'; // Animation library
-import FormInput from '../../components/FormInput';
-import RegistrationHeader from '../../components/RegistrationHeader';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
-import apiClient from '../../api/apiClient';
+import { GraduationCap, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion"; // Animation library
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import FormInput from "../../components/FormInput";
+import RegistrationHeader from "../../components/RegistrationHeader";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
+import apiClient from "../../api/apiClient";
 
 export default function StudentForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullName: '',
-    university: '',
-    major: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    role: 'candidate'
+    fullName: "",
+    university: "",
+    major: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "candidate",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     // Validation
-    if (!formData.fullName || !formData.university || !formData.major || !formData.email || !formData.password || !formData.confirmPassword) {
-      setError('All fields are required');
+    if (
+      !formData.fullName ||
+      !formData.university ||
+      !formData.major ||
+      !formData.email ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
+      setError("All fields are required");
       setLoading(false);
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      setError('Please enter a valid email address');
+      setError("Please enter a valid email address");
       setLoading(false);
       return;
     }
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError("Password must be at least 6 characters long");
       setLoading(false);
       return;
     }
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       setLoading(false);
       return;
     }
 
     try {
       console.log("Sending registration request with data:", formData);
-      await apiClient.post('/auth/register/student', formData);
-      alert('Registration successful! Please login.');
-      navigate('/auth');
+      await apiClient.post("/auth/register/student", formData);
+      toast.success("Registration successful! Please login.");
+      setTimeout(() => navigate("/auth"), 2000);
     } catch (err) {
       if (err.response) {
-        setError(err.response?.data?.message || `Server error: ${err.response.status}`);
+        setError(
+          err.response?.data?.message || `Server error: ${err.response.status}`
+        );
+        toast.error(
+          err.response?.data?.message || `Server error: ${err.response.status}`
+        );
       } else if (err.request) {
-        setError('No response from server. Please check your connection.');
+        setError("No response from server. Please check your connection.");
+        toast.error("No response from server. Please check your connection.");
       } else {
         setError(`Error: ${err.message}`);
+        toast.error(`Error: ${err.message}`);
       }
     } finally {
       setLoading(false);
@@ -72,6 +88,13 @@ export default function StudentForm() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       {/* Top header */}
       <Header />
+
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        theme="colored"
+        toastClassName="dark:bg-gray-800 dark:text-white"
+      />
 
       {/* Hero section */}
       <div className="pt-16">
@@ -90,7 +113,7 @@ export default function StudentForm() {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           className="relative max-w-lg mx-auto p-8 rounded-2xl shadow-xl
                      bg-white dark:bg-slate-800 border border-transparent 
                      transition-all
@@ -116,40 +139,52 @@ export default function StudentForm() {
             <FormInput
               label="Full Name"
               value={formData.fullName}
-              onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, fullName: e.target.value })
+              }
               required
             />
             <FormInput
               label="University Name"
               value={formData.university}
-              onChange={(e) => setFormData({ ...formData, university: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, university: e.target.value })
+              }
               required
             />
             <FormInput
               label="Major/Field of Study"
               value={formData.major}
-              onChange={(e) => setFormData({ ...formData, major: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, major: e.target.value })
+              }
               required
             />
             <FormInput
               type="email"
               label="Email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               required
             />
             <FormInput
               type="password"
               label="Password"
               value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               required
             />
             <FormInput
               type="password"
               label="Confirm Password"
               value={formData.confirmPassword}
-              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, confirmPassword: e.target.value })
+              }
               required
             />
 
@@ -162,7 +197,7 @@ export default function StudentForm() {
               className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-4 text-lg font-medium rounded-md shadow-lg hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-purple-400 disabled:opacity-70"
             >
               {loading && <Loader2 className="animate-spin w-5 h-5" />}
-              {loading ? 'Registering...' : 'Register as Student'}
+              {loading ? "Registering..." : "Register as Student"}
             </motion.button>
           </form>
         </motion.div>
