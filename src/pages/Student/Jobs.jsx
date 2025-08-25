@@ -1017,7 +1017,7 @@ const App = () => {
 
   const navigation = [
     { id: 'jobs', label: 'Jobs', icon: Briefcase },
-    { id: 'resume', label: 'Resume Builder', icon: FileText },
+    //{ id: 'resume', label: 'Resume Builder', icon: FileText },
     { id: 'interviews', label: 'Interview Experience', icon: Users }
   ];
 
