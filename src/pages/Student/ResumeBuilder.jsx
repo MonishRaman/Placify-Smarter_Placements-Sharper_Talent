@@ -8,8 +8,12 @@ import {
   FaSun,
   FaSpinner,
   FaMagic,
+  FaSave,
+  FaCloud,
+  FaList,
 } from "react-icons/fa";
 import { useTheme } from "../../context/ThemeContext";
+import { useAuth } from "../../context/AuthContext";
 import PersonalInfoForm from "../../components/ResumeBuilder/PersonalInfoForm";
 import EducationForm from "../../components/ResumeBuilder/EducationForm";
 import ExperienceForm from "../../components/ResumeBuilder/ExperienceForm";
@@ -19,12 +23,27 @@ import ResumePreview from "../../components/ResumeBuilder/ResumePreview";
 import { validateResumeData } from "../../utils/resumeValidation";
 import { generateResumePDF } from "../../utils/pdfGenerator";
 import { toast } from "react-toastify";
+import {
+  createResume,
+  updateResume,
+  getUserResumes,
+  getResumeById,
+  deleteResume,
+  transformFormDataToAPI,
+  transformAPIDataToForm,
+} from "../../api/resumeApi";
 
 const ResumeBuilder = () => {
   const { darkMode, setDarkMode } = useTheme();
+  const { isAuthenticated, user } = useAuth();
   const [activeTab, setActiveTab] = useState("edit");
   const [errors, setErrors] = useState({});
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [savedResumes, setSavedResumes] = useState([]);
+  const [currentResumeId, setCurrentResumeId] = useState(null);
+  const [showResumeList, setShowResumeList] = useState(false);
   const resumePreviewRef = useRef(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -37,8 +56,37 @@ const ResumeBuilder = () => {
     projects: [], // Added projects
   });
 
-  // Load data from localStorage on component mount
+  // Load saved resumes when component mounts (only if authenticated)
   useEffect(() => {
+    if (isAuthenticated && user) {
+      loadSavedResumes();
+      // If no current resume, try to load from localStorage as fallback
+      if (!currentResumeId) {
+        loadFromLocalStorage();
+      }
+    } else {
+      // If not authenticated, load from localStorage
+      loadFromLocalStorage();
+    }
+  }, [isAuthenticated, user]);
+
+  // Auto-save to localStorage for backup
+  useEffect(() => {
+    if (
+      Object.keys(formData).some(
+        (key) =>
+          formData[key] &&
+          (typeof formData[key] === "string"
+            ? formData[key].trim()
+            : formData[key].length > 0)
+      )
+    ) {
+      localStorage.setItem("resumeBuilderData", JSON.stringify(formData));
+    }
+  }, [formData]);
+
+  // Load data from localStorage
+  const loadFromLocalStorage = () => {
     const savedData = localStorage.getItem("resumeBuilderData");
     if (savedData) {
       try {
@@ -48,12 +96,158 @@ const ResumeBuilder = () => {
         console.error("Error loading saved resume data:", error);
       }
     }
-  }, []);
+  };
 
-  // Save data to localStorage whenever formData changes
-  useEffect(() => {
-    localStorage.setItem("resumeBuilderData", JSON.stringify(formData));
-  }, [formData]);
+  // Load all saved resumes from backend
+  const loadSavedResumes = async () => {
+    if (!isAuthenticated) return;
+
+    setIsLoading(true);
+    try {
+      const result = await getUserResumes();
+      if (result.success) {
+        setSavedResumes(result.data || []);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Error loading resumes:", error);
+      toast.error("Failed to load saved resumes");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Load a specific resume
+  const loadResume = async (resumeId) => {
+    if (!isAuthenticated) return;
+
+    setIsLoading(true);
+    try {
+      const result = await getResumeById(resumeId);
+      if (result.success) {
+        const transformedData = transformAPIDataToForm(result.data);
+        setFormData(transformedData);
+        setCurrentResumeId(resumeId);
+        setActiveTab("edit");
+        setShowResumeList(false);
+        toast.success("Resume loaded successfully!");
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Error loading resume:", error);
+      toast.error("Failed to load resume");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Save resume to backend
+  const saveResumeToBackend = async () => {
+    if (!isAuthenticated) {
+      toast.error("Please login to save your resume");
+      return;
+    }
+
+    const validation = validateResumeData(formData);
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      toast.error("Please fix the validation errors before saving");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const apiData = transformFormDataToAPI(formData);
+      let result;
+
+      if (currentResumeId) {
+        // Update existing resume
+        result = await updateResume(currentResumeId, apiData);
+      } else {
+        // Create new resume
+        result = await createResume(apiData);
+      }
+
+      if (result.success) {
+        if (!currentResumeId) {
+          setCurrentResumeId(result.data._id);
+        }
+        await loadSavedResumes(); // Refresh the list
+        toast.success(result.message || "Resume saved successfully!");
+        setErrors({});
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Error saving resume:", error);
+      toast.error("Failed to save resume");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Delete a resume
+  const handleDeleteResume = async (resumeId) => {
+    if (!isAuthenticated) return;
+
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this resume? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const result = await deleteResume(resumeId);
+      if (result.success) {
+        toast.success("Resume deleted successfully!");
+        await loadSavedResumes(); // Refresh the list
+
+        // If the deleted resume was currently loaded, clear the form
+        if (currentResumeId === resumeId) {
+          setCurrentResumeId(null);
+          setFormData({
+            name: "",
+            email: "",
+            phone: "",
+            summary: "",
+            skills: [],
+            education: [],
+            experience: [],
+            projects: [],
+          });
+        }
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Error deleting resume:", error);
+      toast.error("Failed to delete resume");
+    }
+  };
+
+  // Create new resume (clear current data)
+  const createNewResume = () => {
+    setCurrentResumeId(null);
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      summary: "",
+      skills: [],
+      education: [],
+      experience: [],
+      projects: [],
+    });
+    setErrors({});
+    setActiveTab("edit");
+    setShowResumeList(false);
+    localStorage.removeItem("resumeBuilderData");
+    toast.success("Started new resume!");
+  };
 
   const handlePersonalInfoChange = (changes) => {
     setFormData((prev) => ({
@@ -106,7 +300,11 @@ const ResumeBuilder = () => {
       // Switch to preview tab to show the completed resume
       setActiveTab("preview");
       console.log("Resume Data:", formData);
-      // Here you could also trigger a download or save to backend
+
+      // Auto-save to backend if authenticated
+      if (isAuthenticated) {
+        saveResumeToBackend();
+      }
     } else {
       setErrors(validation.errors);
       // Stay on edit tab to show validation errors
@@ -120,18 +318,7 @@ const ResumeBuilder = () => {
         "Are you sure you want to clear all data? This action cannot be undone."
       )
     ) {
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        summary: "",
-        skills: [],
-        education: [],
-        experience: [],
-        projects: [],
-      });
-      setErrors({});
-      localStorage.removeItem("resumeBuilderData");
+      createNewResume();
     }
   };
 
@@ -331,6 +518,18 @@ const ResumeBuilder = () => {
             </button>
           </div>
 
+          {/* Current Resume Info */}
+          {isAuthenticated && currentResumeId && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+              <div className="flex items-center gap-2 text-blue-800 dark:text-blue-400">
+                <FaCloud />
+                <span className="font-medium">
+                  Currently editing: {formData.name || "Untitled Resume"}
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 mb-6">
             <button
@@ -340,6 +539,52 @@ const ResumeBuilder = () => {
             >
               Generate Resume
             </button>
+
+            {/* Backend Integration Buttons - Only show if authenticated */}
+            {isAuthenticated && (
+              <>
+                <button
+                  onClick={saveResumeToBackend}
+                  disabled={isSaving}
+                  className={`flex items-center gap-2 px-6 py-2 rounded-lg font-semibold transition ${
+                    isSaving
+                      ? "bg-gray-400 text-white cursor-not-allowed opacity-50"
+                      : "bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl"
+                  }`}
+                  title="Save resume to your account"
+                >
+                  {isSaving ? (
+                    <>
+                      <FaSpinner className="animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <FaSave />
+                      Save Resume
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setShowResumeList(!showResumeList)}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition shadow-lg hover:shadow-xl flex items-center gap-2"
+                  title="View your saved resumes"
+                >
+                  <FaList />
+                  My Resumes ({savedResumes.length})
+                </button>
+
+                <button
+                  onClick={createNewResume}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition shadow-lg hover:shadow-xl"
+                  title="Start a new resume"
+                >
+                  New Resume
+                </button>
+              </>
+            )}
+
             <button
               onClick={fillSampleData}
               className="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 
@@ -349,12 +594,14 @@ const ResumeBuilder = () => {
               <FaMagic />
               Fill Sample Data
             </button>
+
             <button
               onClick={clearAllData}
               className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition"
             >
               Clear All
             </button>
+
             <button
               onClick={handleDownloadPDF}
               disabled={isGeneratingPDF || (!formData.name && !formData.email)}
@@ -382,6 +629,87 @@ const ResumeBuilder = () => {
               )}
             </button>
           </div>
+
+          {/* Saved Resumes List */}
+          {isAuthenticated && showResumeList && (
+            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                  Saved Resumes
+                </h3>
+                <button
+                  onClick={() => setShowResumeList(false)}
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {isLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <FaSpinner className="animate-spin text-blue-600 dark:text-blue-400 text-2xl" />
+                  <span className="ml-2 text-gray-600 dark:text-gray-400">
+                    Loading resumes...
+                  </span>
+                </div>
+              ) : savedResumes.length === 0 ? (
+                <p className="text-gray-600 dark:text-gray-400 text-center py-8">
+                  No saved resumes yet. Create your first resume!
+                </p>
+              ) : (
+                <div className="grid gap-3 max-h-60 overflow-y-auto">
+                  {savedResumes.map((resume) => (
+                    <div
+                      key={resume._id}
+                      className={`p-3 rounded-lg border transition-colors cursor-pointer ${
+                        currentResumeId === resume._id
+                          ? "bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700"
+                          : "bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div
+                          className="flex-1"
+                          onClick={() => loadResume(resume._id)}
+                        >
+                          <h4 className="font-medium text-gray-800 dark:text-white">
+                            {resume.fullName || "Untitled Resume"}
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {resume.email} • Updated{" "}
+                            {new Date(resume.updatedAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteResume(resume._id);
+                          }}
+                          className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-2"
+                          title="Delete resume"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Authentication Notice */}
+          {!isAuthenticated && (
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
+              <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-400">
+                <span className="font-medium">💡 Tip:</span>
+                <span>
+                  Login to save your resumes to the cloud and access them from
+                  anywhere!
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Validation Errors Summary */}
           {Object.keys(errors).length > 0 && (
