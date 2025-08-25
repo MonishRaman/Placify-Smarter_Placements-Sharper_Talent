@@ -254,7 +254,9 @@ const RoleSelectionPage = () => {
 
                   {/* Registration Button */}
                   <div className="flex justify-center">
-                    <button className={`w-full bg-gradient-to-r ${role.gradient} text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2`}>
+                    <button className={`w-full bg-gradient-to-r ${role.gradient} text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2`}
+                    onClick={() => handleRegistration(role.title)}
+                    >
                       <span>Register as {role.title === "College/University" ? "Institution" : role.title}</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
