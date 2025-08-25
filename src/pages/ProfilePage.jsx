@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { User, Camera, X, Save, Moon, Sun, Mail, Phone, MapPin, GraduationCap, Calendar, Briefcase } from "lucide-react";
+import { getInitialTheme, applyTheme } from "../utils/theme";
 
 // Mock data for demonstration (replace with your actual API calls)
 export const mockProfile = {
@@ -130,7 +131,7 @@ const FormField = ({ label, name, value, type = "text", editable = true, icon: I
 );
 
 const ProfilePage = () => {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(getInitialTheme);
   const [profile, setProfile] = useState(mockProfile);
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -139,26 +140,12 @@ const ProfilePage = () => {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    // Check for saved theme preference
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      setIsDark(savedTheme === "dark");
-    } else {
-      // Check system preference
-      setIsDark(window.matchMedia("(prefers-color-scheme: dark)").matches);
-    }
-    
     // Simulate loading delay
     setTimeout(() => setIsLoaded(true), 300);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    applyTheme(isDark);
   }, [isDark]);
 
   const toggleTheme = () => setIsDark(!isDark);
