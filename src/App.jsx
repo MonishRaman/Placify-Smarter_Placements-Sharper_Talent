@@ -1,11 +1,17 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { UserProvider } from "./context/UserContext"
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+import { UserProvider } from "./context/UserContext";
 
 // The paths below are relative to this App.jsx file, which should be in the 'src' directory.
 // If you are getting 'Could not resolve' errors, please ensure you are running the build command
 // from the root of the project directory.
 //  IMPORTED the ThemeProvider
-import { ThemeProvider } from './context/ThemeContext'; 
+import { ThemeProvider } from "./context/ThemeContext";
 import Footer from "./components/Footer";
 import AuthPage from "./pages/AuthPage";
 import FeedbackPage from "./pages/FeedbackPage";
@@ -37,41 +43,40 @@ import ResumeATS from "./pages/Student/ResumeATS";
 import ResumeBuilder from "./pages/Student/ResumeBuilder";
 import Settings from "./pages/Student/Settings";
 
-import InstitutionDashboardLayout from './layouts/InstitutionDashboardLayout';
-import InstitutionDashboard from './pages/Institution/InstitutionDashboard';
-import InstitutionProfile from './pages/Institution/InstitutionProfile';
-import StudentPerformance from './pages/Institution/StudentPerformance';
-import DepartmentPerformance from './pages/Institution/DepartmentPerformance';
-import Reports from './pages/Institution/Reports';
-import Analytics from './pages/Institution/Analytics';
-import InstitutionSettings from './pages/Institution/Settings';
+import InstitutionDashboardLayout from "./layouts/InstitutionDashboardLayout";
+import InstitutionDashboard from "./pages/Institution/InstitutionDashboard";
+import InstitutionProfile from "./pages/Institution/InstitutionProfile";
+import StudentPerformance from "./pages/Institution/StudentPerformance";
+import DepartmentPerformance from "./pages/Institution/DepartmentPerformance";
+import Reports from "./pages/Institution/Reports";
+import Analytics from "./pages/Institution/Analytics";
+import InstitutionSettings from "./pages/Institution/Settings";
 
 // Company Dashboard Layout and Pages
-import CompanyDashboardLayout from './layouts/CompanyDashboardLayout';
-import CompanyDashboard from './pages/company/CompanyDashboard';
-import Applicants from './pages/company/Applicants';
-import Collaboration from './pages/company/Collaboration';
-import Employees from './pages/company/Employees';
-import Insights from './pages/company/Insights';
-import Performance from './pages/company/performance';
-import PostJob from './pages/company/postJob';
-import CompanyProfile from './pages/company/CompanyProfile';
-import CompanyReports from './pages/company/Reports';
+import CompanyDashboardLayout from "./layouts/CompanyDashboardLayout";
+import CompanyDashboard from "./pages/company/CompanyDashboard";
+import Applicants from "./pages/company/Applicants";
+import Collaboration from "./pages/company/Collaboration";
+import Employees from "./pages/company/Employees";
+import Insights from "./pages/company/Insights";
+import Performance from "./pages/company/performance";
+import PostJob from "./pages/company/postJob";
+import CompanyProfile from "./pages/company/CompanyProfile";
+import CompanyReports from "./pages/company/Reports";
 
 // Employee Dashboard Layout and Pages
-import EmployeeDashboardLayout from './layouts/EmployeeDashboardLayout';
-import EmployeeDashboard from './pages/employee/EmployeeDashboard';
-import EmployeeProfile from './pages/employee/EmployeeProfile';
-import PerformanceOverview from './pages/employee/PerformanceOverview';
-import SkillDevelopmentTracker from './pages/employee/SkillDevelopmentTracker';
-import ProjectContributions from './pages/employee/ProjectContributions';
-import CareerProgression from './pages/employee/CareerProgression';
-import CompanyFeedback from './pages/employee/CompanyFeedback';
-import LearningResources from './pages/employee/LearningResources';
-import InterviewPracticeZone from './pages/employee/InterviewPracticeZone';
-import JobSwitchInsights from './pages/employee/JobSwitchInsights';
-import EmployeeSettings from './pages/employee/Settings';
-
+import EmployeeDashboardLayout from "./layouts/EmployeeDashboardLayout";
+import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
+import EmployeeProfile from "./pages/employee/EmployeeProfile";
+import PerformanceOverview from "./pages/employee/PerformanceOverview";
+import SkillDevelopmentTracker from "./pages/employee/SkillDevelopmentTracker";
+import ProjectContributions from "./pages/employee/ProjectContributions";
+import CareerProgression from "./pages/employee/CareerProgression";
+import CompanyFeedback from "./pages/employee/CompanyFeedback";
+import LearningResources from "./pages/employee/LearningResources";
+import InterviewPracticeZone from "./pages/employee/InterviewPracticeZone";
+import JobSwitchInsights from "./pages/employee/JobSwitchInsights";
+import EmployeeSettings from "./pages/employee/Settings";
 
 import { motion } from "framer-motion";
 import API from "./api/api";
@@ -114,8 +119,7 @@ const AppWrapper = () => {
             <Route path="/register/employee" element={<EmployeeForm />} />
             <Route path="/register/company" element={<CompanyForm />} />
             <Route path="/feedback" element={<FeedbackPage />} />
-               <Route path="/contact" element={<ContactPage />} />
-            
+            <Route path="/contact" element={<ContactPage />} />
 
             {/* Standalone Route */}
             <Route path="/interview" element={<InterviewInterface />} />
@@ -131,8 +135,7 @@ const AppWrapper = () => {
             >
               <Route index element={<InstitutionDashboard />} />
 
-
-              <Route path="profile" element={<ProfilePage  />} />
+              <Route path="profile" element={<ProfilePage />} />
 
               <Route
                 path="student-performance"
@@ -234,7 +237,10 @@ const AppWrapper = () => {
               {/* New route for the Student Progress Dashboard */}
               <Route path="progress" element={<StudentProgressDashboard />} />
               {/* New route for the Student Progress Detail page */}
-              <Route path="progress/:studentId" element={<StudentProgressDetail />} />
+              <Route
+                path="progress/:studentId"
+                element={<StudentProgressDetail />}
+              />
             </Route>
           </Routes>
         </div>
@@ -255,7 +261,7 @@ const AppWrapper = () => {
 
         {/* Conditional Footer */}
         {!shouldHideFooter && <Footer />}
-        <CursorTrail/>
+        <CursorTrail />
       </div>
     </>
   );
@@ -263,11 +269,15 @@ const AppWrapper = () => {
 
 function App() {
   return (
-    <UserProvider>
-      <Router>
-        <AppWrapper />
-      </Router>
-    </UserProvider>
+    <ThemeProvider>
+      <LoadingProvider>
+        <UserProvider>
+          <Router>
+            <AppWrapper />
+          </Router>
+        </UserProvider>
+      </LoadingProvider>
+    </ThemeProvider>
   );
 }
 
