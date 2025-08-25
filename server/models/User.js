@@ -4,13 +4,13 @@ const baseUserSchema = new mongoose.Schema(
   {
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
-    
+
     // role must be strictly controlled
-    role: { 
-      type: String, 
-      required: true, 
-      enum: ["admin", "employer", "candidate", "student"], 
-      default: "candidate" 
+    role: {
+      type: String,
+      required: true,
+      enum: ["admin", "employer", "candidate", "student"],
+      default: "candidate"
     },
 
     // Common fields
@@ -27,7 +27,8 @@ const baseUserSchema = new mongoose.Schema(
     companyWebsite: { type: String },
 
     // Candidate-specific fields
-    resume: { type: String },  
+    resume: { type: String },  // Legacy field for backward compatibility
+    resumes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Resume" }], // New field for resume references
     skills: [{ type: String }],
   },
   { timestamps: true }
