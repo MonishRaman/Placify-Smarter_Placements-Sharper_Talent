@@ -13,7 +13,7 @@ import { fileURLToPath } from "url";
 import settingsRoutes from "./routes/settingsI.js";
 import atsRoutes from "./routes/ats.js";
 import resumeRoutes from "./routes/resume.js"; // New import for resume routes
-
+import resumeScoreRoutes from "./routes/resumeScore.js"; // New import for resume score routes
 
 import studentRoutes from "./routes/studentRoutes.js"; // Corrected import for studentRoutes
 
@@ -44,7 +44,8 @@ app.use("/api/institution", institutionRoutes);
 app.use("/api/performance", performance);
 app.use("/api/students", studentRoutes); // New route for student progress tracker
 app.use("/api/ats", atsRoutes);
-app.use("/api/resume", resumeRoutes); 
+app.use("/api/resume/score", resumeScoreRoutes); // New route for resume score persistence - MUST come before /api/resume
+app.use("/api/resume", resumeRoutes);
 
 app.get("/", (req, res) => {
   res.json({
@@ -53,7 +54,8 @@ app.get("/", (req, res) => {
     endpoints: {
       feedback: "/api/feedback",
       test: "/api/feedback/test",
-      resume: "/api/resume"
+      resume: "/api/resume",
+      resumeScore: "/api/resume/score"
     }
   });
 });
