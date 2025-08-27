@@ -1,4 +1,5 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import apiClient from "../../api/apiClient.js";
 
 const ResumeATS = () => {
   const [resumeFile, setResumeFile] = useState(null);
@@ -7,6 +8,20 @@ const ResumeATS = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [steps, setSteps] = useState([]);
+
+  // Score history state
+  const [scoreHistory, setScoreHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState("");
+  const [showHistory, setShowHistory] = useState(false);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalCount: 0,
+    limit: 10,
+    hasNextPage: false,
+    hasPrevPage: false,
+  });
 
   // Helper to safely read a factor from multiFactor. The backend sometimes nests
   // factors under `multiFactor.factors` and sometimes directly under `multiFactor`.
@@ -25,6 +40,108 @@ const ResumeATS = () => {
       updated[updated.length - 1].status = "done";
       return updated;
     });
+  };
+
+  // Fetch score history from API
+  const fetchScoreHistory = async (page = 1, limit = 10) => {
+    try {
+      setHistoryLoading(true);
+      setHistoryError("");
+
+      console.log(`🔍 Fetching score history - Page: ${page}, Limit: ${limit}`);
+
+      const response = await apiClient.get(
+        `/resume/score?limit=${limit}&page=${page}&sortBy=createdAt&sortOrder=desc`
+      );
+
+      if (response.data.success) {
+        console.log(`✅ Score history fetched successfully:`, response.data);
+        setScoreHistory(response.data.data || []);
+        setPagination(response.data.pagination || {});
+      } else {
+        throw new Error(
+          response.data.message || "Failed to fetch score history"
+        );
+      }
+    } catch (err) {
+      console.error("❌ Error fetching score history:", err);
+
+      let errorMessage = "Failed to fetch score history";
+      if (err.response?.status === 401) {
+        errorMessage = "Please login to view your score history";
+      } else if (err.response?.status === 404) {
+        errorMessage = "No score history found";
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      setHistoryError(errorMessage);
+      setScoreHistory([]);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  // Delete a score entry
+  const deleteScoreEntry = async (scoreId) => {
+    try {
+      console.log(`🗑️ Deleting score entry: ${scoreId}`);
+
+      const response = await apiClient.delete(`/resume/score/${scoreId}`);
+
+      if (response.data.success) {
+        console.log(`✅ Score entry deleted successfully`);
+        // Refresh the current page of history
+        await fetchScoreHistory(pagination.currentPage, pagination.limit);
+      } else {
+        throw new Error(
+          response.data.message || "Failed to delete score entry"
+        );
+      }
+    } catch (err) {
+      console.error("❌ Error deleting score entry:", err);
+
+      let errorMessage = "Failed to delete score entry";
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      setHistoryError(errorMessage);
+    }
+  };
+
+  // Load score history when component mounts or when showHistory is toggled
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (showHistory && token) {
+      fetchScoreHistory();
+    }
+  }, [showHistory]);
+
+  // Format date for display
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  // Get score color class
+  const getScoreColorClass = (score) => {
+    if (score >= 80)
+      return "text-emerald-600 bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-900/20";
+    if (score >= 60)
+      return "text-yellow-600 bg-yellow-100 dark:text-yellow-300 dark:bg-yellow-900/20";
+    if (score >= 40)
+      return "text-orange-600 bg-orange-100 dark:text-orange-300 dark:bg-orange-900/20";
+    return "text-red-600 bg-red-100 dark:text-red-300 dark:bg-red-900/20";
   };
 
   const handleSubmit = async (e) => {
@@ -50,16 +167,17 @@ const ResumeATS = () => {
       updateStep("Uploading resume and job description...");
 
       console.log("Submitting resume and job description for analysis...");
-      const res = await fetch("http://localhost:5000/api/ats/upload", {
-        method: "POST",
-        body: formData,
+
+      // Step 1: Analyze the resume using ATS API
+      const atsResponse = await apiClient.post("/ats/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+      if (!atsResponse.data) {
+        throw new Error("No data received from ATS analysis");
       }
-
-      const data = await res.json();
 
       markLastStepComplete();
       updateStep("Running keyword analysis...");
@@ -74,12 +192,65 @@ const ResumeATS = () => {
       await new Promise((r) => setTimeout(r, 800)); // simulate time
 
       markLastStepComplete();
-      setAnalysis(data);
 
-      console.log("Analysis response received:", data);
+      // Check if the backend already saved the score
+      const token = localStorage.getItem("token");
+      if (token && atsResponse.data.scoreSaved) {
+        updateStep("Score saved to your history! 🎉");
+        markLastStepComplete();
+        updateStep("Analysis complete! ✨");
+      } else if (
+        token &&
+        atsResponse.data.overallScore !== null &&
+        atsResponse.data.overallScore !== undefined
+      ) {
+        updateStep("Saving score to your history...");
+
+        // Fallback: Save the score if backend didn't save it
+        try {
+          const scoreData = {
+            score: atsResponse.data.overallScore,
+            scoreBreakdown: atsResponse.data.multiFactor || {},
+            jobTitle: atsResponse.data.jobTitle || "Unknown Position",
+            companyName: atsResponse.data.companyName || "Unknown Company",
+            resumeFileName: resumeFile.name,
+            aiAnalysis: {
+              feedback:
+                atsResponse.data.geminiAnalysis?.feedback ||
+                "Analysis completed",
+              suggestions: atsResponse.data.geminiAnalysis?.suggestions || [],
+              strengths: atsResponse.data.geminiAnalysis?.strengths || [],
+              improvements: atsResponse.data.geminiAnalysis?.improvements || [],
+            },
+          };
+
+          await apiClient.post("/resume/score", scoreData);
+          console.log("Score saved to user history successfully");
+          markLastStepComplete();
+          updateStep("Analysis complete! 🎉");
+        } catch (scoreError) {
+          console.warn("Failed to save score to history:", scoreError);
+          // Don't fail the entire process if score saving fails
+          markLastStepComplete();
+          updateStep("Analysis complete! (Score not saved) ⚠️");
+        }
+      } else {
+        updateStep("Analysis complete! (Login to save score) ✨");
+      }
+
+      setAnalysis(atsResponse.data);
+      console.log("Analysis response received:", atsResponse.data);
     } catch (err) {
-      setError("❌ Failed to analyze resume. Try again later.");
       console.error("Error during resume analysis:", err);
+
+      let errorMessage = "❌ Failed to analyze resume. Try again later.";
+      if (err.response?.data?.message) {
+        errorMessage = `❌ ${err.response.data.message}`;
+      } else if (err.message) {
+        errorMessage = `❌ ${err.message}`;
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
       console.log("Analysis request completed.");
@@ -265,6 +436,327 @@ const ResumeATS = () => {
           </p>
         </div>
 
+        {/* Score History Section */}
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 overflow-hidden dark:bg-slate-800/70 dark:border-slate-700">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                    <svg
+                      className="w-6 h-6 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">
+                      Score History
+                    </h3>
+                    <p className="text-white/80 text-sm">
+                      Track your resume improvement over time
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowHistory(!showHistory)}
+                  className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all duration-200 flex items-center gap-2"
+                >
+                  {showHistory ? (
+                    <>
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M5 15l7-7 7 7"
+                        ></path>
+                      </svg>
+                      Hide History
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        ></path>
+                      </svg>
+                      View History
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            {showHistory && (
+              <div className="p-6">
+                {historyLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="flex items-center gap-3 text-gray-600">
+                      <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                      <span>Loading your score history...</span>
+                    </div>
+                  </div>
+                ) : historyError ? (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 dark:bg-red-900/20 dark:border-red-700">
+                    <div className="flex items-center gap-3">
+                      <svg
+                        className="w-5 h-5 text-red-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        ></path>
+                      </svg>
+                      <span className="text-red-700 dark:text-red-300">
+                        {historyError}
+                      </span>
+                    </div>
+                  </div>
+                ) : scoreHistory.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 dark:bg-gray-700">
+                      <svg
+                        className="w-8 h-8 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2 dark:text-gray-100">
+                      No Score History Yet
+                    </h4>
+                    <p className="text-gray-600 mb-4 dark:text-gray-300">
+                      Start analyzing your resume to build your score history!
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Score History List */}
+                    <div className="space-y-4">
+                      {scoreHistory.map((score, index) => (
+                        <div
+                          key={score._id}
+                          className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-all duration-200 dark:bg-slate-900 dark:border-slate-600"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              {/* Score Badge */}
+                              <div
+                                className={`px-3 py-1 rounded-full text-sm font-bold ${getScoreColorClass(
+                                  score.score
+                                )}`}
+                              >
+                                {score.score}%
+                              </div>
+
+                              {/* Score Details */}
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="font-semibold text-gray-900 dark:text-gray-100">
+                                    {score.jobTitle || "ATS Analysis"}
+                                  </h4>
+                                  {score.companyName && (
+                                    <span className="text-gray-500 text-sm">
+                                      at {score.companyName}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                                  <span className="flex items-center gap-1">
+                                    <svg
+                                      className="w-4 h-4"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                      ></path>
+                                    </svg>
+                                    {formatDate(score.createdAt)}
+                                  </span>
+                                  {score.resumeFileName && (
+                                    <span className="flex items-center gap-1">
+                                      <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth="2"
+                                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                        ></path>
+                                      </svg>
+                                      {score.resumeFileName}
+                                    </span>
+                                  )}
+                                  {score.processingTime && (
+                                    <span className="flex items-center gap-1">
+                                      <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth="2"
+                                          d="M13 10V3L4 14h7v7l9-11h-7z"
+                                        ></path>
+                                      </svg>
+                                      {(score.processingTime / 1000).toFixed(1)}
+                                      s
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => deleteScoreEntry(score._id)}
+                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200 dark:hover:bg-red-900/20"
+                                title="Delete this score entry"
+                              >
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                  ></path>
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Score Breakdown */}
+                          <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-600">
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
+                              {score.scoreBreakdown &&
+                                Object.entries(score.scoreBreakdown).map(
+                                  ([key, value]) => (
+                                    <div key={key} className="text-center">
+                                      <div className="text-gray-500 dark:text-gray-400 capitalize">
+                                        {key.replace(/([A-Z])/g, " $1").trim()}
+                                      </div>
+                                      <div
+                                        className={`font-semibold ${getScoreColorClass(
+                                          value.score
+                                        )}`}
+                                      >
+                                        {value.score}%
+                                      </div>
+                                    </div>
+                                  )
+                                )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Pagination */}
+                    {pagination.totalPages > 1 && (
+                      <div className="mt-6 flex items-center justify-between">
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                          Showing{" "}
+                          {(pagination.currentPage - 1) * pagination.limit + 1}{" "}
+                          to{" "}
+                          {Math.min(
+                            pagination.currentPage * pagination.limit,
+                            pagination.totalCount
+                          )}{" "}
+                          of {pagination.totalCount} results
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() =>
+                              fetchScoreHistory(
+                                pagination.currentPage - 1,
+                                pagination.limit
+                              )
+                            }
+                            disabled={!pagination.hasPrevPage}
+                            className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:border-slate-600 dark:hover:bg-slate-700"
+                          >
+                            Previous
+                          </button>
+                          <span className="px-3 py-1 text-sm text-gray-600 dark:text-gray-400">
+                            Page {pagination.currentPage} of{" "}
+                            {pagination.totalPages}
+                          </span>
+                          <button
+                            onClick={() =>
+                              fetchScoreHistory(
+                                pagination.currentPage + 1,
+                                pagination.limit
+                              )
+                            }
+                            disabled={!pagination.hasNextPage}
+                            className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:border-slate-600 dark:hover:bg-slate-700"
+                          >
+                            Next
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Enhanced Upload Form */}
         <div className="max-w-2xl mx-auto">
           <form
@@ -435,7 +927,7 @@ const ResumeATS = () => {
                         analysis.overallScore ?? 0
                       )} drop-shadow-sm`}
                     >
-                      {analysis.multiFactor?.overallScore ?? 0}%
+                      {analysis.overallScore ?? 0}%
                     </div>
                     <div className="text-sm text-gray-600 font-semibold">
                       Overall Score
