@@ -1,10 +1,17 @@
 import jwt from "jsonwebtoken";
 
-const verifyToken = (roles = []) => {
+const verifyToken = (roles = [], optional = false) => {
   const allowedRoles = Array.isArray(roles) ? roles : [roles];
 
   return (req, res, next) => {
     const authHeader = req.headers.authorization;
+
+    // If authentication is optional and no token provided, continue without user
+    if (optional && !authHeader?.startsWith("Bearer ")) {
+      req.user = null;
+      return next();
+    }
+
     if (!authHeader?.startsWith("Bearer ")) {
       return res.status(401).json({ message: "No token provided" });
     }
@@ -22,6 +29,10 @@ const verifyToken = (roles = []) => {
       next();
     } catch (err) {
       console.error("JWT verification error:", err.message);
+      if (optional) {
+        req.user = null;
+        return next();
+      }
       return res.status(401).json({ message: "Invalid or expired token" });
     }
   };
