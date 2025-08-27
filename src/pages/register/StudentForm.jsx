@@ -176,6 +176,8 @@ export default function StudentForm() {
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
+              onCopy={(e) => e.preventDefault()}
+              onPaste={(e) => e.preventDefault()}
               required
             />
             <FormInput
@@ -185,6 +187,7 @@ export default function StudentForm() {
               onChange={(e) =>
                 setFormData({ ...formData, confirmPassword: e.target.value })
               }
+              onPaste={(e) => e.preventDefault()}
               required
             />
 
