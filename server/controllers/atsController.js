@@ -1,4 +1,4 @@
-// server/controllers/atsController.js
+
 import fs from "fs/promises";
 import { analyzeWithGemini } from "../services/ai/gemini.js"; // optional
 import { extractPdfText } from "../services/pdf/extractTextPdfjs.js";
@@ -19,6 +19,7 @@ export async function analyzeUpload(req, res) {
 
     const filePath = req.file.path;
     const resumeFileName = req.file.originalname;
+
     let resumeText = "";
 
     try {
@@ -55,50 +56,47 @@ export async function analyzeUpload(req, res) {
       console.warn("Gemini unavailable, continuing with heuristic scoring only.");
     }
 
-    // Calculate overall score (weighted average)
-    const overallScore = Math.round(
-      (multi.keywordMatch * 0.3) +
-      (multi.skillsRelevance * 0.25) +
-      (multi.experienceRelevance * 0.2) +
-      (multi.educationRelevance * 0.15) +
-      (multi.formatAndStructure * 0.1)
-    );
+    // Use the overallScore from the scorer (already calculated)
+    const overallScore = multi.overallScore ?? 0;
 
-    // Prepare score breakdown for database
+    // Prepare score breakdown for database using the correct structure
     const scoreBreakdown = {
       keywordMatch: {
-        score: multi.keywordMatch,
-        details: multi.keywordDetails || {}
+        score: multi.factors?.keywords?.score ?? 0,
+        details: multi.factors?.keywords || {}
       },
       skillsRelevance: {
-        score: multi.skillsRelevance,
-        details: multi.skillsDetails || {}
+        score: multi.factors?.semantic?.score ?? 0, // Using semantic as skills relevance
+        details: multi.factors?.semantic || {}
       },
       experienceRelevance: {
-        score: multi.experienceRelevance,
-        details: multi.experienceDetails || {}
+        score: multi.factors?.actionImpact?.score ?? 0, // Using actionImpact as experience relevance
+        details: multi.factors?.actionImpact || {}
       },
       educationRelevance: {
-        score: multi.educationRelevance,
-        details: multi.educationDetails || {}
+        score: multi.factors?.recency?.score ?? 0, // Using recency as education relevance
+        details: multi.factors?.recency || {}
       },
       formatAndStructure: {
-        score: multi.formatAndStructure,
-        details: multi.formatDetails || {}
+        score: multi.factors?.structure?.score ?? 0,
+        details: multi.factors?.structure || {}
       }
     };
+
+    // Validate that overallScore is a valid number before saving
+    const validOverallScore = !isNaN(overallScore) && isFinite(overallScore) ? overallScore : 0;
 
     // Save score to database if user is authenticated
     if (req.user && req.user.userId) {
       try {
         const scoreData = {
           userId: req.user.userId,
-          score: overallScore,
+          score: validOverallScore,
           scoreBreakdown,
           jobTitle: jobTitle || null,
           companyName: companyName || null,
           resumeFileName,
-          resumeId: resumeId || null,
+          resumeId: null, // ATS uploads don't have associated Resume documents
           processingTime: Date.now() - startTime,
           aiAnalysis: geminiAnalysis ? {
             feedback: geminiAnalysis.feedback || "",
@@ -111,17 +109,17 @@ export async function analyzeUpload(req, res) {
         const newScoreEntry = new ResumeScore(scoreData);
         await newScoreEntry.save();
 
-        console.log(`✅ Score saved for user ${req.user.userId}: ${overallScore}%`);
+        console.log(`✅ Score saved for user ${req.user.userId}: ${validOverallScore}%`);
       } catch (saveError) {
         console.error("Failed to save score to database:", saveError);
-        // Don't fail the request if score saving fails
+        // Don't fail the entire process if score saving fails
       }
     }
 
     return res.json({
       message: "Resume analyzed successfully",
       resumeChars: resumeText.length,
-      overallScore,
+      overallScore: validOverallScore,
       multiFactor: multi,
       geminiAnalysis, // may be null or an error; front-end can show a soft warning
       scoreSaved: !!req.user?.userId // Indicate if score was saved
