@@ -6,6 +6,7 @@ import retextRepeatedWords from "retext-repeated-words";
 import retextIndefiniteArticle from "retext-indefinite-article";
 import retextStringify from "retext-stringify";
 import stringSimilarity from "string-similarity";
+import { pipeline } from "@xenova/transformers"; // Example: SBERT via transformers.js (or use OpenAI API)
 
 
 const tokenize = (s) => (s?.toLowerCase().match(/[a-z0-9+#.\-]+/g) || []);
@@ -261,5 +262,84 @@ export async function scoreResumeMultiFactor(resumeText, jobDescription, opts = 
     overallScore,
     weights,
     factors: { keywords, semantic, structure, grammar, actionImpact, recency, parseability },
+  };
+}
+
+// --- factor 2: semantic similarity (NLP-based) ---
+async function scoreSemanticNLP(resumeText, jdText) {
+  // Use SBERT or similar model for embedding-based similarity
+  // This is a placeholder for actual implementation
+  // For production, use a backend service or OpenAI API for embeddings
+  try {
+    const embedder = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
+    const [resumeEmb, jdEmb] = await Promise.all([
+      embedder(resumeText),
+      embedder(jdText)
+    ]);
+    // Compute cosine similarity between embeddings
+    function cosineSimilarity(a, b) {
+      const dot = a.reduce((sum, v, i) => sum + v * b[i], 0);
+      const normA = Math.sqrt(a.reduce((sum, v) => sum + v * v, 0));
+      const normB = Math.sqrt(b.reduce((sum, v) => sum + v * v, 0));
+      return dot / (normA * normB);
+    }
+    const score = Math.round(pct(cosineSimilarity(resumeEmb[0], jdEmb[0])));
+    return { score, cosine: score / 100 };
+  } catch (e) {
+    // Fallback to existing heuristic if NLP fails
+    return scoreSemantic(resumeText, jdText);
+  }
+}
+
+// --- Skill gap analysis ---
+function analyzeSkillGap(resumeSkills, jdSkills) {
+  const missingSkills = jdSkills.filter(skill => !resumeSkills.includes(skill));
+  const weakSkills = resumeSkills.filter(skill => !jdSkills.includes(skill));
+  return { missingSkills, weakSkills };
+}
+
+// --- Personalized recommendations ---
+function generateRecommendations(missingSkills) {
+  return missingSkills.map(skill => `Take a course or assessment in ${skill} to improve your match score.`);
+}
+
+// --- Main multi-factor scorer ---
+export async function scoreResumeMultiFactor(resumeText, jdText) {
+  // Extract skills from resume and JD (simple token extraction, can be improved)
+  const resumeTokens = canonize(filterStop(tokenize(resumeText)));
+  const jdTokens = canonize(filterStop(tokenize(jdText)));
+  const resumeSkills = [...new Set(resumeTokens)];
+  const jdSkills = [...new Set(jdTokens)];
+
+  // Keyword match
+  const keywords = scoreKeywords(resumeText, jdText);
+  // Semantic similarity (NLP)
+  const semantic = await scoreSemanticNLP(resumeText, jdText);
+  // Structure
+  const structure = scoreStructure(resumeText);
+  // Grammar
+  const grammar = await scoreGrammar(resumeText);
+  // Action/impact
+  const actionImpact = scoreActionImpact(resumeText);
+
+  // Skill gap analysis
+  const skillGap = analyzeSkillGap(resumeSkills, jdSkills);
+  // Recommendations
+  const recommendations = generateRecommendations(skillGap.missingSkills);
+
+  // Overall score (weighted average)
+  const overallScore = Math.round(
+    0.25 * keywords.score +
+    0.25 * semantic.score +
+    0.15 * structure.score +
+    0.15 * grammar.score +
+    0.2 * actionImpact.score
+  );
+
+  return {
+    overallScore,
+    factors: { keywords, semantic, structure, grammar, actionImpact },
+    skillGap,
+    recommendations
   };
 }
