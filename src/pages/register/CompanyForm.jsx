@@ -178,15 +178,18 @@ const validatePassword = (password) => {
             />
 
             <FormInput
-            type="password"
-            label="Password"
-            value={formData.password}
-            onChange={(e) => {
-            const newPass = e.target.value;
-            setFormData({ ...formData, password: newPass });
-            validatePassword(newPass); 
-            }}
-            required
+
+              type="password"
+              label="Password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+              onCopy={(e) => e.preventDefault()}
+              onPaste={(e) => e.preventDefault()}
+              required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+
             />
             <div className="mt-2 space-y-1 text-sm">
   {[
@@ -220,6 +223,7 @@ const validatePassword = (password) => {
               onChange={(e) =>
                 setFormData({ ...formData, confirmPassword: e.target.value })
               }
+              onPaste={(e) => e.preventDefault()}
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />

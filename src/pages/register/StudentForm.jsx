@@ -191,12 +191,14 @@ const validatePassword = (password) => {
               type="password"
               label="Password"
               value={formData.password}
-              onChange={(e) => {
-              const newPass = e.target.value;
-              setFormData({ ...formData, password: newPass });
-              validatePassword(newPass); // 👈 Live validation
-           }}
-            required
+
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+              onCopy={(e) => e.preventDefault()}
+              onPaste={(e) => e.preventDefault()}
+              required
+
             />
             <div className="mt-2 space-y-1 text-sm">
   {[
@@ -230,6 +232,7 @@ const validatePassword = (password) => {
               onChange={(e) =>
                 setFormData({ ...formData, confirmPassword: e.target.value })
               }
+              onPaste={(e) => e.preventDefault()}
               required
             />
 

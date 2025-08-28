@@ -173,40 +173,19 @@ const validatePassword = (password) => {
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
-                        type="password"
-                        label="Password"
-                        value={formData.password}
-                        onChange={(e) => {
-                        const newPass = e.target.value;
-                        setFormData({ ...formData, password: newPass });
-                        validatePassword(newPass); 
-                        }}
-                        required
-                        />
-                        <div className="mt-2 space-y-1 text-sm">
-              {[
-                { label: "At least 8 characters", key: "length" },
-                { label: "One uppercase letter", key: "upper" },
-                { label: "One lowercase letter", key: "lower" },
-                { label: "One number", key: "number" },
-                { label: "One special character", key: "special" },
-                        ].map((rule) => (
-                        <div key={rule.key} className="flex items-center gap-2">
-                        {passwordRules[rule.key] ? (
-                        <CheckCircle className="text-green-500 w-4 h-4" />
-                        ) : (
-                        <XCircle className="text-red-500 w-4 h-4" />
-                        )}
-                        <span
-                        className={
-                        passwordRules[rule.key] ? "text-green-600" : "text-red-500"
-                        }
-                        >
-                        {rule.label}
-                        </span>
-                        </div>
-                        ))}
-                        </div>
+
+              type="password"
+              label="Password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+              onCopy={(e) => e.preventDefault()}
+              onPaste={(e) => e.preventDefault()}
+              required
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+            />
+
             <FormInput
               type="password"
               label="Confirm Password"
@@ -214,6 +193,7 @@ const validatePassword = (password) => {
               onChange={(e) =>
                 setFormData({ ...formData, confirmPassword: e.target.value })
               }
+              onPaste={(e) => e.preventDefault()}
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
