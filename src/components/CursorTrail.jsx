@@ -39,8 +39,9 @@ export default function CursorTrail() {
     const targetX = e.clientX
     const targetY = e.clientY
 
-    smoothMousePos.current.x = lerp(smoothMousePos.current.x, targetX, 0.25)
-    smoothMousePos.current.y = lerp(smoothMousePos.current.y, targetY, 0.25)
+    // Use higher lerp factor for snappier movement
+    smoothMousePos.current.x = lerp(smoothMousePos.current.x, targetX, CURSOR_LERP_FACTOR)
+    smoothMousePos.current.y = lerp(smoothMousePos.current.y, targetY, CURSOR_LERP_FACTOR)
 
     const newPoint = {
       x: smoothMousePos.current.x,
@@ -93,9 +94,14 @@ export default function CursorTrail() {
     document.head.appendChild(style)
 
     let rafId
+    let lastUpdate = Date.now()
     const animate = () => {
-      setAnimationFrame((prev) => prev + 1)
-
+      // Throttle animation frame updates for performance
+      const now = Date.now()
+      if (now - lastUpdate > 24) {
+        setAnimationFrame((prev) => prev + 1)
+        lastUpdate = now
+      }
       setBubbles((prev) =>
         prev
           .map((bubble) => ({
@@ -106,7 +112,7 @@ export default function CursorTrail() {
           }))
           .filter((bubble) => Date.now() - bubble.timestamp < bubble.life),
       )
-
+    
       rafId = requestAnimationFrame(animate)
     }
     rafId = requestAnimationFrame(animate)
@@ -286,3 +292,6 @@ export default function CursorTrail() {
     </div>
   )
 }
+
+// Increase lerp factor for faster cursor response
+const CURSOR_LERP_FACTOR = 0.5

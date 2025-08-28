@@ -98,12 +98,14 @@ export async function analyzeUpload(req, res) {
           resumeFileName,
           resumeId: null, // ATS uploads don't have associated Resume documents
           processingTime: Date.now() - startTime,
-          aiAnalysis: geminiAnalysis ? {
-            feedback: geminiAnalysis.feedback || "",
-            suggestions: geminiAnalysis.suggestions || [],
-            strengths: geminiAnalysis.strengths || [],
-            improvements: geminiAnalysis.improvements || []
-          } : null
+          aiAnalysis: {
+            feedback: geminiAnalysis?.feedback || "",
+            suggestions: geminiAnalysis?.suggestions || [],
+            strengths: geminiAnalysis?.strengths || [],
+            improvements: geminiAnalysis?.improvements || [],
+            skillGap: multi.skillGap || {},
+            recommendations: multi.recommendations || []
+          }
         };
 
         const newScoreEntry = new ResumeScore(scoreData);
@@ -121,6 +123,8 @@ export async function analyzeUpload(req, res) {
       resumeChars: resumeText.length,
       overallScore: validOverallScore,
       multiFactor: multi,
+      skillGap: multi.skillGap,
+      recommendations: multi.recommendations,
       geminiAnalysis, // may be null or an error; front-end can show a soft warning
       scoreSaved: !!req.user?.userId // Indicate if score was saved
     });
