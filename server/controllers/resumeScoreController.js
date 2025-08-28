@@ -1,6 +1,5 @@
 import ResumeScore from "../models/ResumeScore.js";
 import User from "../models/User.js";
-import Resume from "../models/Resume.js";
 import mongoose from "mongoose";
 
 // ==================== SAVE RESUME SCORE ====================
@@ -12,12 +11,11 @@ import mongoose from "mongoose";
  * Headers: { Authorization: "Bearer <jwt_token>" }
  * Body: {
  *   score: 85,
- *   resumeId: "optional_resume_id",
- *   scoreBreakdown: { keywordMatch: { score: 90, details: {...} }, ... },
+ *   scoreBreakdown: { keywordMatch: { score: 90, details: {} } },
  *   jobTitle: "Software Developer",
  *   companyName: "Tech Corp",
  *   resumeFileName: "john_doe_resume.pdf",
- *   aiAnalysis: { feedback: "...", suggestions: [...] }
+ *   aiAnalysis: { feedback: "...", suggestions: [] }
  * }
  */
 export const saveResumeScore = async (req, res) => {
@@ -51,31 +49,6 @@ export const saveResumeScore = async (req, res) => {
             });
         }
 
-        // Validate resumeId if provided
-        const { resumeId } = req.body;
-        if (resumeId && !mongoose.Types.ObjectId.isValid(resumeId)) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid resume ID"
-            });
-        }
-
-        // If resumeId provided, verify it belongs to user
-        if (resumeId) {
-            const resume = await Resume.findOne({
-                _id: resumeId,
-                userId,
-                isActive: true
-            });
-
-            if (!resume) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Resume not found or access denied"
-                });
-            }
-        }
-
         // Calculate processing time
         const processingTime = Date.now() - startTime;
 
@@ -85,6 +58,7 @@ export const saveResumeScore = async (req, res) => {
             score,
             scoreBreakdown,
             processingTime,
+            resumeId: null, // ATS uploads don't have associated Resume documents
             ...req.body // Include other optional fields like jobTitle, companyName, etc.
         };
 
@@ -138,7 +112,6 @@ export const getUserScoreHistory = async (req, res) => {
             isActive: true
         })
             .populate('userId', 'name email')
-            .populate('resumeId', 'fullName version')
             .sort(sort)
             .limit(limit)
             .skip(skip);
@@ -195,7 +168,6 @@ export const getLatestScore = async (req, res) => {
             isActive: true
         })
             .populate('userId', 'name email')
-            .populate('resumeId', 'fullName version')
             .sort({ createdAt: -1 });
 
         if (!latestScore) {
