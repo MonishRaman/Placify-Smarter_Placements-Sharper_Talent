@@ -9,6 +9,7 @@ import RegistrationHeader from "../../components/RegistrationHeader";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import apiClient from "../../api/apiClient"; // Import the new apiClient
+import { CheckCircle, XCircle } from "lucide-react";
 
 export default function EmployeeForm() {
   const navigate = useNavigate();
@@ -23,6 +24,24 @@ export default function EmployeeForm() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  // Track password validation
+const [passwordRules, setPasswordRules] = useState({
+  length: false,
+  upper: false,
+  lower: false,
+  number: false,
+  special: false,
+});
+
+const validatePassword = (password) => {
+  setPasswordRules({
+    length: password.length >= 8,
+    upper: /[A-Z]/.test(password),
+    lower: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  });
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -154,6 +173,7 @@ export default function EmployeeForm() {
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
+
               type="password"
               label="Password"
               value={formData.password}
@@ -165,6 +185,7 @@ export default function EmployeeForm() {
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
+
             <FormInput
               type="password"
               label="Confirm Password"

@@ -9,7 +9,7 @@ import RegistrationHeader from "../../components/RegistrationHeader";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import apiClient from "../../api/apiClient";
-
+import { CheckCircle, XCircle } from "lucide-react";
 export default function StudentForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -23,6 +23,24 @@ export default function StudentForm() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  // Track password validation
+const [passwordRules, setPasswordRules] = useState({
+  length: false,
+  upper: false,
+  lower: false,
+  number: false,
+  special: false,
+});
+
+const validatePassword = (password) => {
+  setPasswordRules({
+    length: password.length >= 8,
+    upper: /[A-Z]/.test(password),
+    lower: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  });
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -173,13 +191,40 @@ export default function StudentForm() {
               type="password"
               label="Password"
               value={formData.password}
+
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
               onCopy={(e) => e.preventDefault()}
               onPaste={(e) => e.preventDefault()}
               required
+
             />
+            <div className="mt-2 space-y-1 text-sm">
+  {[
+    { label: "At least 8 characters", key: "length" },
+    { label: "One uppercase letter", key: "upper" },
+    { label: "One lowercase letter", key: "lower" },
+    { label: "One number", key: "number" },
+    { label: "One special character", key: "special" },
+  ].map((rule) => (
+    <div key={rule.key} className="flex items-center gap-2">
+      {passwordRules[rule.key] ? (
+        <CheckCircle className="text-green-500 w-4 h-4" />
+      ) : (
+        <XCircle className="text-red-500 w-4 h-4" />
+      )}
+      <span
+        className={
+          passwordRules[rule.key] ? "text-green-600" : "text-red-500"
+        }
+      >
+        {rule.label}
+      </span>
+    </div>
+  ))}
+</div>
+
             <FormInput
               type="password"
               label="Confirm Password"
