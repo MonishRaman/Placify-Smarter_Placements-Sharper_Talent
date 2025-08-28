@@ -197,7 +197,7 @@ const Footer = () => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.5 }}
           onClick={scrollToTop}
-          className="fixed bottom-24 right-6 z-50 bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
+          className="fixed bottom-4 right-6 z-50 bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
           aria-label="Back to top"
         >
           <ArrowUp className="w-6 h-6 group-hover:-translate-y-0.5 transition-transform" />
