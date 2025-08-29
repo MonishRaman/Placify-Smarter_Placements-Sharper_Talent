@@ -10,7 +10,7 @@ const baseUserSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: ["admin", "company", "employee", "student","institution"],
-      default: "candidate"
+      default: "student"
     },
 
     // Common fields
