@@ -12,11 +12,16 @@ import {
   X,
   ExternalLink,
   Heart,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Footer = () => {
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: "", type: "" });
 
   // Show back to top button when scrolling
   React.useEffect(() => {
@@ -29,6 +34,49 @@ const Footer = () => {
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const showToast = (message, type = "success") => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: "", type: "" });
+    }, 3000);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!email) {
+      showToast("Please enter your email address", "error");
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      showToast("Please enter a valid email address", "error");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      // In a real application, you would make an API call here
+      // const response = await fetch('/api/newsletter', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ email })
+      // });
+
+      // For demo purposes, we'll assume it was successful
+      showToast("Successfully subscribed to our newsletter!", "success");
+      setEmail("");
+    } catch (error) {
+      showToast("Failed to subscribe. Please try again later.", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const navigationLinks = [
@@ -71,7 +119,7 @@ const Footer = () => {
       <footer className="bg-gradient-to-t from-purple-300 to-purple-100 dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-200 border-t border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Main Footer Content */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8">
             {/* About Placify Section */}
             <div className="lg:col-span-2">
               <div className="flex items-center space-x-3 mb-3">
@@ -136,6 +184,39 @@ const Footer = () => {
                   </li>
                 ))}
               </ul>
+            </div>
+
+            {/* Newsletter Section */}
+            <div className="md:col-span-2 lg:col-span-1">
+              <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+                Stay Updated
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                Subscribe to our newsletter for the latest updates and tips on
+                interview preparation.
+              </p>
+              <form onSubmit={handleSubmit} className="space-y-3">
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                    disabled={isSubmitting}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white rounded-lg transition-colors duration-200 text-sm font-medium whitespace-nowrap"
+                  >
+                    {isSubmitting ? "Subscribing..." : "Subscribe"}
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  We respect your privacy. Unsubscribe at any time.
+                </p>
+              </form>
             </div>
           </div>
 
@@ -203,6 +284,29 @@ const Footer = () => {
           <ArrowUp className="w-6 h-6 group-hover:-translate-y-0.5 transition-transform" />
         </motion.button>
       )}
+
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast.show && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.3 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
+            className={`fixed bottom-4 right-4 flex items-center space-x-2 p-4 rounded-lg shadow-lg z-50 ${
+              toast.type === "error"
+                ? "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
+                : "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
+            }`}
+          >
+            {toast.type === "error" ? (
+              <XCircle className="w-5 h-5" />
+            ) : (
+              <CheckCircle className="w-5 h-5" />
+            )}
+            <span className="text-sm font-medium">{toast.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
