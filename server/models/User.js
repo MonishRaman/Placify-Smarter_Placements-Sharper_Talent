@@ -9,8 +9,8 @@ const baseUserSchema = new mongoose.Schema(
     role: {
       type: String,
       required: true,
-      enum: ["admin", "employer", "candidate", "student"],
-      default: "candidate"
+      enum: ["admin", "company", "employee", "student","institution"],
+      default: "student"
     },
 
     // Common fields
@@ -22,9 +22,6 @@ const baseUserSchema = new mongoose.Schema(
     education: { type: String },
     profileImage: { type: String },
 
-    // Employer-specific fields
-    companyName: { type: String },
-    companyWebsite: { type: String },
 
     // Candidate-specific fields
     resume: { type: String },  // Legacy field for backward compatibility
