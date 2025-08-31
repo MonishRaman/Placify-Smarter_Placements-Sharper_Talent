@@ -226,44 +226,44 @@ function scoreParseability(resumeText) {
   return { score: 100, note: "Good amount of selectable text.", chars };
 }
 
-export async function scoreResumeMultiFactor(resumeText, jobDescription, opts = {}) {
-  // weights (sum to 100). If you enable real LLM semantic scoring later, bump semantic to ~25–35.
-  const weights = {
-    keywords: 35,
-    semantic: 10,         // heuristic + fuzz (no LLM). Set to 0 if you dislike.
-    structure: 15,
-    grammar: 10,
-    actionImpact: 15,
-    recency: 10,
-    parseability: 5
-  };
+// export async function scoreResumeMultiFactor(resumeText, jobDescription, opts = {}) {
+//   // weights (sum to 100). If you enable real LLM semantic scoring later, bump semantic to ~25–35.
+//   const weights = {
+//     keywords: 35,
+//     semantic: 10,         // heuristic + fuzz (no LLM). Set to 0 if you dislike.
+//     structure: 15,
+//     grammar: 10,
+//     actionImpact: 15,
+//     recency: 10,
+//     parseability: 5
+//   };
 
-  const keywords = scoreKeywords(resumeText, jobDescription);
-  const semantic = scoreSemantic(resumeText, jobDescription);
-  const structure = scoreStructure(resumeText);
-  const grammar = await scoreGrammar(resumeText);
-  const actionImpact = scoreActionImpact(resumeText);
-  const recency = scoreRecency(resumeText);
-  const parseability = scoreParseability(resumeText);
+//   const keywords = scoreKeywords(resumeText, jobDescription);
+//   const semantic = scoreSemantic(resumeText, jobDescription);
+//   const structure = scoreStructure(resumeText);
+//   const grammar = await scoreGrammar(resumeText);
+//   const actionImpact = scoreActionImpact(resumeText);
+//   const recency = scoreRecency(resumeText);
+//   const parseability = scoreParseability(resumeText);
 
-  const overall =
-      (keywords.score * weights.keywords) +
-      (semantic.score * weights.semantic) +
-      (structure.score * weights.structure) +
-      (grammar.score * weights.grammar) +
-      (actionImpact.score * weights.actionImpact) +
-      (recency.score * weights.recency) +
-      (parseability.score * weights.parseability);
+//   const overall =
+//       (keywords.score * weights.keywords) +
+//       (semantic.score * weights.semantic) +
+//       (structure.score * weights.structure) +
+//       (grammar.score * weights.grammar) +
+//       (actionImpact.score * weights.actionImpact) +
+//       (recency.score * weights.recency) +
+//       (parseability.score * weights.parseability);
 
-  const totalWeight = Object.values(weights).reduce((a,b)=>a+b,0);
-  const overallScore = Math.round(overall / totalWeight);
+//   const totalWeight = Object.values(weights).reduce((a,b)=>a+b,0);
+//   const overallScore = Math.round(overall / totalWeight);
 
-  return {
-    overallScore,
-    weights,
-    factors: { keywords, semantic, structure, grammar, actionImpact, recency, parseability },
-  };
-}
+//   return {
+//     overallScore,
+//     weights,
+//     factors: { keywords, semantic, structure, grammar, actionImpact, recency, parseability },
+//   };
+// }
 
 // --- factor 2: semantic similarity (NLP-based) ---
 async function scoreSemanticNLP(resumeText, jdText) {
