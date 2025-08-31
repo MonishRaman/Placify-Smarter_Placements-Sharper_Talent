@@ -180,13 +180,11 @@ const StudentDashboard = () => {
 
       <div className="flex">
         {/* Sidebar Navigation */}
-        <div className="w-64 bg-white dark:bg-gray-800 border-r dark:border-gray-700 min-h-screen">
-          <div className="p-4">
+        <div className="w-52 bg-white dark:bg-gray-800 border-r dark:border-gray-700 min-h-screen">
+          <div className="py-4 px-1">
             <nav className="space-y-2">
               {[
                 { id: 'overview', label: 'Overview', icon: BarChart3 },
-                { id: 'aptitude', label: 'Aptitude Tests', icon: Brain },
-                { id: 'interviews', label: 'Mock Interviews', icon: Users },
                 { id: 'resume', label: 'Resume Analysis', icon: FileText },
                 { id: 'goals', label: 'Goals & Progress', icon: Target },
                 { id: 'analytics', label: 'Analytics', icon: TrendingUp },
