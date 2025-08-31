@@ -5,3 +5,4 @@ librosa
 transformers
 scikit-learn
 speechrecognition
+rapidfuzz
