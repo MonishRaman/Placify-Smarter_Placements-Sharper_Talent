@@ -109,15 +109,15 @@ const LandingPage = () => {
         <motion.nav
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-in-out ${
             isScrolled
-              ? "backdrop-blur-lg bg-white/90 dark:bg-gray-900/90 shadow-lg border-b border-gray-200/80 dark:border-gray-700/80"
-              : "backdrop-blur-md bg-purple-600/20 dark:bg-purple-800/30 border-b border-purple-300/30 dark:border-purple-600/40"
+              ? "backdrop-blur-xl bg-white/80 dark:bg-gray-900/85 shadow-xl border-b border-gray-200/60 dark:border-gray-700/60"
+              : "backdrop-blur-lg bg-purple-600/15 dark:bg-purple-800/25 border-b border-purple-300/20 dark:border-purple-600/30"
           }`}
           style={{
-            backdropFilter: isScrolled ? "blur(16px)" : "blur(12px)",
-            WebkitBackdropFilter: isScrolled ? "blur(16px)" : "blur(12px)",
+            backdropFilter: isScrolled ? "blur(20px)" : "blur(16px)",
+            WebkitBackdropFilter: isScrolled ? "blur(20px)" : "blur(16px)",
           }}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -126,22 +126,20 @@ const LandingPage = () => {
               <motion.div
                 initial={{ x: -50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
+                transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
                 className="flex items-center space-x-3"
               >
-                {/* onClick and cursor-pointer are on the icon's div */}
                 <motion.div
-                  whileHover={{ rotate: 360 }}
-                  transition={{ duration: 0.6 }}
-                  className="p-2 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg cursor-pointer"
+                  whileHover={{ rotate: 360, scale: 1.1 }}
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                  className="p-2 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-xl cursor-pointer backdrop-blur-sm"
                   onClick={() => (window.location.href = "/")}
                 >
                   <Brain className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
                 </motion.div>
-                {/* onClick and cursor-pointer are also on the text's span */}
                 <span
                   onClick={() => (window.location.href = "/")}
-                  className={`text-2xl lg:text-3xl font-bold transition-all duration-500 cursor-pointer ${
+                  className={`text-2xl lg:text-3xl font-bold transition-all duration-700 ease-in-out cursor-pointer ${
                     isScrolled
                       ? "bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 bg-clip-text text-transparent"
                       : "text-white dark:text-gray-100"
@@ -155,18 +153,20 @@ const LandingPage = () => {
               <motion.div
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
                 className="hidden lg:flex items-center space-x-6"
               >
                 {/* Sign In Button - Only show if not authenticated */}
                 {!loading && !isAuthenticated && (
                   <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
-                    className={`relative px-6 py-2.5 font-medium rounded-xl transition-all duration-300 hover-lift will-change-transform
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className={`relative px-6 py-2.5 font-medium rounded-xl transition-all duration-500 ease-in-out hover-lift will-change-transform backdrop-blur-sm
                              ${
                                isScrolled
-                                 ? "text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 before:absolute before:inset-0 before:rounded-xl before:bg-gray-100 dark:before:bg-gray-800 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
-                                 : "text-white/90 dark:text-gray-100/90 hover:text-white dark:hover:text-white before:absolute before:inset-0 before:rounded-xl before:bg-white/10 dark:before:bg-white/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
+                                 ? "text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 before:absolute before:inset-0 before:rounded-xl before:bg-gray-100/70 dark:before:bg-gray-800/70 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:backdrop-blur-md"
+                                 : "text-white/90 dark:text-gray-100/90 hover:text-white dark:hover:text-white before:absolute before:inset-0 before:rounded-xl before:bg-white/15 dark:before:bg-white/25 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:backdrop-blur-md"
                              }`}
                     onClick={() => navigate("/auth")}
                   >
@@ -179,11 +179,13 @@ const LandingPage = () => {
 
                 {/* Get Started Button */}
                 <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`relative px-6 py-2.5 font-semibold rounded-xl shadow-lg transition-all duration-300 overflow-hidden group btn-hover ${
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className={`relative px-6 py-2.5 font-semibold rounded-xl shadow-xl transition-all duration-500 ease-in-out overflow-hidden group btn-hover backdrop-blur-md ${
                     isScrolled
                       ? "bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 text-white"
-                      : "bg-white dark:bg-gray-100 text-purple-600 dark:text-purple-700"
+                      : "bg-white/90 dark:bg-gray-100/90 text-purple-600 dark:text-purple-700 backdrop-blur-xl"
                   }`}
                   onClick={handleGetStarted}
                 >
@@ -200,38 +202,45 @@ const LandingPage = () => {
                       className="absolute inset-0 bg-gradient-to-r from-purple-700 to-indigo-700 dark:from-purple-600 dark:to-indigo-600"
                       initial={{ x: "100%" }}
                       whileHover={{ x: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.4, ease: "easeInOut" }}
                     />
                   )}
                 </motion.button>
 
                 {/* Theme Toggle */}
-                <ThemeToggle />
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                  <ThemeToggle />
+                </motion.div>
               </motion.div>
+
               {/* Mobile Menu Button */}
               <motion.button
                 initial={{ x: 50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className={`lg:hidden p-2 rounded-xl transition-all duration-300 will-change-transform hover-lift ${
+                className={`lg:hidden p-2 rounded-xl transition-all duration-500 ease-in-out will-change-transform hover-lift backdrop-blur-md ${
                   isScrolled
-                    ? "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
-                    : "bg-white/10 dark:bg-white/20 hover:bg-white/20 dark:hover:bg-white/30"
+                    ? "bg-gray-100/70 dark:bg-gray-800/70 hover:bg-gray-200/70 dark:hover:bg-gray-700/70"
+                    : "bg-white/15 dark:bg-white/25 hover:bg-white/25 dark:hover:bg-white/35"
                 }`}
               >
                 <AnimatePresence mode="wait">
                   {isMobileMenuOpen ? (
                     <motion.div
                       key="close"
-                      initial={{ rotate: -90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: 90, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
+                      initial={{ rotate: -90, opacity: 0, scale: 0.8 }}
+                      animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                      exit={{ rotate: 90, opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
                     >
                       <X
-                        className={`w-5 h-5 ${
+                        className={`w-5 h-5 transition-colors duration-300 ${
                           isScrolled
                             ? "text-gray-600 dark:text-gray-300"
                             : "text-white dark:text-gray-100"
@@ -241,13 +250,13 @@ const LandingPage = () => {
                   ) : (
                     <motion.div
                       key="menu"
-                      initial={{ rotate: 90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: -90, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
+                      initial={{ rotate: 90, opacity: 0, scale: 0.8 }}
+                      animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                      exit={{ rotate: -90, opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
                     >
                       <Menu
-                        className={`w-5 h-5 ${
+                        className={`w-5 h-5 transition-colors duration-300 ${
                           isScrolled
                             ? "text-gray-600 dark:text-gray-300"
                             : "text-white dark:text-gray-100"
@@ -258,22 +267,23 @@ const LandingPage = () => {
                 </AnimatePresence>
               </motion.button>
             </div>
+
             {/* Mobile Menu */}
             <AnimatePresence>
               {isMobileMenuOpen && (
                 <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className={`lg:hidden overflow-hidden border-t transition-colors duration-300 ${
+                  initial={{ height: 0, opacity: 0, y: -20 }}
+                  animate={{ height: "auto", opacity: 1, y: 0 }}
+                  exit={{ height: 0, opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  className={`lg:hidden overflow-hidden border-t transition-colors duration-500 ${
                     isScrolled
-                      ? "border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95"
-                      : "border-purple-300/30 dark:border-purple-600/40 bg-purple-600/20 dark:bg-purple-800/30"
+                      ? "border-gray-200/60 dark:border-gray-700/60 bg-white/85 dark:bg-gray-900/85"
+                      : "border-purple-300/25 dark:border-purple-600/35 bg-purple-600/15 dark:bg-purple-800/25"
                   }`}
                   style={{
-                    backdropFilter: "blur(16px)",
-                    WebkitBackdropFilter: "blur(16px)",
+                    backdropFilter: "blur(20px)",
+                    WebkitBackdropFilter: "blur(20px)",
                   }}
                 >
                   <div className="py-4 space-y-3">
@@ -282,16 +292,17 @@ const LandingPage = () => {
                       <motion.button
                         initial={{ x: -20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
-                        transition={{ delay: 0.1 }}
+                        transition={{ delay: 0.1, duration: 0.5, ease: "easeOut" }}
+                        whileHover={{ x: 4, scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => {
                           navigate("/auth");
                           setIsMobileMenuOpen(false);
                         }}
-                        className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 flex items-center space-x-3 will-change-transform hover-lift ${
+                        className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-500 ease-in-out flex items-center space-x-3 will-change-transform hover-lift backdrop-blur-sm ${
                           isScrolled
-                            ? "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-                            : "text-white/90 dark:text-gray-100/90 hover:bg-white/10 dark:hover:bg-white/20"
+                            ? "text-gray-700 dark:text-gray-200 hover:bg-gray-100/70 dark:hover:bg-gray-800/70"
+                            : "text-white/90 dark:text-gray-100/90 hover:bg-white/15 dark:hover:bg-white/25"
                         }`}
                       >
                         <User className="w-5 h-5" />
@@ -302,16 +313,17 @@ const LandingPage = () => {
                     <motion.button
                       initial={{ x: -20, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.2 }}
+                      transition={{ delay: 0.2, duration: 0.5, ease: "easeOut" }}
+                      whileHover={{ x: 4, scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => {
                         handleGetStarted();
                         setIsMobileMenuOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 flex items-center space-x-3 will-change-transform hover-lift ${
+                      className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-500 ease-in-out flex items-center space-x-3 will-change-transform hover-lift backdrop-blur-md ${
                         isScrolled
                           ? "bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 text-white"
-                          : "bg-white dark:bg-gray-100 text-purple-600 dark:text-purple-700"
+                          : "bg-white/90 dark:bg-gray-100/90 text-purple-600 dark:text-purple-700"
                       }`}
                     >
                       <Zap className="w-5 h-5" />
@@ -321,14 +333,15 @@ const LandingPage = () => {
                           : "Get Started"}
                       </span>
                     </motion.button>
+
                     <motion.div
                       initial={{ x: -20, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.3 }}
+                      transition={{ delay: 0.3, duration: 0.5, ease: "easeOut" }}
                       className="flex items-center justify-between px-4 py-3"
                     >
                       <span
-                        className={`transition-colors duration-300 ${
+                        className={`transition-colors duration-500 ${
                           isScrolled
                             ? "text-gray-700 dark:text-gray-200"
                             : "text-white/90 dark:text-gray-100/90"
@@ -351,18 +364,59 @@ const LandingPage = () => {
         id="hero-section"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.5 }}
+        transition={{ duration: 1.2, delay: 0.5, ease: "easeOut" }}
         className="relative min-h-screen bg-gradient-to-br from-black via-purple-700 to-black dark:from-purple-800 dark:via-purple-900 dark:to-indigo-950 text-white transition-colors duration-300 pt-24 lg:pt-28 overflow-hidden"
       >
-        {/* Background Pattern/Decoration */}
-        <div className="absolute inset-0 opacity-10 dark:opacity-5">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-white dark:bg-purple-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-yellow-200 dark:bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
-          <div className="absolute bottom-20 left-20 w-72 h-72 bg-pink-200 dark:bg-purple-400 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-4000"></div>
+        {/* Enhanced Background Pattern/Decoration */}
+        <div className="absolute inset-0 opacity-15 dark:opacity-8">
+          <motion.div 
+            className="absolute top-20 left-10 w-96 h-96 bg-white dark:bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl"
+            animate={{
+              scale: [1, 1.2, 1],
+              x: [0, 50, 0],
+              y: [0, -30, 0],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.div 
+            className="absolute top-40 right-10 w-96 h-96 bg-yellow-200 dark:bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl"
+            animate={{
+              scale: [1, 1.3, 1],
+              x: [0, -40, 0],
+              y: [0, 40, 0],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2,
+            }}
+          />
+          <motion.div 
+            className="absolute bottom-20 left-20 w-96 h-96 bg-pink-200 dark:bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl"
+            animate={{
+              scale: [1, 1.1, 1],
+              x: [0, 30, 0],
+              y: [0, -50, 0],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 4,
+            }}
+          />
         </div>
 
-        {/* Grid Pattern Overlay */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-5 dark:opacity-3"></div>
+        {/* Enhanced Grid Pattern Overlay */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-8 dark:opacity-5" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)`,
+          backgroundSize: '50px 50px'
+        }}></div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-15 pb-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-200px)]">
@@ -371,14 +425,14 @@ const LandingPage = () => {
               className="text-center lg:text-left space-y-8"
               initial={{ x: -100, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
+              transition={{ duration: 1, delay: 0.7, ease: "easeOut" }}
             >
               {/* Badge */}
               <motion.div
-                initial={{ y: 30, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.8 }}
-                className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 dark:bg-white/20 backdrop-blur-sm border border-white/20 dark:border-white/30 text-sm font-medium"
+                initial={{ y: 30, opacity: 0, scale: 0.9 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
+                className="inline-flex items-center px-4 py-2 rounded-full bg-white/15 dark:bg-white/25 backdrop-blur-xl border border-white/25 dark:border-white/35 text-sm font-medium shadow-xl"
               >
                 <Brain className="w-4 h-4 mr-2" />
                 AI-Powered Recruitment & Skill Assessment
@@ -388,23 +442,41 @@ const LandingPage = () => {
               <motion.h1
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.9 }}
+                transition={{ duration: 1, delay: 0.9, ease: "easeOut" }}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
               >
-                <span className="block">Placify:</span>
-                <span className="block bg-gradient-to-r from-yellow-300 to-orange-300 dark:from-yellow-400 dark:to-orange-400 bg-clip-text text-transparent">
+                <motion.span 
+                  className="block"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 1.1 }}
+                >
+                  Placify:
+                </motion.span>
+                <motion.span 
+                  className="block bg-gradient-to-r from-yellow-300 to-orange-300 dark:from-yellow-400 dark:to-orange-400 bg-clip-text text-transparent"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 1.3 }}
+                >
                   Smarter Placements.
-                </span>
-                <span className="block text-purple-200 dark:text-purple-300 text-3xl md:text-4xl lg:text-5xl mt-2">
+                </motion.span>
+                <motion.span 
+                  className="block text-purple-200 dark:text-purple-300 text-3xl md:text-4xl lg:text-5xl mt-2"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 1.5 }}
+                >
                   Sharper Talent.
-                </span>
+                </motion.span>
               </motion.h1>
+
               {/* Subtitle */}
               <motion.p
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, delay: 1.1 }}
-                className="text-lg md:text-l text-purple-100 dark:text-purple-200 leading-relaxed max-w-2xl lg:max-w-none"
+                transition={{ duration: 0.8, delay: 1.7, ease: "easeOut" }}
+                className="text-lg md:text-l text-purple-100 dark:text-purple-200 leading-relaxed max-w-2xl lg:max-w-none backdrop-blur-sm"
               >
                 Revolutionize campus placements with our AI-powered platform
                 that streamlines 60-70% of recruitment processes. From automated
@@ -416,46 +488,49 @@ const LandingPage = () => {
               <motion.div
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, delay: 1.2 }}
+                transition={{ duration: 0.8, delay: 1.9, ease: "easeOut" }}
                 className="flex flex-wrap justify-center lg:justify-start gap-8 text-sm"
               >
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-yellow-300 dark:text-yellow-400">
-                    60-70%
-                  </div>
-                  <div className="text-purple-200 dark:text-purple-300">
-                    Process Automation
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-300 dark:text-green-400">
-                    10x
-                  </div>
-                  <div className="text-purple-200 dark:text-purple-300">
-                    Faster Screening
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-300 dark:text-blue-400">
-                    500+
-                  </div>
-                  <div className="text-purple-200 dark:text-purple-300">
-                    Students per Day
-                  </div>
-                </div>
+                {[
+                  { value: "60-70%", label: "Process Automation", color: "yellow" },
+                  { value: "10x", label: "Faster Screening", color: "green" },
+                  { value: "500+", label: "Students per Day", color: "blue" }
+                ].map((stat, index) => (
+                  <motion.div
+                    key={index}
+                    className="text-center backdrop-blur-sm bg-white/5 dark:bg-white/10 rounded-lg p-3"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 2.1 + index * 0.1 }}
+                  >
+                    <div className={`text-2xl font-bold ${
+                      stat.color === 'yellow' ? 'text-yellow-300 dark:text-yellow-400' :
+                      stat.color === 'green' ? 'text-green-300 dark:text-green-400' :
+                      'text-blue-300 dark:text-blue-400'
+                    }`}>
+                      {stat.value}
+                    </div>
+                    <div className="text-purple-200 dark:text-purple-300">
+                      {stat.label}
+                    </div>
+                  </motion.div>
+                ))}
               </motion.div>
 
               {/* CTA Buttons */}
               <motion.div
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, delay: 1.4 }}
+                transition={{ duration: 0.8, delay: 2.5, ease: "easeOut" }}
                 className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
               >
                 {/* Primary CTA Button */}
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -3 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
                   onClick={handleGetStarted}
-                  className="group relative inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-purple-700 dark:text-purple-800 bg-white dark:bg-gray-100 rounded-2xl shadow-xl transition-all duration-200 overflow-hidden btn-hover"
+                  className="group relative inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-purple-700 dark:text-purple-800 bg-white/95 dark:bg-gray-100/95 rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden btn-hover backdrop-blur-xl"
                 >
                   <span className="relative z-10 flex items-center space-x-2">
                     <Zap className="w-5 h-5" />
@@ -464,62 +539,70 @@ const LandingPage = () => {
                         ? "Go to Dashboard"
                         : "Transform Your Placements"}
                     </span>
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </span>
-                </button>
+                </motion.button>
 
                 {/* Secondary CTA Button */}
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -3 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
                   onClick={() => {
                     document
                       .getElementById("works")
                       ?.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white border-2 border-white/30 dark:border-white/40 rounded-2xl hover:bg-white/10 dark:hover:bg-white/20 hover:border-white/50 dark:hover:border-white/60 transition-all duration-200 backdrop-blur-sm hover-lift will-change-transform"
+                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white border-2 border-white/40 dark:border-white/50 rounded-2xl hover:bg-white/15 dark:hover:bg-white/25 hover:border-white/60 dark:hover:border-white/70 transition-all duration-300 backdrop-blur-xl hover-lift will-change-transform"
                 >
                   <span className="flex items-center space-x-2">
                     <Target className="w-5 h-5" />
                     <span>Try Our New Resume Builder</span>
                   </span>
-                </button>
+                </motion.button>
               </motion.div>
 
               {/* Trust Indicators */}
               <motion.div
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, delay: 1.6 }}
+                transition={{ duration: 0.8, delay: 2.8, ease: "easeOut" }}
                 className="flex items-center justify-center lg:justify-start space-x-6 text-sm text-purple-200 dark:text-purple-300"
               >
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-300 dark:text-green-400" />
-                  <span>AI-Powered Screening</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-300 dark:text-green-400" />
-                  <span>Adaptive Assessments</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-300 dark:text-green-400" />
-                  <span>Real-time Analytics</span>
-                </div>
+                {[
+                  "AI-Powered Screening",
+                  "Adaptive Assessments", 
+                  "Real-time Analytics"
+                ].map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    className="flex items-center space-x-2 backdrop-blur-sm bg-white/5 dark:bg-white/10 rounded-full px-3 py-1"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 3 + index * 0.1 }}
+                  >
+                    <CheckCircle className="w-4 h-4 text-green-300 dark:text-green-400" />
+                    <span>{feature}</span>
+                  </motion.div>
+                ))}
               </motion.div>
             </motion.div>
+
             {/* Right Column - AI Image/Illustration */}
             <motion.div
               className="relative"
               initial={{ x: 100, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 1.0 }}
+              transition={{ duration: 1, delay: 1.2, ease: "easeOut" }}
             >
               {/* Main Image Container */}
               <div className="relative">
-                {/* Glowing background effect */}
+                {/* Enhanced glowing background effect */}
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-300 to-indigo-400 dark:from-purple-500 dark:via-pink-400 dark:to-indigo-500 rounded-3xl blur-3xl opacity-30 dark:opacity-20"
+                  className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-300 to-indigo-400 dark:from-purple-500 dark:via-pink-400 dark:to-indigo-500 rounded-3xl blur-3xl opacity-40 dark:opacity-25"
                   animate={{
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, 0],
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 10, 0],
                   }}
                   transition={{
                     duration: 8,
@@ -527,13 +610,18 @@ const LandingPage = () => {
                     ease: "easeInOut",
                   }}
                 />
+
                 {/* AI Generated Image Placeholder */}
-                <div className="relative bg-gradient-to-br from-white/20 to-white/5 dark:from-white/10 dark:to-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/20 dark:border-white/30 shadow-2xl transition-all duration-200 hover:-translate-y-2 will-change-transform">
+                <motion.div 
+                  className="relative bg-gradient-to-br from-white/25 to-white/10 dark:from-white/15 dark:to-white/5 backdrop-blur-2xl rounded-3xl p-8 border border-white/30 dark:border-white/40 shadow-2xl transition-all duration-500 hover:-translate-y-3 will-change-transform"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                >
                   {/* Mock AI Interview Scene */}
-                  <div className="aspect-square bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100 dark:from-purple-900/40 dark:via-blue-900/40 dark:to-indigo-900/40 rounded-2xl p-6 relative overflow-hidden">
+                  <div className="aspect-square bg-gradient-to-br from-purple-100/80 via-blue-50/80 to-indigo-100/80 dark:from-purple-900/50 dark:via-blue-900/50 dark:to-indigo-900/50 rounded-2xl p-6 relative overflow-hidden backdrop-blur-xl">
                     {/* Floating AI Elements */}
                     <motion.div
-                      className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 dark:from-purple-400 dark:to-indigo-400 rounded-full flex items-center justify-center"
+                      className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 dark:from-purple-400 dark:to-indigo-400 rounded-full flex items-center justify-center shadow-xl backdrop-blur-sm"
                       animate={{ rotate: 360 }}
                       transition={{
                         duration: 20,
@@ -543,96 +631,89 @@ const LandingPage = () => {
                     >
                       <Brain className="w-6 h-6 text-white" />
                     </motion.div>
+
                     {/* Interview Simulation Visualization */}
                     <div className="space-y-4">
                       {/* User Avatar */}
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 dark:from-purple-500 dark:to-pink-500 rounded-full flex items-center justify-center">
+                      <motion.div 
+                        className="flex items-center space-x-3"
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ duration: 0.8, delay: 2 }}
+                      >
+                        <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 dark:from-purple-500 dark:to-pink-500 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm">
                           <User className="w-6 h-6 text-white" />
                         </div>
                         <div className="flex-1">
-                          <div className="h-3 bg-purple-200 dark:bg-purple-600 rounded-full mb-2"></div>
-                          <div className="h-2 bg-purple-100 dark:bg-purple-700 rounded-full w-3/4"></div>
+                          <motion.div 
+                            className="h-3 bg-purple-200/80 dark:bg-purple-600/80 rounded-full mb-2 backdrop-blur-sm"
+                            initial={{ width: 0 }}
+                            animate={{ width: "100%" }}
+                            transition={{ duration: 1.5, delay: 2.2 }}
+                          />
+                          <motion.div 
+                            className="h-2 bg-purple-100/80 dark:bg-purple-700/80 rounded-full w-3/4 backdrop-blur-sm"
+                            initial={{ width: 0 }}
+                            animate={{ width: "75%" }}
+                            transition={{ duration: 1.2, delay: 2.5 }}
+                          />
                         </div>
-                      </div>
+                      </motion.div>
 
                       {/* AI Analysis Bars */}
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-xs text-purple-700 dark:text-purple-300">
-                          <span>Technical Skills</span>
-                          <span>92%</span>
-                        </div>
-                        <motion.div
-                          className="h-2 bg-purple-100 dark:bg-purple-800 rounded-full overflow-hidden"
-                          initial={{ width: 0 }}
-                          animate={{ width: "100%" }}
-                          transition={{ duration: 2, delay: 2 }}
-                        >
-                          <motion.div
-                            className="h-full bg-gradient-to-r from-green-400 to-emerald-500 dark:from-green-500 dark:to-emerald-600 rounded-full"
-                            initial={{ width: "0%" }}
-                            animate={{ width: "92%" }}
-                            transition={{ duration: 2, delay: 2.5 }}
-                          />
-                        </motion.div>
-
-                        <div className="flex items-center justify-between text-xs text-purple-700 dark:text-purple-300">
-                          <span>Communication</span>
-                          <span>88%</span>
-                        </div>
-                        <motion.div
-                          className="h-2 bg-purple-100 dark:bg-purple-800 rounded-full overflow-hidden"
-                          initial={{ width: 0 }}
-                          animate={{ width: "100%" }}
-                          transition={{ duration: 2, delay: 2.2 }}
-                        >
-                          <motion.div
-                            className="h-full bg-gradient-to-r from-blue-400 to-cyan-500 dark:from-blue-500 dark:to-cyan-600 rounded-full"
-                            initial={{ width: "0%" }}
-                            animate={{ width: "88%" }}
-                            transition={{ duration: 2, delay: 2.7 }}
-                          />
-                        </motion.div>
-
-                        <div className="flex items-center justify-between text-xs text-purple-700 dark:text-purple-300">
-                          <span>Industry Readiness</span>
-                          <span>95%</span>
-                        </div>
-                        <motion.div
-                          className="h-2 bg-purple-100 dark:bg-purple-800 rounded-full overflow-hidden"
-                          initial={{ width: 0 }}
-                          animate={{ width: "100%" }}
-                          transition={{ duration: 2, delay: 2.4 }}
-                        >
-                          <motion.div
-                            className="h-full bg-gradient-to-r from-purple-400 to-pink-500 dark:from-purple-500 dark:to-pink-600 rounded-full"
-                            initial={{ width: "0%" }}
-                            animate={{ width: "95%" }}
-                            transition={{ duration: 2, delay: 2.9 }}
-                          />
-                        </motion.div>
+                      <div className="space-y-3">
+                        {[
+                          { label: "Technical Skills", percentage: 92, color: "green" },
+                          { label: "Communication", percentage: 88, color: "blue" },
+                          { label: "Industry Readiness", percentage: 95, color: "purple" }
+                        ].map((skill, index) => (
+                          <div key={index}>
+                            <div className="flex items-center justify-between text-xs text-purple-700/90 dark:text-purple-300/90 mb-1">
+                              <span className="font-medium">{skill.label}</span>
+                              <span className="font-bold">{skill.percentage}%</span>
+                            </div>
+                            <motion.div
+                              className="h-2 bg-purple-100/60 dark:bg-purple-800/60 rounded-full overflow-hidden backdrop-blur-sm"
+                              initial={{ width: 0 }}
+                              animate={{ width: "100%" }}
+                              transition={{ duration: 1, delay: 2.5 + index * 0.2 }}
+                            >
+                              <motion.div
+                                className={`h-full rounded-full ${
+                                  skill.color === 'green' ? 'bg-gradient-to-r from-green-400 to-emerald-500 dark:from-green-500 dark:to-emerald-600' :
+                                  skill.color === 'blue' ? 'bg-gradient-to-r from-blue-400 to-cyan-500 dark:from-blue-500 dark:to-cyan-600' :
+                                  'bg-gradient-to-r from-purple-400 to-pink-500 dark:from-purple-500 dark:to-pink-600'
+                                }`}
+                                initial={{ width: "0%" }}
+                                animate={{ width: `${skill.percentage}%` }}
+                                transition={{ duration: 1.5, delay: 3 + index * 0.2, ease: "easeOut" }}
+                              />
+                            </motion.div>
+                          </div>
+                        ))}
                       </div>
 
                       {/* Success Indicator */}
                       <motion.div
-                        className="mt-6 p-3 bg-green-100 dark:bg-green-900/40 rounded-xl border-2 border-green-200 dark:border-green-700"
+                        className="mt-6 p-3 bg-green-100/80 dark:bg-green-900/50 rounded-xl border-2 border-green-200/80 dark:border-green-700/80 backdrop-blur-xl"
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 0.5, delay: 3.5 }}
+                        transition={{ duration: 0.8, delay: 4.5, ease: "easeOut" }}
                       >
                         <div className="flex items-center space-x-2 text-green-700 dark:text-green-300">
                           <CheckCircle className="w-5 h-5" />
-                          <span className="text-sm font-medium">
+                          <span className="text-sm font-semibold">
                             Interview Success!
                           </span>
                         </div>
                       </motion.div>
                     </div>
-                    {/* Floating particles */}
-                    {[...Array(6)].map((_, i) => (
+
+                    {/* Enhanced floating particles */}
+                    {[...Array(8)].map((_, i) => (
                       <motion.div
                         key={i}
-                        className="absolute w-2 h-2 bg-purple-300 dark:bg-purple-500 rounded-full"
+                        className="absolute w-2 h-2 bg-purple-300/60 dark:bg-purple-500/60 rounded-full backdrop-blur-sm"
                         style={{
                           top: `${Math.random() * 100}%`,
                           left: `${Math.random() * 100}%`,
@@ -640,29 +721,41 @@ const LandingPage = () => {
                         animate={{
                           y: [-20, 20, -20],
                           opacity: [0.3, 1, 0.3],
+                          scale: [0.8, 1.2, 0.8],
                         }}
                         transition={{
-                          duration: 3 + Math.random() * 2,
+                          duration: 4 + Math.random() * 2,
                           repeat: Infinity,
-                          delay: Math.random() * 2,
+                          delay: Math.random() * 3,
+                          ease: "easeInOut",
                         }}
                       />
                     ))}
                   </div>
 
                   {/* Tech Stack Icons */}
-                  <div className="absolute -bottom-4 -left-4 bg-white dark:bg-gray-800 rounded-xl p-3 shadow-lg">
+                  <motion.div 
+                    className="absolute -bottom-4 -left-4 bg-white/90 dark:bg-gray-800/90 rounded-xl p-3 shadow-xl backdrop-blur-xl"
+                    initial={{ scale: 0, rotate: -10 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ duration: 0.8, delay: 2 }}
+                  >
                     <div className="flex space-x-2">
                       <div className="w-6 h-6 bg-blue-500 dark:bg-blue-400 rounded"></div>
                       <div className="w-6 h-6 bg-green-500 dark:bg-green-400 rounded"></div>
                       <div className="w-6 h-6 bg-purple-500 dark:bg-purple-400 rounded"></div>
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <div className="absolute -top-4 -right-4 bg-white dark:bg-gray-800 rounded-xl p-3 shadow-lg">
+                  <motion.div 
+                    className="absolute -top-4 -right-4 bg-white/90 dark:bg-gray-800/90 rounded-xl p-3 shadow-xl backdrop-blur-xl"
+                    initial={{ scale: 0, rotate: 10 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ duration: 0.8, delay: 2.2 }}
+                  >
                     <Zap className="w-6 h-6 text-yellow-500 dark:text-yellow-400" />
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
               </div>
             </motion.div>
           </div>
@@ -674,7 +767,7 @@ const LandingPage = () => {
         id="features-section"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 1, ease: "easeOut" }}
         viewport={{ once: true, margin: "-100px" }}
         className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300"
       >
@@ -682,7 +775,7 @@ const LandingPage = () => {
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 1, ease: "easeOut" }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
@@ -699,17 +792,26 @@ const LandingPage = () => {
             {features.map((feature, index) => (
               <motion.div
                 key={index}
-                initial={{ y: 50, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
+                initial={{ y: 50, opacity: 0, scale: 0.95 }}
+                whileInView={{ y: 0, opacity: 1, scale: 1 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: index * 0.2,
+                  ease: "easeOut"
+                }}
                 viewport={{ once: true }}
-                className="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl transition-all duration-200 
+                className="bg-gray-50/80 dark:bg-gray-800/80 p-8 rounded-2xl transition-all duration-500 
                            hover:bg-white dark:hover:bg-gray-750 border border-transparent hover:border-purple-100 
-                           dark:hover:border-purple-700 hover:shadow-lg dark:hover:shadow-2xl card-hover"
+                           dark:hover:border-purple-700 hover:shadow-xl dark:hover:shadow-2xl card-hover backdrop-blur-sm"
               >
-                <div className="text-purple-600 dark:text-purple-400 mb-4">
+                <motion.div 
+                  className="text-purple-600 dark:text-purple-400 mb-4"
+                  whileHover={{ scale: 1.2, rotate: 5 }}
+                  transition={{ duration: 0.3 }}
+                >
                   {feature.icon}
-                </div>
+                </motion.div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
                   {feature.title}
                 </h3>
@@ -727,15 +829,15 @@ const LandingPage = () => {
         id="works"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 1, ease: "easeOut" }}
         viewport={{ once: true, margin: "-100px" }}
-        className="py-20 bg-gray-100 dark:bg-gray-800 transition-colors duration-300"
+        className="py-20 bg-gray-100/80 dark:bg-gray-800/80 transition-colors duration-300 backdrop-blur-sm"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 1, ease: "easeOut" }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
@@ -750,35 +852,41 @@ const LandingPage = () => {
           <div className="relative flex items-center justify-between gap-6 md:gap-12 px-4 sm:px-8 lg:px-16">
             {[
               {
-                icon: (
-                  <User className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-                ),
+                icon: <User className="w-8 h-8 text-purple-600 dark:text-purple-400" />,
                 title: "Sign Up",
-                description:
-                  "Create your profile and select your placement goals.",
+                description: "Create your profile and select your placement goals.",
               },
               {
-                icon: (
-                  <Zap className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-                ),
+                icon: <Zap className="w-8 h-8 text-purple-600 dark:text-purple-400" />,
                 title: "Practice",
                 description: "AI-driven mock interviews and custom challenges.",
               },
               {
-                icon: (
-                  <CheckCircle className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-                ),
+                icon: <CheckCircle className="w-8 h-8 text-purple-600 dark:text-purple-400" />,
                 title: "Get Placed",
                 description: "Use feedback to improve and ace real interviews.",
               },
             ].map((step, index) => (
-              <div
+              <motion.div
                 key={index}
                 className="relative flex flex-col items-center text-center w-1/3"
+                initial={{ y: 50, opacity: 0, scale: 0.9 }}
+                whileInView={{ y: 0, opacity: 1, scale: 1 }}
+                whileHover={{ y: -5, scale: 1.05 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: index * 0.3,
+                  ease: "easeOut"
+                }}
+                viewport={{ once: true }}
               >
-                <div className="flex items-center justify-center w-14 h-14 rounded-full bg-white dark:bg-gray-700 shadow-lg z-10 border border-gray-200 dark:border-gray-600">
+                <motion.div 
+                  className="flex items-center justify-center w-14 h-14 rounded-full bg-white/90 dark:bg-gray-700/90 shadow-xl z-10 border border-gray-200/80 dark:border-gray-600/80 backdrop-blur-xl"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.3 }}
+                >
                   {step.icon}
-                </div>
+                </motion.div>
                 <div className="mt-4">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                     {step.title}
@@ -788,11 +896,17 @@ const LandingPage = () => {
                   </p>
                 </div>
 
-                {/* Connector Line */}
+                {/* Enhanced Connector Line */}
                 {index < 2 && (
-                  <div className="absolute top-7 right-[-50%] w-full h-1 bg-purple-300 dark:bg-purple-600 z-0 hidden md:block"></div>
+                  <motion.div 
+                    className="absolute top-7 right-[-50%] w-full h-1 bg-gradient-to-r from-purple-300 to-purple-400 dark:from-purple-600 dark:to-purple-500 z-0 hidden md:block rounded-full"
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    transition={{ duration: 1, delay: index * 0.3 + 0.5 }}
+                    viewport={{ once: true }}
+                  />
                 )}
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -802,16 +916,16 @@ const LandingPage = () => {
       <motion.section
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 1, ease: "easeOut" }}
         viewport={{ once: true, margin: "-100px" }}
-        className="py-20 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-gray-850 transition-colors duration-300"
+        className="py-20 bg-gradient-to-r from-purple-50/80 to-indigo-50/80 dark:from-gray-900/80 dark:to-gray-850/80 transition-colors duration-300 backdrop-blur-sm"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <motion.div
               initial={{ x: -50, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 1, ease: "easeOut" }}
               viewport={{ once: true }}
             >
               <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
@@ -825,64 +939,59 @@ const LandingPage = () => {
                 {benefits.map((benefit, index) => (
                   <motion.div
                     key={index}
-                    initial={{ x: -30, opacity: 0 }}
-                    whileInView={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    initial={{ x: -30, opacity: 0, scale: 0.95 }}
+                    whileInView={{ x: 0, opacity: 1, scale: 1 }}
+                    whileHover={{ x: 5, scale: 1.02 }}
+                    transition={{ 
+                      duration: 0.8, 
+                      delay: index * 0.1,
+                      ease: "easeOut"
+                    }}
                     viewport={{ once: true }}
-                    className="flex items-center space-x-3"
+                    className="flex items-center space-x-3 p-3 rounded-xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300"
                   >
                     <CheckCircle className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
-                    <span className="text-lg text-gray-700 dark:text-gray-200">
+                    <span className="text-lg text-gray-700 dark:text-gray-200 font-medium">
                       {benefit}
                     </span>
                   </motion.div>
                 ))}
               </div>
             </motion.div>
+
             <motion.div
-              initial={{ x: 50, opacity: 0, scale: 0.9 }}
-              whileInView={{ x: 0, opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8 }}
+              initial={{ y: -50, opacity: 0, scale: 0.9 }}
+              whileInView={{ y: 0, opacity: 1, scale: 1 }}
+              whileHover={{ y: -5, scale: 1.02 }}
+              transition={{ duration: 1, ease: "easeOut" }}
               viewport={{ once: true }}
-              className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:scale-105 will-change-transform"
+              className="bg-white/90 dark:bg-gray-800/90 p-8 rounded-2xl shadow-2xl border border-gray-200/60 dark:border-gray-700/60 transition-all duration-500 will-change-transform backdrop-blur-xl"
             >
               <div className="text-center">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  viewport={{ once: true }}
-                  className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2"
-                >
-                  85%
-                </motion.div>
-                <div className="text-gray-600 dark:text-gray-300 mb-6">
-                  Success Rate
-                </div>
-                <motion.div
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  transition={{ duration: 0.6, delay: 0.4 }}
-                  viewport={{ once: true }}
-                  className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mb-2"
-                >
-                  10K+
-                </motion.div>
-                <div className="text-gray-600 dark:text-gray-300 mb-6">
-                  Students Placed
-                </div>
-                <motion.div
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  transition={{ duration: 0.6, delay: 0.6 }}
-                  viewport={{ once: true }}
-                  className="text-4xl font-bold text-emerald-500 dark:text-emerald-400 mb-2"
-                >
-                  500+
-                </motion.div>
-                <div className="text-gray-600 dark:text-gray-300">
-                  Partner Companies
-                </div>
+                {[
+                  { value: "85%", label: "Success Rate", color: "purple" },
+                  { value: "10K+", label: "Students Placed", color: "indigo" },
+                  { value: "500+", label: "Partner Companies", color: "emerald" }
+                ].map((stat, index) => (
+                  <div key={index} className="mb-6 last:mb-0">
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      whileInView={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.8, delay: 0.2 + index * 0.2, ease: "easeOut" }}
+                      viewport={{ once: true }}
+                      className={`text-4xl font-bold mb-2 ${
+                        stat.color === 'purple' ? 'text-purple-600 dark:text-purple-400' :
+                        stat.color === 'indigo' ? 'text-indigo-600 dark:text-indigo-400' :
+                        'text-emerald-500 dark:text-emerald-400'
+                      }`}
+                    >
+                      {stat.value}
+                    </motion.div>
+                    <div className="text-gray-600 dark:text-gray-300 font-medium">
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
               </div>
             </motion.div>
           </div>
@@ -893,15 +1002,15 @@ const LandingPage = () => {
       <motion.section
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 1, ease: "easeOut" }}
         viewport={{ once: true, margin: "-100px" }}
-        className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300"
+        className="py-20 bg-white/80 dark:bg-gray-900/80 transition-colors duration-300 backdrop-blur-sm"
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.h2
             initial={{ y: 30, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: true }}
             className="text-4xl font-bold text-gray-900 dark:text-white mb-6"
           >
@@ -910,7 +1019,7 @@ const LandingPage = () => {
           <motion.p
             initial={{ y: 30, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             viewport={{ once: true }}
             className="text-xl text-gray-600 dark:text-gray-300 mb-8"
           >
@@ -918,15 +1027,16 @@ const LandingPage = () => {
             professionals
           </motion.p>
           <motion.button
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            viewport={{ once: true }}
+            initial={{ y: 30, opacity: 0, scale: 0.9 }}
+            whileInView={{ y: 0, opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.05, y: -3 }}
             whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            viewport={{ once: true }}
             onClick={handleGetStarted}
             className="bg-purple-600 dark:bg-purple-500 text-white px-8 py-4 rounded-xl font-semibold text-lg 
-                       hover:bg-purple-700 dark:hover:bg-purple-600 transition-all duration-200 
-                       shadow-xl hover:shadow-2xl inline-flex items-center space-x-2 btn-hover"
+                       hover:bg-purple-700 dark:hover:bg-purple-600 transition-all duration-500 
+                       shadow-2xl hover:shadow-purple-500/25 dark:hover:shadow-purple-400/25 inline-flex items-center space-x-2 btn-hover backdrop-blur-sm"
           >
             <span>
               {!loading && isAuthenticated
