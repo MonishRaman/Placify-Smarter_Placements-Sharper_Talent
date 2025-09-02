@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth.js";
 import interviewRoutes from "./routes/interview.js";
 import institutionRoutes from "./routes/institutionRoutes.js";
 import performance from "./routes/performance.js"
+import jobRoute from "./routes/job.js"
 import path from "path";
 import { fileURLToPath } from "url";
 import settingsRoutes from "./routes/settingsI.js";
@@ -46,6 +47,7 @@ app.use("/api/students", studentRoutes); // New route for student progress track
 app.use("/api/ats", atsRoutes);
 app.use("/api/resume/score", resumeScoreRoutes); // New route for resume score persistence - MUST come before /api/resume
 app.use("/api/resume", resumeRoutes);
+app.use("api/jobs",jobRoute)
 
 app.get("/", (req, res) => {
   res.json({
