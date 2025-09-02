@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   GraduationCap,
   School,
@@ -17,6 +18,7 @@ import Footer from '../components/Footer';
 
 const RoleSelectionPage = () => {
   const [isDark, setIsDark] = useState(false);
+  const navigate = useNavigate();
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -46,8 +48,7 @@ const RoleSelectionPage = () => {
   };
 
   const handleNavigation = (route) => {
-    console.log(`Navigating to: ${route}`);
-    // Replace with your navigation logic
+    navigate(route);
   };
 
   const handleLogoClick = () => {
@@ -253,7 +254,9 @@ const RoleSelectionPage = () => {
 
                   {/* Registration Button */}
                   <div className="flex justify-center">
-                    <button className={`w-full bg-gradient-to-r ${role.gradient} text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2`}>
+                    <button className={`w-full bg-gradient-to-r ${role.gradient} text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2`}
+                    onClick={() => handleRegistration(role.title)}
+                    >
                       <span>Register as {role.title === "College/University" ? "Institution" : role.title}</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>

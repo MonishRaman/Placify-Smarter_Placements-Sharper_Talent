@@ -332,6 +332,45 @@ const ResumeAnalysis = ({ resumeAnalysis, generateQuestions, loading }) => (
       <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Resume Analysis Complete</h2>
     </div>
 
+    {/* --- New: Match Score --- */}
+    {resumeAnalysis.matchScore !== undefined && (
+      <div className="bg-blue-100 dark:bg-blue-900/20 p-6 rounded-lg border dark:border-blue-700 mb-6 flex items-center justify-between">
+        <div>
+          <h3 className="font-bold text-lg mb-2 text-blue-800 dark:text-blue-300">Resume Match Score</h3>
+          <p className="text-gray-700 dark:text-gray-300">Your resume matches <span className="font-bold text-blue-700 dark:text-blue-200">{resumeAnalysis.matchScore}%</span> with the job description.</p>
+        </div>
+        <div className="flex items-center">
+          <Brain className="w-8 h-8 text-blue-600 dark:text-blue-400 mr-2" />
+          <span className="text-2xl font-bold text-blue-700 dark:text-blue-200">{resumeAnalysis.matchScore}%</span>
+        </div>
+      </div>
+    )}
+
+    {/* --- New: Skill Gap Analysis --- */}
+    {resumeAnalysis.skillGap && resumeAnalysis.skillGap.length > 0 && (
+      <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg border dark:border-red-700 mb-6">
+        <h3 className="font-bold text-lg mb-3 text-red-800 dark:text-red-300">Skill Gap Analysis</h3>
+        <p className="text-gray-700 dark:text-gray-300 mb-2">Skills missing for this job:</p>
+        <div className="flex flex-wrap gap-2">
+          {resumeAnalysis.skillGap.map((skill, idx) => (
+            <span key={idx} className="bg-red-200 dark:bg-red-700 text-red-800 dark:text-red-200 px-3 py-1 rounded-full text-sm">{skill}</span>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {/* --- New: Personalized Recommendations --- */}
+    {resumeAnalysis.recommendations && resumeAnalysis.recommendations.length > 0 && (
+      <div className="bg-indigo-50 dark:bg-indigo-900/20 p-6 rounded-lg border dark:border-indigo-700 mb-6">
+        <h3 className="font-bold text-lg mb-3 text-indigo-800 dark:text-indigo-300">Personalized Learning Recommendations</h3>
+        <ul className="text-gray-700 dark:text-gray-300">
+          {resumeAnalysis.recommendations.map((rec, idx) => (
+            <li key={idx} className="mb-1">• {rec}</li>
+          ))}
+        </ul>
+      </div>
+    )}
+
     <div className="grid md:grid-cols-2 gap-6 mb-8">
       <div className="bg-green-50 dark:bg-green-900/20 p-6 rounded-lg border dark:border-green-700">
         <h3 className="font-bold text-lg mb-3 text-green-800 dark:text-green-300">Summary</h3>

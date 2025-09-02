@@ -21,8 +21,8 @@ router.post("/register/company", registerCompany);
 router.post("/login", loginUser);
 
 // Profile
-router.get("/profile", verifyToken, getProfile);
-router.put("/profile", verifyToken, upload.single("profileImage"), updateProfile);
+router.get("/profile", verifyToken(), getProfile);
+router.put("/profile", verifyToken(), upload.single("profileImage"), updateProfile);
 
 
 export default router;

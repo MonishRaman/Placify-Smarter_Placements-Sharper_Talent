@@ -5,6 +5,32 @@
     <link rel="icon" type="image/svg+xml" href="/logo1.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Placify - AI Interview Platform</title>
+    <meta name="description" content="Revolutionize campus placements with our AI-powered platform that streamlines 60-70% of recruitment processes. From automated resume screening to adaptive assessments, we bridge the gap between industry needs and candidate readiness.">
+    <!-- Theme initialization script to prevent flash of incorrect theme -->
+    <script>
+      (function() {
+        try {
+          const savedTheme = localStorage.getItem('theme');
+          if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+          } else if (savedTheme === 'light') {
+            document.documentElement.classList.remove('dark');
+          } else {
+            // Check system preference
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+              document.documentElement.classList.add('dark');
+              localStorage.setItem('theme', 'dark');
+            } else {
+              document.documentElement.classList.remove('dark');
+              localStorage.setItem('theme', 'light');
+            }
+          }
+        } catch (e) {
+          // Fallback in case of any error
+          console.warn('Theme initialization failed:', e);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

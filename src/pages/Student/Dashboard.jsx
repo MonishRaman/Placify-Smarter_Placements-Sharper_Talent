@@ -45,11 +45,16 @@ import {
   Bell,
   MessageSquare
 } from 'lucide-react';
+import { getInitialTheme, applyTheme } from '../../utils/theme';
 
 const StudentDashboard = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(getInitialTheme);
   const [selectedTimeframe, setSelectedTimeframe] = useState('week');
   const [activeSection, setActiveSection] = useState('overview');
+
+  useEffect(() => {
+    applyTheme(isDarkMode);
+  }, [isDarkMode]);
 
   // Connected data from other pages
   const [dashboardData, setDashboardData] = useState({
@@ -128,19 +133,21 @@ const StudentDashboard = () => {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${themeClasses}`}>
-      {/* Theme Toggle */}
-      {/*<div className="absolute top-4 right-4 z-10">
+      {/* Enhanced Theme Toggle Button - Fixed Position */}
+      <div className="fixed top-6 right-6 z-50">
         <button
           onClick={toggleTheme}
-          className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 border dark:border-gray-700"
+          className="w-14 h-14 rounded-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 flex items-center justify-center hover:scale-110 transition-all duration-300 group"
         >
-          {isDarkMode ? (
-            <Sun className="w-5 h-5 text-yellow-500" />
-          ) : (
-            <Moon className="w-5 h-5 text-gray-700" />
-          )}
+          <div className="relative overflow-hidden w-6 h-6">
+            {isDarkMode ? (
+              <Sun className="w-6 h-6 text-yellow-500 transform transition-transform duration-300 group-hover:rotate-12" />
+            ) : (
+              <Moon className="w-6 h-6 text-gray-700 transform transition-transform duration-300 group-hover:-rotate-12" />
+            )}
+          </div>
         </button>
-      </div>*/}
+      </div>
 
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-6 py-4">
@@ -161,22 +168,6 @@ const StudentDashboard = () => {
              <Bell className="w-6 h-6 text-gray-600 dark:text-gray-400 cursor-pointer hover:text-purple-600" />
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
             </div>
-            {/*<button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all duration-300">
-            <RefreshCw className="w-4 h-4" />
-            Sync Data
-            </button>*/}
-
-            {/* Theme Toggle */}
-            <button
-            onClick={toggleTheme}
-            className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 border dark:border-gray-700"
-            >
-           {isDarkMode ? (
-           <Sun className="w-5 h-5 text-yellow-500" />
-           ) : (
-           <Moon className="w-5 h-5 text-gray-700" />
-          )}
-         </button>
          </div>
 
               <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all duration-300">
@@ -189,13 +180,11 @@ const StudentDashboard = () => {
 
       <div className="flex">
         {/* Sidebar Navigation */}
-        <div className="w-64 bg-white dark:bg-gray-800 border-r dark:border-gray-700 min-h-screen">
-          <div className="p-4">
+        <div className="w-52 bg-white dark:bg-gray-800 border-r dark:border-gray-700 min-h-screen">
+          <div className="py-4 px-1">
             <nav className="space-y-2">
               {[
                 { id: 'overview', label: 'Overview', icon: BarChart3 },
-                { id: 'aptitude', label: 'Aptitude Tests', icon: Brain },
-                { id: 'interviews', label: 'Mock Interviews', icon: Users },
                 { id: 'resume', label: 'Resume Analysis', icon: FileText },
                 { id: 'goals', label: 'Goals & Progress', icon: Target },
                 { id: 'analytics', label: 'Analytics', icon: TrendingUp },

@@ -30,7 +30,7 @@ const getModelByRole = (role) => {
 // ---------------- REGISTER ----------------
 export const registerStudent = async (req, res) => {
   try {
-    const { fullName, university, major, email, password } = req.body;
+    const { fullName, university, major, email, password, role } = req.body;
 
     if (await User.findOne({ email }))
       return res.status(400).json({ message: "Email already exists" });
@@ -42,7 +42,7 @@ export const registerStudent = async (req, res) => {
       major,
       email,
       password: hashedPassword,
-      role: "Student", // Explicitly set role
+      role: role, // Explicitly set role
     });
 
     res.status(201).json({ message: "Student registered successfully" });
@@ -167,22 +167,28 @@ export const loginUser = async (req, res) => {
 // ---------------- PROFILE ----------------
 export const getProfile = async (req, res) => {
   try {
-    // First get the user to determine their role
+    console.log("Incoming profile request for user:", req.user?.userId);
+
     const baseUser = await User.findById(req.user.userId).select("role");
+    console.log("Base user found:", baseUser);
+
     if (!baseUser) return res.status(404).json({ message: "User not found" });
 
-    // Get the appropriate model and fetch with all fields
     const UserModel = getModelByRole(baseUser.role);
+    console.log("User model resolved:", UserModel?.modelName);
+
     const user = await UserModel.findById(req.user.userId).select("-password");
+    console.log("Full user:", user);
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    res.json(user);
+    return res.json(user);
   } catch (error) {
     console.error("Get profile error:", error);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 };
+
 
 export const updateProfile = async (req, res) => {
   try {

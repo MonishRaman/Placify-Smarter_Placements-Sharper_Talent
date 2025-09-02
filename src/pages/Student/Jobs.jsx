@@ -38,8 +38,8 @@ const useTheme = () => useContext(ThemeContext);
 // Theme Toggle Component
 const ThemeToggle = () => {
   const { isDark, toggleTheme } = useTheme();
-  
-  return (
+};
+  /*return (
     <button
       onClick={toggleTheme}
       className="fixed top-4 right-4 z-50 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700"
@@ -52,7 +52,7 @@ const ThemeToggle = () => {
       )}
     </button>
   );
-};
+};*/
 
 // Jobs Component
 const Jobs = () => {
@@ -1017,7 +1017,7 @@ const App = () => {
 
   const navigation = [
     { id: 'jobs', label: 'Jobs', icon: Briefcase },
-    { id: 'resume', label: 'Resume Builder', icon: FileText },
+    //{ id: 'resume', label: 'Resume Builder', icon: FileText },
     { id: 'interviews', label: 'Interview Experience', icon: Users }
   ];
 

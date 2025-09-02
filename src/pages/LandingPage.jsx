@@ -30,6 +30,8 @@ const LandingPage = () => {
     switch (user.role.toLowerCase()) {
       case "student":
         return "/dashboard";
+      case "candidate":
+        return "/dashboard";
       case "institution":
         return "/dashboard/institution";
       case "company":

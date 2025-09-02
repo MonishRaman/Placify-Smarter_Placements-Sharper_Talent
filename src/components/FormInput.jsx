@@ -7,7 +7,9 @@ export default function FormInput({
   value,
   onChange,
   required = false,
-  focusColor = 'purple' // Default focus color is purple
+  focusColor = 'purple', // Default focus color is purple
+  onCopy,
+  onPaste
 }) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -31,6 +33,8 @@ export default function FormInput({
           type={type === 'password' ? (showPassword ? 'text' : 'password') : type}
           value={value}
           onChange={onChange}
+          onCopy={onCopy}
+          onPaste={onPaste}
           required={required}
           className={`
             w-full px-3 py-2 border border-gray-300 rounded-md
