@@ -1,4 +1,3 @@
-import Job from "../models/Jobs";
 
 import Job from "../models/Jobs.js";
 
