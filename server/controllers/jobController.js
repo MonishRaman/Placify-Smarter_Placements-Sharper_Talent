@@ -1,5 +1,3 @@
-import Job from "../models/Jobs";
-
 import Job from "../models/Jobs.js";
 
 export const createJob = async (req, res) => {
@@ -15,7 +13,7 @@ export const createJob = async (req, res) => {
       responsibilities
     } = req.body;
 
-    if (!title || !type || !domain || !location ) {
+    if (!title || !type || !domain || !location) {
       return res.status(400).json({
         success: false,
         message: "Title, Type, Domain, and Location are required.",
@@ -58,7 +56,7 @@ export const getJobs = async (req, res) => {
     const jobs = await Job.find().populate({
       path: "company",
       select: "name email industry website  employeeCount profileImage"
-      
+
     });
 
     if (!jobs || jobs.length === 0) {
