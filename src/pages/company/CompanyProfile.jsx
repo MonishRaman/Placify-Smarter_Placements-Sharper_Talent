@@ -4,14 +4,14 @@ import { Building2, Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const CompanyProfile = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const [profile, setProfile] = useState({
-    name: "", // Backend uses 'name' for company name
+    name: "",
     industry: "",
     website: "",
     email: "",
@@ -38,10 +38,10 @@ const CompanyProfile = () => {
         const res = await axios.get(`${API_BASE}/api/auth/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        
+
         console.log("Profile data received:", res.data);
         setProfile(res.data);
-        
+
         if (res.data.profileImage) {
           setImagePreview(`${API_BASE}${res.data.profileImage}`);
         }
@@ -77,46 +77,44 @@ const CompanyProfile = () => {
     try {
       const formData = new FormData();
       const fieldMapping = {
-        name: "name", 
+        name: "name",
         website: "website",
-        industry: "industry", 
-        phone: "phone", 
-        address: "address", 
-        description: "description", 
-        foundedYear: "foundedYear", 
-        employeeCount: "employeeCount"
+        industry: "industry",
+        phone: "phone",
+        address: "address",
+        description: "description",
+        foundedYear: "foundedYear",
+        employeeCount: "employeeCount",
       };
-      
+
       Object.entries(fieldMapping).forEach(([profileKey, formKey]) => {
         const value = profile[profileKey];
         if (value !== undefined && value !== null && value !== "") {
           formData.append(formKey, value.toString());
         }
       });
-      
+
       if (imageFile) {
         formData.append("profileImage", imageFile);
       }
-      
-      console.log("Sending form data:");
-      for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
-      
-      const response = await axios.put(`${API_BASE}/api/auth/profile`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      
-      console.log("Update response:", response.data);
+
+      const response = await axios.put(
+        `${API_BASE}/api/auth/profile`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
       setProfile(response.data);
-      
+
       if (response.data.profileImage) {
         setImagePreview(`${API_BASE}${response.data.profileImage}`);
       }
-      
+
       toast.success("Company profile updated successfully!");
       navigate("/dashboard/company");
     } catch (err) {
@@ -129,7 +127,7 @@ const CompanyProfile = () => {
   const handleBlur = () => setFocusedField(null);
 
   const fields = [
-    { key: "name", label: "Company Name", editable: false }, 
+    { key: "name", label: "Company Name", editable: false },
     { key: "email", label: "HR Contact Email", editable: false },
     { key: "industry", label: "Industry", editable: true },
     { key: "website", label: "Website", editable: true, type: "url" },
@@ -141,10 +139,10 @@ const CompanyProfile = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-600 via-orange-700 to-red-800 relative overflow-hidden">
+    <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4 py-8">
         <div
-          className={`w-full max-w-4xl bg-white bg-opacity-95 backdrop-blur-lg rounded-3xl shadow-2xl p-8 transform transition-all duration-1000 ease-out ${
+          className={`w-full max-w-4xl bg-white dark:bg-gray-900 bg-opacity-95 dark:bg-opacity-95 backdrop-blur-lg rounded-3xl shadow-2xl p-8 transform transition-all duration-1000 ease-out ${
             isLoaded
               ? "translate-y-0 opacity-100 scale-100"
               : "translate-y-10 opacity-0 scale-95"
@@ -155,10 +153,10 @@ const CompanyProfile = () => {
               <Building2 className="w-12 h-12 text-orange-600 mr-3" />
               <Briefcase className="w-10 h-10 text-red-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
               Company Profile
             </h2>
-            <p className="text-gray-600 text-sm">
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
               Manage your company information and recruitment settings
             </p>
           </div>
@@ -167,7 +165,7 @@ const CompanyProfile = () => {
           <div className="flex flex-col items-center mb-8 relative group">
             <label
               htmlFor="profile-upload"
-              className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer overflow-hidden shadow-lg hover:scale-105 transition border-4 border-orange-100"
+              className="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center cursor-pointer overflow-hidden shadow-lg hover:scale-105 transition border-4 border-orange-100 dark:border-gray-600"
             >
               {imagePreview ? (
                 <img
@@ -176,7 +174,7 @@ const CompanyProfile = () => {
                   className="w-full h-full object-cover rounded-full"
                 />
               ) : (
-                <Building2 className="w-12 h-12 text-gray-500" />
+                <Building2 className="w-12 h-12 text-gray-500 dark:text-gray-300" />
               )}
               <input
                 type="file"
@@ -186,11 +184,13 @@ const CompanyProfile = () => {
                 className="hidden"
               />
             </label>
-            <p className="text-sm text-gray-500 mt-2">Click to upload company logo</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Click to upload company logo
+            </p>
             {imagePreview && (
               <button
                 onClick={handleRemoveImage}
-                className="mt-2 text-red-500 text-sm hover:underline"
+                className="mt-2 text-red-500 dark:text-red-400 text-sm hover:underline"
               >
                 Remove Logo
               </button>
@@ -202,12 +202,14 @@ const CompanyProfile = () => {
             {fields.map(({ key, label, editable, type, isTextarea }, index) => (
               <div
                 key={key}
-                className={`transition-transform ${isTextarea ? 'md:col-span-2' : ''}`}
+                className={`transition-transform ${isTextarea ? "md:col-span-2" : ""}`}
                 style={{ transitionDelay: `${index * 50}ms` }}
               >
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {label}
-                  {!editable && <span className="text-gray-400 text-xs ml-2">(Read-only)</span>}
+                  {!editable && (
+                    <span className="text-gray-400 text-xs ml-2">(Read-only)</span>
+                  )}
                 </label>
                 {isTextarea ? (
                   <textarea
@@ -221,8 +223,12 @@ const CompanyProfile = () => {
                     className={`w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none resize-none ${
                       focusedField === key
                         ? "border-orange-500 shadow-lg ring-4 ring-orange-500 ring-opacity-20 scale-105"
-                        : "border-gray-200 hover:border-gray-300"
-                    } ${!editable ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                        : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                    } ${
+                      !editable
+                        ? "bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
+                        : "bg-white dark:bg-gray-900"
+                    } text-gray-900 dark:text-gray-100`}
                     placeholder={`Enter ${label.toLowerCase()}`}
                   />
                 ) : (
@@ -237,8 +243,12 @@ const CompanyProfile = () => {
                     className={`w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none ${
                       focusedField === key
                         ? "border-orange-500 shadow-lg ring-4 ring-orange-500 ring-opacity-20 scale-105"
-                        : "border-gray-200 hover:border-gray-300"
-                    } ${!editable ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                        : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                    } ${
+                      !editable
+                        ? "bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
+                        : "bg-white dark:bg-gray-900"
+                    } text-gray-900 dark:text-gray-100`}
                     placeholder={`Enter ${label.toLowerCase()}`}
                   />
                 )}
@@ -249,7 +259,7 @@ const CompanyProfile = () => {
           <div className="mt-8 flex justify-center space-x-4">
             <button
               onClick={() => navigate("/dashboard/company")}
-              className="bg-gray-500 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition"
+              className="bg-gray-500 dark:bg-gray-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition"
             >
               Cancel
             </button>
