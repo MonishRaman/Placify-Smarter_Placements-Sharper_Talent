@@ -15,6 +15,7 @@ import settingsRoutes from "./routes/settingsI.js";
 import atsRoutes from "./routes/ats.js";
 import resumeRoutes from "./routes/resume.js"; // New import for resume routes
 import resumeScoreRoutes from "./routes/resumeScore.js"; // New import for resume score routes
+import interviewExperienceRoutes from "./routes/interviewExperience.js"; // New import for interview experience routes
 
 import studentRoutes from "./routes/studentRoutes.js"; // Corrected import for studentRoutes
 
@@ -47,8 +48,10 @@ app.use("/api/students", studentRoutes); // New route for student progress track
 app.use("/api/ats", atsRoutes);
 app.use("/api/resume/score", resumeScoreRoutes); // New route for resume score persistence - MUST come before /api/resume
 app.use("/api/resume", resumeRoutes);
+
 // NOTE: Missing leading slash would break the route (returning index.html or 404 to frontend)
 app.use("/api/jobs", jobRoute);
+
 
 app.get("/", (req, res) => {
   res.json({
@@ -58,7 +61,8 @@ app.get("/", (req, res) => {
       feedback: "/api/feedback",
       test: "/api/feedback/test",
       resume: "/api/resume",
-      resumeScore: "/api/resume/score"
+      resumeScore: "/api/resume/score",
+      interviewExperience: "/api/interview-experience"
     }
   });
 });
