@@ -540,7 +540,7 @@ const RoleSelectionPage = () => {
       </div>
 
       <div className="relative min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 pt-28">
-        <div className="max-w-7xl w-full">
+        <div className="max-w-7xl w-full pt-10">
           {/* Header Section */}
           <div className="text-center mb-16 mt-8">
             {/* Logo/Brand */}
