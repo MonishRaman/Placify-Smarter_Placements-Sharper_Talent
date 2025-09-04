@@ -24,7 +24,7 @@ export const createJob = async (req, res) => {
 
     const newJob = new Job({
       title,
-      company: req.user._id, // <-- automatically assign from logged-in user
+      company: req.user.userId, // <-- automatically assign from logged-in user
       type,
       domain,
       location,
