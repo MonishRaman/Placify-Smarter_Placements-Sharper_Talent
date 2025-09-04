@@ -85,6 +85,10 @@ const RoleSelectionPage = () => {
     }
   }, []);
 
+   useEffect(() => {
+     window.scrollTo({ top: 0, behavior: "smooth" });
+   }, []);
+
   const toggleTheme = () => {
     const newTheme = !isDark;
     setIsDark(newTheme);
