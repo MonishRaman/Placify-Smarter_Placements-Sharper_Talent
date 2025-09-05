@@ -1,6 +1,7 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+
 def evaluate_answer(user_answer, ideal_answer):
     vectorizer = TfidfVectorizer()
     vectors = vectorizer.fit_transform([user_answer, ideal_answer])

@@ -1,5 +1,6 @@
 import librosa
 
+
 def analyze_prosody(audio_path):
     y, sr = librosa.load(audio_path)
 
@@ -9,5 +10,5 @@ def analyze_prosody(audio_path):
     return {
         "avg_pitch": float(pitch.mean()),
         "pitch_variance": float(pitch.std()),
-        "energy": float(energy)
+        "energy": float(energy),
     }
