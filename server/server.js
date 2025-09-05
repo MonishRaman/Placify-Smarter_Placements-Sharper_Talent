@@ -19,6 +19,8 @@ import interviewExperienceRoutes from "./routes/interviewExperience.js"; // New 
 
 import studentRoutes from "./routes/studentRoutes.js"; // Corrected import for studentRoutes
 
+import questionsRoutes from "./routes/questions.js"; // Aptitude questions API
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,6 +53,9 @@ app.use("/api/resume", resumeRoutes);
 
 // NOTE: Missing leading slash would break the route (returning index.html or 404 to frontend)
 app.use("/api/jobs", jobRoute);
+
+// Aptitude questions API
+app.use("/api/questions", questionsRoutes);
 
 
 app.get("/", (req, res) => {
