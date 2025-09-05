@@ -262,3 +262,117 @@ export const applyForJob = async (req, res) => {
   }
 };
 
+
+// GET /api/jobs/applied?page=1&limit=10  (STUDENT ONLY)
+export const getAppliedJobs = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Total count for pagination
+    const totalJobs = await Job.countDocuments({ "applicants.user": userId });
+
+    const jobs = await Job.find({ "applicants.user": userId })
+      .populate({
+        path: "company",
+        select: "name website profileImage", // सिर्फ ज़रूरी fields
+      })
+      .skip(skip)
+      .limit(limit);
+
+    if (!jobs || jobs.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No applied jobs found.",
+      });
+    }
+
+    // student-specific data निकालना
+    const formattedJobs = jobs.map((job) => {
+      const applicant = job.applicants.find(
+        (app) => app.user.toString() === userId.toString()
+      );
+
+      return {
+        _id: job._id,
+        title: job.title,
+        type: job.type,
+        domain: job.domain,
+        location: job.location,
+        salary: job.salary,
+        description: job.description,         
+        requirements: job.requirements,       
+        responsibilities: job.responsibilities, 
+        company: job.company,   
+        appliedAt: applicant?.appliedAt,
+        resume: applicant?.resume,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      count: formattedJobs.length,
+      totalJobs,
+      currentPage: page,
+      totalPages: Math.ceil(totalJobs / limit),
+      jobs: formattedJobs,
+    });
+  } catch (error) {
+    console.error("Error fetching applied jobs:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error: Could not fetch applied jobs",
+      error: error.message,
+    });
+  }
+};
+
+
+
+// DELETE /api/jobs/:id/withdraw  (STUDENT ONLY)
+export const withdrawApplication = async (req, res) => {
+  try {
+    const jobId = req.params.id;
+    const userId = req.user.userId;
+
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job not found",
+      });
+    }
+
+    // Check if student applied before
+    const alreadyApplied = job.applicants.some(
+      (app) => app.user.toString() === userId.toString()
+    );
+    if (!alreadyApplied) {
+      return res.status(400).json({
+        success: false,
+        message: "You have not applied for this job.",
+      });
+    }
+
+    // Remove student from applicants array
+    job.applicants = job.applicants.filter(
+      (app) => app.user.toString() !== userId.toString()
+    );
+    await job.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Application withdrawn successfully.",
+      jobId: job._id,
+    });
+  } catch (error) {
+    console.error("Error withdrawing application:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error: Could not withdraw application",
+      error: error.message,
+    });
+  }
+};
