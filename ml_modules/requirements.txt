@@ -6,3 +6,5 @@ transformers
 scikit-learn
 speechrecognition
 rapidfuzz
+flake8
+black
