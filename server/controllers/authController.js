@@ -27,34 +27,54 @@ const getModelByRole = (role) => {
   }
 };
 
+// Helper function to check if email already exists
+const checkEmailExists = async (email) => {
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new Error("Email already exists");
+  }
+};
+
+// Helper function to hash password
+const hashPassword = async (password) => {
+  return await bcrypt.hash(password, 10);
+};
+
 // ---------------- REGISTER ----------------
 export const registerStudent = async (req, res) => {
   try {
     const { fullName, university, major, email, password, role } = req.body;
 
-    if (await User.findOne({ email }))
-      return res.status(400).json({ message: "Email already exists" });
+    await checkEmailExists(email);
+    const hashedPassword = await hashPassword(password);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     await Student.create({
-      name: fullName, // Map to base schema field
+      name: fullName,
       university,
       major,
       email,
       password: hashedPassword,
-      role: role, // Explicitly set role
+      role: role,
     });
 
     res.status(201).json({ message: "Student registered successfully" });
   } catch (error) {
     console.error("Student Register Error:", error);
+    if (error.message === "Email already exists") {
+      return res.status(400).json({ message: error.message });
+    }
     res.status(500).json({ message: "Server error" });
   }
 };
 
 export const registerInstitution = async (req, res) => {
   try {
-    const { institutionName, website, contactPerson, email, password } = req.body;
+    const { institutionName, website, contactPerson, email, password } =
+      req.body;
+
+    await checkEmailExists(email);
+    const hashedPassword = await hashPassword(password);
+
     await Institution.create({
       name: institutionName,
       website,
@@ -64,45 +84,38 @@ export const registerInstitution = async (req, res) => {
       role: "Institution",
     });
 
-    if (await User.findOne({ email }))
-      return res.status(400).json({ message: "Email already exists" });
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await Institution.create({
-      name: institutionName, // Map to base schema field
-      website,
-      contactPerson,
-      email,
-      password: hashedPassword,
-      role: "Institution", // Explicitly set role
-    });
-
     res.status(201).json({ message: "Institution registered successfully" });
   } catch (error) {
     console.error("Institution Register Error:", error);
+    if (error.message === "Email already exists") {
+      return res.status(400).json({ message: error.message });
+    }
     res.status(500).json({ message: "Server error" });
   }
 };
+
 export const registerEmployee = async (req, res) => {
   try {
     const { fullName, currentCompany, jobTitle, email, password } = req.body;
 
-    if (await User.findOne({ email }))
-      return res.status(400).json({ message: "Email already exists" });
+    await checkEmailExists(email);
+    const hashedPassword = await hashPassword(password);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     await Employee.create({
-      name: fullName, // Map to base schema field
+      name: fullName,
       currentCompany,
       jobTitle,
       email,
       password: hashedPassword,
-      role: 'Employee' 
+      role: "Employee",
     });
 
     res.status(201).json({ message: "Employee registered successfully" });
   } catch (error) {
     console.error("Employee Register Error:", error);
+    if (error.message === "Email already exists") {
+      return res.status(400).json({ message: error.message });
+    }
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -111,22 +124,24 @@ export const registerCompany = async (req, res) => {
   try {
     const { companyName, industry, email, password, website } = req.body;
 
-    if (await User.findOne({ email }))
-      return res.status(400).json({ message: "Email already exists" });
+    await checkEmailExists(email);
+    const hashedPassword = await hashPassword(password);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     await Company.create({
-      name: companyName, // Only use base schema field - no more companyName duplication
+      name: companyName,
       industry,
       website,
       email,
       password: hashedPassword,
-      role: "Company", // Explicitly set role
+      role: "Company",
     });
 
     res.status(201).json({ message: "Company registered successfully" });
   } catch (error) {
     console.error("Company Register Error:", error);
+    if (error.message === "Email already exists") {
+      return res.status(400).json({ message: error.message });
+    }
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -188,7 +203,6 @@ export const getProfile = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-
 
 export const updateProfile = async (req, res) => {
   try {
@@ -309,7 +323,7 @@ export const updateProfile = async (req, res) => {
       updateData.profileImage = `/uploads/${req.file.filename}`;
     }
 
-    console.log("Update data being sent to database:", updateData); // Debug log
+    console.log("Update data being sent to database:", updateData);
 
     // Update using the correct model
     const updatedUser = await UserModel.findByIdAndUpdate(userId, updateData, {
@@ -321,7 +335,7 @@ export const updateProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    console.log("Updated user from database:", updatedUser); // Debug log
+    console.log("Updated user from database:", updatedUser);
 
     return res.json(updatedUser);
   } catch (error) {
