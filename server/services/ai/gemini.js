@@ -36,6 +36,7 @@ export async function analyzeWithGemini(resumeText, jobDescription) {
  * @param {Object} params - { topic: string, difficulty: string }
  * @returns {Promise<Object>} - { question, options, answer, explanation }
  */
+
 export async function generateAptitudeQuestionWithGemini({ topic, difficulty }) {
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -48,6 +49,28 @@ export async function generateAptitudeQuestionWithGemini({ topic, difficulty }) 
         return parseJsonLoose(text);
     } catch (err) {
         console.error("[generateAptitudeQuestionWithGemini] Gemini Error:", err?.message || err);
+        return { error: "Gemini AI failed" };
+    }
+}
+
+/**
+ * Chat with Gemini API, preserving chat history and roles
+ * @param {Array<{role: "user"|"assistant", content: string}>} messages
+ * @returns {Promise<string|{error:string,raw:string}>}
+ */
+export async function chatWithGemini(messages) {
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        // Gemini expects [{role, parts:[{text}]}]
+        const formatted = messages.map(m => ({
+            role: m.role,
+            parts: [{ text: m.content }]
+        }));
+        const result = await model.generateContent({ contents: formatted });
+        const text = result.response.text();
+        return text;
+    } catch (err) {
+        console.error("[chatWithGemini] Gemini Error:", err?.message || err);
         return { error: "Gemini AI failed" };
     }
 }

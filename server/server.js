@@ -19,7 +19,9 @@ import interviewExperienceRoutes from "./routes/interviewExperience.js"; // New 
 
 import studentRoutes from "./routes/studentRoutes.js"; // Corrected import for studentRoutes
 
+
 import questionsRoutes from "./routes/questions.js"; // Aptitude questions API
+import chatRoutes from "./routes/chat.js"; // Gemini chat API
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -55,6 +57,8 @@ app.use("/api/resume", resumeRoutes);
 app.use("/api/jobs", jobRoute);
 
 // Aptitude questions API
+
+app.use("/api/chat", chatRoutes);
 app.use("/api/questions", questionsRoutes);
 
 
