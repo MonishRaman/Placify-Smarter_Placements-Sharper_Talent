@@ -9,7 +9,16 @@ export default defineConfig({
     },
   },
   build: {
+    outDir: 'build',
+    sourcemap: false,
     rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        },
+      },
       // Ensure framer-motion is bundled and not mistakenly treated as external
       external: [],
     },

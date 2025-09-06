@@ -1,3 +1,4 @@
+import React, { Suspense, lazy } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -6,246 +7,222 @@ import {
   useLocation,
 } from "react-router-dom";
 import { UserProvider } from "./context/UserContext";
-
-// The paths below are relative to this App.jsx file, which should be in the 'src' directory.
-// If you are getting 'Could not resolve' errors, please ensure you are running the build command
-// from the root of the project directory.
-//  IMPORTED the ThemeProvider
 import { ThemeProvider } from "./context/ThemeContext";
 import Footer from "./components/Footer";
-import AuthPage from "./pages/AuthPage";
-import FeedbackPage from "./pages/FeedbackPage";
-import LandingPage from "./pages/LandingPage";
-import ProfilePage from "./pages/ProfilePage";
-import Resume from "./pages/Resume";
-import ResultsPage from "./pages/ResultsPage";
-
-import RoleSelectionPage from "./pages/RoleSelectionPage";
-import CompanyForm from "./pages/register/CompanyForm";
-import EmployeeForm from "./pages/register/EmployeeForm";
-import InstitutionForm from "./pages/register/InstitutionForm";
-import StudentForm from "./pages/register/StudentForm";
-import StudentProgressDashboard from "./pages/Student/StudentProgressDashboard";
-import StudentProgressDetail from "./pages/Student/StudentProgressDetail"; // New import
-import ContactPage from "./pages/ContactPage";
-
 import { LoadingProvider } from "./context/LoadingContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-import DashboardLayout from "./layouts/DashboardLayout";
-import Aptitude from "./pages/Student/Aptitude";
-import Coding from "./pages/Student/Coding";
-import CodingEditor from "./pages/Student/CodingEditor";
-import Dashboard from "./pages/Student/Dashboard";
-import InterviewExperience from "./pages/Student/InterviewExperience";
-import InterviewInterface from "./pages/Student/InterviewInterface";
-import Jobs from "./pages/Student/Jobs";
-import ResumeATS from "./pages/Student/ResumeATS";
-import ResumeBuilder from "./pages/Student/ResumeBuilder";
-import Settings from "./pages/Student/Settings";
-
-import InstitutionDashboardLayout from "./layouts/InstitutionDashboardLayout";
-import InstitutionDashboard from "./pages/Institution/InstitutionDashboard";
-import InstitutionProfile from "./pages/Institution/InstitutionProfile";
-import StudentPerformance from "./pages/Institution/StudentPerformance";
-import DepartmentPerformance from "./pages/Institution/DepartmentPerformance";
-import Reports from "./pages/Institution/Reports";
-import Analytics from "./pages/Institution/Analytics";
-import InstitutionSettings from "./pages/Institution/Settings";
-
-// Company Dashboard Layout and Pages
-import CompanyDashboardLayout from "./layouts/CompanyDashboardLayout";
-import CompanyDashboard from "./pages/company/CompanyDashboard";
-import Applicants from "./pages/company/Applicants";
-import Collaboration from "./pages/company/Collaboration";
-import Employees from "./pages/company/Employees";
-import Insights from "./pages/company/Insights";
-import Performance from "./pages/company/performance";
-import PostJob from "./pages/company/postJob";
-import CompanyProfile from "./pages/company/CompanyProfile";
-import CompanyReports from "./pages/company/Reports";
-
-// Employee Dashboard Layout and Pages
-import EmployeeDashboardLayout from "./layouts/EmployeeDashboardLayout";
-import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
-import EmployeeProfile from "./pages/employee/EmployeeProfile";
-import PerformanceOverview from "./pages/employee/PerformanceOverview";
-import SkillDevelopmentTracker from "./pages/employee/SkillDevelopmentTracker";
-import ProjectContributions from "./pages/employee/ProjectContributions";
-import CareerProgression from "./pages/employee/CareerProgression";
-import CompanyFeedback from "./pages/employee/CompanyFeedback";
-import LearningResources from "./pages/employee/LearningResources";
-import InterviewPracticeZone from "./pages/employee/InterviewPracticeZone";
-import JobSwitchInsights from "./pages/employee/JobSwitchInsights";
-import EmployeeSettings from "./pages/employee/Settings";
-
 import { motion } from "framer-motion";
 import API from "./api/api";
-
-import UserJobs from "./pages/Student/UserJobs";
-
 import ScrollToTop from "./components/ScrollToTop";
 import useLenis from "./components/useLenis";
-
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// ✅ Import your Cursor effect:
 import CursorTrail from "./components/CursorTrail";
+import Loader from "./components/Loader"; // Assuming you have a Loader component
 
-// ✅ Wrapper to allow useLocation inside Router
+// Lazy-loaded components
+const LandingPage = lazy(() => import("./pages/LandingPage"));
+const AuthPage = lazy(() => import("./pages/AuthPage"));
+const FeedbackPage = lazy(() => import("./pages/FeedbackPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const Resume = lazy(() => import("./pages/Resume"));
+const ResultsPage = lazy(() => import("./pages/ResultsPage"));
+const RoleSelectionPage = lazy(() => import("./pages/RoleSelectionPage"));
+const CompanyForm = lazy(() => import("./pages/register/CompanyForm"));
+const EmployeeForm = lazy(() => import("./pages/register/EmployeeForm"));
+const InstitutionForm = lazy(() => import("./pages/register/InstitutionForm"));
+const StudentForm = lazy(() => import("./pages/register/StudentForm"));
+const StudentProgressDashboard = lazy(() => import("./pages/Student/StudentProgressDashboard"));
+const StudentProgressDetail = lazy(() => import("./pages/Student/StudentProgressDetail"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const DashboardLayout = lazy(() => import("./layouts/DashboardLayout"));
+const Aptitude = lazy(() => import("./pages/Student/Aptitude"));
+const Coding = lazy(() => import("./pages/Student/Coding"));
+const CodingEditor = lazy(() => import("./pages/Student/CodingEditor"));
+const Dashboard = lazy(() => import("./pages/Student/Dashboard"));
+const InterviewExperience = lazy(() => import("./pages/Student/InterviewExperience"));
+const InterviewInterface = lazy(() => import("./pages/Student/InterviewInterface"));
+const Jobs = lazy(() => import("./pages/Student/Jobs"));
+const ResumeATS = lazy(() => import("./pages/Student/ResumeATS"));
+const ResumeBuilder = lazy(() => import("./pages/Student/ResumeBuilder"));
+const Settings = lazy(() => import("./pages/Student/Settings"));
+const InstitutionDashboardLayout = lazy(() => import("./layouts/InstitutionDashboardLayout"));
+const InstitutionDashboard = lazy(() => import("./pages/Institution/InstitutionDashboard"));
+const InstitutionProfile = lazy(() => import("./pages/Institution/InstitutionProfile"));
+const StudentPerformance = lazy(() => import("./pages/Institution/StudentPerformance"));
+const DepartmentPerformance = lazy(() => import("./pages/Institution/DepartmentPerformance"));
+const Reports = lazy(() => import("./pages/Institution/Reports"));
+const Analytics = lazy(() => import("./pages/Institution/Analytics"));
+const InstitutionSettings = lazy(() => import("./pages/Institution/Settings"));
+const CompanyDashboardLayout = lazy(() => import("./layouts/CompanyDashboardLayout"));
+const CompanyDashboard = lazy(() => import("./pages/company/CompanyDashboard"));
+const Applicants = lazy(() => import("./pages/company/Applicants"));
+const Collaboration = lazy(() => import("./pages/company/Collaboration"));
+const Employees = lazy(() => import("./pages/company/Employees"));
+const Insights = lazy(() => import("./pages/company/Insights"));
+const Performance = lazy(() => import("./pages/company/performance"));
+const PostJob = lazy(() => import("./pages/company/postJob"));
+const CompanyProfile = lazy(() => import("./pages/company/CompanyProfile"));
+const CompanyReports = lazy(() => import("./pages/company/Reports"));
+const EmployeeDashboardLayout = lazy(() => import("./layouts/EmployeeDashboardLayout"));
+const EmployeeDashboard = lazy(() => import("./pages/employee/EmployeeDashboard"));
+const EmployeeProfile = lazy(() => import("./pages/employee/EmployeeProfile"));
+const PerformanceOverview = lazy(() => import("./pages/employee/PerformanceOverview"));
+const SkillDevelopmentTracker = lazy(() => import("./pages/employee/SkillDevelopmentTracker"));
+const ProjectContributions = lazy(() => import("./pages/employee/ProjectContributions"));
+const CareerProgression = lazy(() => import("./pages/employee/CareerProgression"));
+const CompanyFeedback = lazy(() => import("./pages/employee/CompanyFeedback"));
+const LearningResources = lazy(() => import("./pages/employee/LearningResources"));
+const InterviewPracticeZone = lazy(() => import("./pages/employee/InterviewPracticeZone"));
+const JobSwitchInsights = lazy(() => import("./pages/employee/JobSwitchInsights"));
+const EmployeeSettings = lazy(() => import("./pages/employee/Settings"));
+const UserJobs = lazy(() => import("./pages/Student/UserJobs"));
+
 const AppWrapper = () => {
   useLenis();
-
   const location = useLocation();
-
-  // Footer visible only on home page
   const shouldHideFooter = location.pathname !== "/";
 
   return (
     <>
       <ScrollToTop />
-      {/* UPDATED the background here for consistency */}
       <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex flex-col justify-between">
         <div>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/register" element={<RoleSelectionPage />} />
-            <Route path="/resume" element={<Resume />} />
-            <Route path="/register/student" element={<StudentForm />} />
-            <Route path="/register/institution" element={<InstitutionForm />} />
-            <Route path="/register/employee" element={<EmployeeForm />} />
-            <Route path="/register/company" element={<CompanyForm />} />
-            <Route path="/feedback" element={<FeedbackPage />} />
-            <Route path="/contact" element={<ContactPage />} />
+          <Suspense fallback={<Loader />}>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/register" element={<RoleSelectionPage />} />
+              <Route path="/resume" element={<Resume />} />
+              <Route path="/register/student" element={<StudentForm />} />
+              <Route path="/register/institution" element={<InstitutionForm />} />
+              <Route path="/register/employee" element={<EmployeeForm />} />
+              <Route path="/register/company" element={<CompanyForm />} />
+              <Route path="/feedback" element={<FeedbackPage />} />
+              <Route path="/contact" element={<ContactPage />} />
 
-            {/* Standalone Route */}
-            <Route path="/interview" element={<InterviewInterface />} />
+              {/* Standalone Route */}
+              <Route path="/interview" element={<InterviewInterface />} />
 
-            {/* Institution Dashboard Routes */}
-            <Route
-              path="/dashboard/institution"
-              element={
-                <ProtectedRoute>
-                  <InstitutionDashboardLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<InstitutionDashboard />} />
-
-              <Route path="profile" element={<ProfilePage />} />
-
+              {/* Institution Dashboard Routes */}
               <Route
-                path="student-performance"
-                element={<StudentPerformance />}
-              />
+                path="/dashboard/institution"
+                element={
+                  <ProtectedRoute>
+                    <InstitutionDashboardLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<InstitutionDashboard />} />
+                <Route path="profile" element={<ProfilePage />} />
+                <Route
+                  path="student-performance"
+                  element={<StudentPerformance />}
+                />
+                <Route
+                  path="department-performance"
+                  element={<DepartmentPerformance />}
+                />
+                <Route path="reports" element={<Reports />} />
+                <Route path="analytics" element={<Analytics />} />
+                <Route path="settings" element={<InstitutionSettings />} />
+              </Route>
+
+              {/* Company Dashboard Routes */}
               <Route
-                path="department-performance"
-                element={<DepartmentPerformance />}
+                path="/dashboard/company"
+                element={
+                  <ProtectedRoute>
+                    <CompanyDashboardLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<CompanyDashboard />} />
+                <Route path="profile" element={<CompanyProfile />} />
+                <Route path="employees" element={<Employees />} />
+                <Route path="performance" element={<Performance />} />
+                <Route path="post-job" element={<PostJob />} />
+                <Route path="applicants" element={<Applicants />} />
+                <Route path="insights" element={<Insights />} />
+                <Route path="collaboration" element={<Collaboration />} />
+                <Route path="reports" element={<CompanyReports />} />
+                <Route path="settings" element={<Settings />} />
+              </Route>
+
+              {/* Employee Dashboard Routes */}
+              <Route
+                path="/dashboard/employee"
+                element={
+                  <ProtectedRoute>
+                    <EmployeeDashboardLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<EmployeeDashboard />} />
+                <Route path="profile" element={<EmployeeProfile />} />
+                <Route path="performance" element={<PerformanceOverview />} />
+                <Route path="skills" element={<SkillDevelopmentTracker />} />
+                <Route path="projects" element={<ProjectContributions />} />
+                <Route path="career" element={<CareerProgression />} />
+                <Route path="feedback" element={<CompanyFeedback />} />
+                <Route path="learning" element={<LearningResources />} />
+                <Route
+                  path="interview-practice"
+                  element={<InterviewPracticeZone />}
+                />
+                <Route path="job-insights" element={<JobSwitchInsights />} />
+                <Route path="settings" element={<EmployeeSettings />} />
+              </Route>
+
+              {/* Results */}
+              <Route
+                path="/results/:interviewId"
+                element={
+                  <ProtectedRoute>
+                    <ResultsPage />
+                  </ProtectedRoute>
+                }
               />
 
-              <Route path="reports" element={<Reports />} />
-              <Route path="analytics" element={<Analytics />} />
-              <Route path="settings" element={<InstitutionSettings />} />
-            </Route>
-
-            {/* Company Dashboard Routes */}
-            <Route
-              path="/dashboard/company"
-              element={
-                <ProtectedRoute>
-                  <CompanyDashboardLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<CompanyDashboard />} />
-              <Route path="profile" element={<CompanyProfile />} />
-              <Route path="employees" element={<Employees />} />
-              <Route path="performance" element={<Performance />} />
-              <Route path="post-job" element={<PostJob />} />
-              <Route path="applicants" element={<Applicants />} />
-              <Route path="insights" element={<Insights />} />
-              <Route path="collaboration" element={<Collaboration />} />
-              <Route path="reports" element={<CompanyReports />} />
-              <Route path="settings" element={<Settings />} />
-            </Route>
-
-            {/* Employee Dashboard Routes */}
-            <Route
-              path="/dashboard/employee"
-              element={
-                <ProtectedRoute>
-                  <EmployeeDashboardLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<EmployeeDashboard />} />
-              <Route path="profile" element={<EmployeeProfile />} />
-              <Route path="performance" element={<PerformanceOverview />} />
-              <Route path="skills" element={<SkillDevelopmentTracker />} />
-              <Route path="projects" element={<ProjectContributions />} />
-              <Route path="career" element={<CareerProgression />} />
-              <Route path="feedback" element={<CompanyFeedback />} />
-              <Route path="learning" element={<LearningResources />} />
+              {/* Student Dashboard Routes */}
               <Route
-                path="interview-practice"
-                element={<InterviewPracticeZone />}
-              />
-              <Route path="job-insights" element={<JobSwitchInsights />} />
-              <Route path="settings" element={<EmployeeSettings />} />
-            </Route>
-
-            {/* Results */}
-            <Route
-              path="/results/:interviewId"
-              element={
-                <ProtectedRoute>
-                  <ResultsPage />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Student Dashboard Routes */}
-            <Route
-              path="/dashboard"
-              element={
-                // <ProtectedRoute>
-                <DashboardLayout />
-                // </ProtectedRoute>
-              }
-            >
-              <Route index element={<Dashboard />} />
-              <Route path="profile" element={<ProfilePage />} />
-              <Route path="resume-builder" element={<ResumeBuilder />} />
-              <Route path="resume-ats" element={<ResumeATS />} />
-              <Route path="jobs" element={<Jobs />} />
-              <Route path="user-jobs" element={<UserJobs />} />
-              <Route path="coding" element={<Coding />} />
-              <Route path="coding/:id" element={<CodingEditor />} />
-              <Route
-                path="interview-practice"
-                element={<InterviewInterface />}
-              />
-              <Route path="aptitude" element={<Aptitude />} />
-              <Route
-                path="interview-experience"
-                element={<InterviewExperience />}
-              />
-              <Route path="settings" element={<Settings />} />
-              {/* New route for the Student Progress Dashboard */}
-              <Route path="progress" element={<StudentProgressDashboard />} />
-              {/* New route for the Student Progress Detail page */}
-              <Route
-                path="progress/:studentId"
-                element={<StudentProgressDetail />}
-              />
-            </Route>
-          </Routes>
+                path="/dashboard"
+                element={
+                  // <ProtectedRoute>
+                  <DashboardLayout />
+                  // </ProtectedRoute>
+                }
+              >
+                <Route index element={<Dashboard />} />
+                <Route path="profile" element={<ProfilePage />} />
+                <Route path="resume-builder" element={<ResumeBuilder />} />
+                <Route path="resume-ats" element={<ResumeATS />} />
+                <Route path="jobs" element={<Jobs />} />
+                <Route path="user-jobs" element={<UserJobs />} />
+                <Route path="coding" element={<Coding />} />
+                <Route path="coding/:id" element={<CodingEditor />} />
+                <Route
+                  path="interview-practice"
+                  element={<InterviewInterface />}
+                />
+                <Route path="aptitude" element={<Aptitude />} />
+                <Route
+                  path="interview-experience"
+                  element={<InterviewExperience />}
+                />
+                <Route path="settings" element={<Settings />} />
+                <Route path="progress" element={<StudentProgressDashboard />} />
+                <Route
+                  path="progress/:studentId"
+                  element={<StudentProgressDetail />}
+                />
+              </Route>
+            </Routes>
+          </Suspense>
         </div>
 
-        {/* Toast Notifications */}
         <ToastContainer
           position="top-center"
           autoClose={3000}
@@ -259,7 +236,6 @@ const AppWrapper = () => {
           theme="colored"
         />
 
-        {/* Conditional Footer */}
         {!shouldHideFooter && <Footer />}
         <CursorTrail />
       </div>
