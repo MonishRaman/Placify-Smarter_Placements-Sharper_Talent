@@ -51,7 +51,8 @@ export const createInterviewExperience = async (req, res) => {
             difficulty,
             rating: parseInt(rating),
             experience,
-            tips: tips || ''
+            tips: tips || '',
+            isApproved: true // Always approved by default
         });
 
         const savedExperience = await newExperience.save();
@@ -94,9 +95,9 @@ export const getAllInterviewExperiences = async (req, res) => {
         } = req.query;
 
         // Basic filter for public and approved experiences only
-        const filter = { 
+        const filter = {
             isPublic: true,
-            isApproved: true 
+            isApproved: true
         };
 
         // Calculate pagination

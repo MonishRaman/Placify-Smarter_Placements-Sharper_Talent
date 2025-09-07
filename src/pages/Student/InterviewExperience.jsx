@@ -1,5 +1,22 @@
 import { Briefcase, Star, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+// Simple Toast component
+const Toast = ({ message, type, onClose }) => (
+  <div
+    className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-[9999] px-6 py-3 rounded-lg shadow-lg text-white font-semibold transition-all duration-300
+      ${type === "success" ? "bg-green-600" : "bg-red-600"}`}
+    role="alert"
+  >
+    {message}
+    <button
+      className="ml-4 text-white/80 hover:text-white font-bold"
+      onClick={onClose}
+      aria-label="Close toast"
+    >
+      ×
+    </button>
+  </div>
+);
 
 const InterviewExperience = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,7 +32,8 @@ const InterviewExperience = () => {
     email: "",
   });
 
-  const experiences = [
+  // Mock data for fallback
+  const mockExperiences = [
     {
       id: 1,
       company: "Google",
@@ -42,33 +60,111 @@ const InterviewExperience = () => {
     },
   ];
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const [experiences, setExperiences] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [toast, setToast] = useState({ message: "", type: "", visible: false });
+
+  // Fetch interview experiences from backend
+  const fetchExperiences = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("http://localhost:5000/api/interviewExperience");
+      if (!res.ok) throw new Error("Failed to fetch interview experiences");
+      const data = await res.json();
+      console.log("Fetched interview experiences:", data);
+      if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+        setExperiences(
+          data.data.map((exp, idx) => ({
+            id: exp._id || idx,
+            company: exp.company,
+            role: exp.role,
+            content: exp.experience,
+            color: mockExperiences[idx % mockExperiences.length].color,
+          }))
+        );
+        setToast({
+          message: "Interview experiences loaded successfully!",
+          type: "success",
+          visible: true,
+        });
+      } else {
+        setExperiences(mockExperiences);
+        setToast({
+          message: "No experiences found. Showing mock data.",
+          type: "success",
+          visible: true,
+        });
+      }
+    } catch (err) {
+      setError(err.message);
+      setExperiences(mockExperiences);
+      setToast({
+        message: "Failed to load experiences. Showing mock data.",
+        type: "error",
+        visible: true,
+      });
+    } finally {
+      setLoading(false);
+      setTimeout(() => setToast((t) => ({ ...t, visible: false })), 2500);
+    }
   };
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    fetchExperiences();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement backend submission
-    console.log("Form Data:", formData);
-    // Close modal after submission
-    setIsModalOpen(false);
-    // Reset form
-    setFormData({
-      company: "",
-      role: "",
-      experience: "",
-      rating: 5,
-      interviewType: "",
-      difficulty: "",
-      tips: "",
-      name: "",
-      email: "",
-    });
-    alert("Thank you for sharing your experience!");
+    setError(null);
+    try {
+      const res = await fetch("http://localhost:5000/api/interviewExperience", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFormData({
+          company: "",
+          role: "",
+          experience: "",
+          rating: 5,
+          interviewType: "",
+          difficulty: "",
+          tips: "",
+          name: "",
+          email: "",
+        });
+        setIsModalOpen(false);
+        setToast({
+          message: "Experience submitted successfully!",
+          type: "success",
+          visible: true,
+        });
+        await fetchExperiences();
+      } else {
+        setError(data.message || "Failed to submit experience");
+        setToast({
+          message: data.message || "Failed to submit experience",
+          type: "error",
+          visible: true,
+        });
+      }
+    } catch (err) {
+      setError(err.message);
+      setToast({ message: err.message, type: "error", visible: true });
+    } finally {
+      setLoading(false);
+      setTimeout(() => setToast((t) => ({ ...t, visible: false })), 2500);
+    }
   };
 
   const openModal = () => setIsModalOpen(true);
@@ -76,7 +172,24 @@ const InterviewExperience = () => {
 
   return (
     <>
+      {toast.visible && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast((t) => ({ ...t, visible: false }))}
+        />
+      )}
       <div className="relative min-h-screen bg-gray-100 dark:bg-gray-900 overflow-x-hidden">
+        {loading && (
+          <div className="text-center py-10 text-lg text-gray-700 dark:text-gray-200">
+            Loading interview experiences...
+          </div>
+        )}
+        {error && (
+          <div className="text-center py-2 text-red-600 dark:text-red-400">
+            {error}
+          </div>
+        )}
         {/* Background Decorations */}
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           <div className="absolute -top-32 -left-32 h-72 w-72 sm:h-96 sm:w-96 rounded-full bg-blue-400/20 blur-3xl dark:bg-blue-500/30" />
