@@ -52,6 +52,7 @@ app.use("/api/students", studentRoutes); // New route for student progress track
 app.use("/api/ats", atsRoutes);
 app.use("/api/resume/score", resumeScoreRoutes); // New route for resume score persistence - MUST come before /api/resume
 app.use("/api/resume", resumeRoutes);
+app.use("/api/interviewExperience", interviewExperienceRoutes);
 
 // NOTE: Missing leading slash would break the route (returning index.html or 404 to frontend)
 app.use("/api/jobs", jobRoute);
