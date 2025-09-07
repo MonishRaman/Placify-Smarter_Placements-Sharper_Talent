@@ -165,8 +165,8 @@ const LandingPage = () => {
                     className={`relative px-6 py-2.5 font-medium rounded-xl transition-all duration-500 ease-in-out hover-lift will-change-transform backdrop-blur-sm
                              ${
                                isScrolled
-                                 ? "text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 before:absolute before:inset-0 before:rounded-xl before:bg-gray-100/70 dark:before:bg-gray-800/70 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:backdrop-blur-md"
-                                 : "text-white/90 dark:text-gray-100/90 hover:text-white dark:hover:text-white before:absolute before:inset-0 before:rounded-xl before:bg-white/15 dark:before:bg-white/25 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:backdrop-blur-md"
+                                 ? "text-gray-700 border-2 border-white/40 dark:border-white/50 rounded-2xl dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 before:absolute before:inset-0 before:rounded-xl before:bg-gray-100/70 dark:before:bg-gray-800/70 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:backdrop-blur-md"
+                                 : "text-white/90 border-2 border-white/40 dark:border-white/50 rounded-2xl dark:text-gray-100/90 hover:text-white dark:hover:text-white before:absolute before:inset-0 before:rounded-xl before:bg-white/15 dark:before:bg-white/25 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:backdrop-blur-md"
                              }`}
                     onClick={() => navigate("/auth")}
                   >
@@ -183,9 +183,9 @@ const LandingPage = () => {
                   whileTap={{ scale: 0.95 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                   className={`relative px-6 py-2.5 font-semibold rounded-xl shadow-xl transition-all duration-500 ease-in-out overflow-hidden group btn-hover backdrop-blur-md ${
-                    isScrolled
-                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 text-white"
-                      : "bg-white/90 dark:bg-gray-100/90 text-purple-600 dark:text-purple-700 backdrop-blur-xl"
+                  isScrolled
+                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
+                      : "bg-white/90 text-purple-600 dark:bg-gradient-to-r dark:from-purple-500 dark:to-indigo-600 dark:text-white backdrop-blur-xl"
                   }`}
                   onClick={handleGetStarted}
                 >
@@ -530,7 +530,7 @@ const LandingPage = () => {
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                   onClick={handleGetStarted}
-                  className="group relative inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-purple-700 dark:text-purple-800 bg-white/95 dark:bg-gray-100/95 rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden btn-hover backdrop-blur-xl"
+                  className="group relative inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-purple-700 bg-white/95 rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden btn-hover backdrop-blur-xl dark:text-white dark:bg-gradient-to-r dark:from-purple-500 dark:to-indigo-600"
                 >
                   <span className="relative z-10 flex items-center space-x-2">
                     <Zap className="w-5 h-5" />
