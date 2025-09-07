@@ -6,14 +6,13 @@
 [![GitHub issues](https://img.shields.io/github/issues/MonishRaman/Placify-Smarter_Placements-Sharper_Talent)](https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent/issues)
 [![GitHub forks](https://img.shields.io/github/forks/MonishRaman/Placify-Smarter_Placements-Sharper_Talent)](https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent/network)
 [![GitHub stars](https://img.shields.io/github/stars/MonishRaman/Placify-Smarter_Placements-Sharper_Talent)](https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent/stargazers)
-[![Join our Discord](https://img.shields.io/badge/Join_Discord-7289DA?logo=discord\&logoColor=white)](https://discord.gg/WdAdQPAB)
-
+[![Join our Discord](https://img.shields.io/badge/Join_Discord-7289DA?logo=discord&logoColor=white)](https://discord.gg/WdAdQPAB)
 
 Welcome to the official repository for **Placify**, a project by **Innovision Technologies Pvt Ltd**, participating in **GirlScript Summer of Code (GSSoC) 2025**. We're thrilled to have you join our mission!
 
-**Tagline:** *Unboxing New Ideas*
+**Tagline:** _Unboxing New Ideas_
 
-**Vision:** *"Reinventing campus placement through AI-powered intelligent interviewing."*
+**Vision:** _"Reinventing campus placement through AI-powered intelligent interviewing."_
 
 ---
 
@@ -25,18 +24,18 @@ Welcome to the official repository for **Placify**, a project by **Innovision Te
 
 ## 📖 Table of Contents
 
-* [😫 The Problem](#-the-problem)
-* [💡 The Solution: Placify](#-the-solution-placify)
-* [🚀 Key Features](#-key-features)
-* [👥 Primary Beneficiaries](#-primary-beneficiaries)
-* [🛠️ Technology Stack (Proposed)](#️-technology-stack-proposed)
-* [🗺️ Project Roadmap](#️-project-roadmap)
-* [🏆 Achievements](#-achievements)
-* [🏁 Getting Started](#-getting-started)
-* [🤝 How to Contribute](#-how-to-contribute)
-* [🧑‍💻 Our Team](#-our-team)
-* [📄 License](#-license)
-* [📞 Contact](#-contact)
+- [😫 The Problem](#-the-problem)
+- [💡 The Solution: Placify](#-the-solution-placify)
+- [🚀 Key Features](#-key-features)
+- [👥 Primary Beneficiaries](#-primary-beneficiaries)
+- [🛠️ Technology Stack (Proposed)](#️-technology-stack-proposed)
+- [🗺️ Project Roadmap](#️-project-roadmap)
+- [🏆 Achievements](#-achievements)
+- [🏁 Getting Started](#-getting-started)
+- [🤝 How to Contribute](#-how-to-contribute)
+- [🧑‍💻 Our Team](#-our-team)
+- [📄 License](#-license)
+- [📞 Contact](#-contact)
 
 ---
 
@@ -44,10 +43,10 @@ Welcome to the official repository for **Placify**, a project by **Innovision Te
 
 The traditional campus hiring process is inefficient and outdated:
 
-* ⏱️ **Time-Consuming:** Interviewing 500+ students can take weeks.
-* 🎯 **Subjectivity:** Human evaluation varies widely.
-* ❌ **Lack of Feedback:** Students often get no insights post-interview.
-* 📉 **No Data:** Institutions miss critical improvement metrics.
+- ⏱️ **Time-Consuming:** Interviewing 500+ students can take weeks.
+- 🎯 **Subjectivity:** Human evaluation varies widely.
+- ❌ **Lack of Feedback:** Students often get no insights post-interview.
+- 📉 **No Data:** Institutions miss critical improvement metrics.
 
 **Result?** Talented students go unnoticed, companies lose time and resources, and placement records fall short.
 
@@ -57,10 +56,10 @@ The traditional campus hiring process is inefficient and outdated:
 
 **Placify** is an AI-powered, full-stack assessment platform that automates and elevates the campus placement process. It mimics real interviews and evaluates candidates on:
 
-* 📹 Facial expressions
-* 🎤 Voice tone, clarity, and confidence
-* 🧠 Technical accuracy
-* 👥 Behavioral traits
+- 📹 Facial expressions
+- 🎤 Voice tone, clarity, and confidence
+- 🧠 Technical accuracy
+- 👥 Behavioral traits
 
 ⏩ Evaluate **40+ students per hour**, fairly and consistently!
 
@@ -68,63 +67,84 @@ The traditional campus hiring process is inefficient and outdated:
 
 ## 🚀 Key Features
 
-* ⚡ **10x Faster Interviews:** Complete 500 interviews in under 48 hours.
-* 🤖 **AI-Based Scoring:** Removes human bias, ensures consistency.
-* 📊 **Real-Time Analysis:** Monitors webcam & audio inputs for tone, clarity, logic, and body language.
-* 📈 **Student Feedback Reports:** Personalized improvement suggestions.
-* 🧠 **AI Learning Roadmap:** Smart progress path suggestions.
-* 📊 **Recruiter Dashboards:** Actionable talent pool insights.
-* ❓ **Adaptive Questions:** Adjust based on responses.
+- ⚡ **10x Faster Interviews:** Complete 500 interviews in under 48 hours.
+- 🤖 **AI-Based Scoring:** Removes human bias, ensures consistency.
+- 📊 **Real-Time Analysis:** Monitors webcam & audio inputs for tone, clarity, logic, and body language.
+- 📈 **Student Feedback Reports:** Personalized improvement suggestions.
+- 🧠 **AI Learning Roadmap:** Smart progress path suggestions.
+- 📊 **Recruiter Dashboards:** Actionable talent pool insights.
+- ❓ **Adaptive Questions:** Adjust based on responses.
 
 ---
 
 ## 👥 Primary Beneficiaries
 
-* 🎓 **Students** – Understand strengths, get feedback, and grow
-* 🏫 **Institutions** – Analyze gaps, boost curriculum, improve metrics
-* 🧑‍💼 **HR Recruiters** – Hire faster, smarter, and with data
-* 🎯 **Placement Cells** – Automate workflows, improve efficiency
+- 🎓 **Students** – Understand strengths, get feedback, and grow
+- 🏫 **Institutions** – Analyze gaps, boost curriculum, improve metrics
+- 🧑‍💼 **HR Recruiters** – Hire faster, smarter, and with data
+- 🎯 **Placement Cells** – Automate workflows, improve efficiency
 
 ---
 
-## 📁 Project Structure
+## 📁 Project Structure (2025)
 
-```bash
 Placify-Smarter_Placements-Sharper_Talent/
-├── node_modules/
-├── src/
-│   ├── pages/
-│   │   ├── AuthPage.jsx
-│   │   ├── Dashboard.jsx
-│   │   ├── InterviewInterface.jsx
-│   │   ├── LandingPage.jsx
-│   │   └── ResultsPage.jsx
-│   ├── App.jsx
-│   ├── index.css
-│   └── main.jsx
-├── .gitignore
-├── CODE_OF_CONDUCT.md
-├── CONTRIBUTING.md
-├── eslint.config.js
-├── index.html
-├── LICENSE
-├── package-lock.json
-├── package.json
-├── postcss.config.js
-├── README.md
-├── tailwind.config.js
-└── vite.config.js
-```
+├── server/ # Backend (Node.js, Express, API, DB, business logic)
+│ ├── config/ # Database and environment configs
+│ ├── controllers/ # API route controllers (auth, chat, resume, etc.)
+│ ├── middleware/ # Express middlewares (auth, file upload, etc.)
+│ ├── models/ # Mongoose models (User, Student, Resume, etc.)
+│ ├── routes/ # Express routes (auth.js, resume.js, etc.)
+│ ├── services/ # Service logic (AI, ATS, PDF extraction)
+│ ├── uploads/ # Uploaded files (images, PDFs)
+│ ├── server.js # Main Express server entry point
+│ ├── package.json # Backend dependencies
+│ └── ...
+├── src/ # Frontend (React)
+│ ├── api/ # API client logic
+│ ├── components/ # Reusable React components
+│ ├── context/ # React context providers
+│ ├── data/ # Static data (questions, challenges)
+│ ├── layouts/ # Dashboard and page layouts
+│ ├── lib/ # Helper libraries (e.g., geminiHelper.js)
+│ ├── pages/ # Main app pages (Landing, Auth, Student, Company, etc.)
+│ ├── utils/ # Utility functions (email, PDF, theme)
+│ ├── App.jsx # App root
+│ ├── main.jsx # React entry point
+│ └── index.css # Global styles
+├── ml_modules/ # Python ML modules (AI, scoring, analysis)
+│ ├── answer_accuracy/ # Fuzzy matching, keyword checking
+│ ├── emotion_detector/ # Emotion detection models
+│ ├── speech_analysis/ # Audio and prosody analysis
+│ ├── code_quality.py # Code quality analysis
+│ ├── main_analyzer.py # Main ML analyzer
+│ ├── requirements.txt # Python dependencies
+│ └── ...
+├── public/ # Static assets (images, redirects)
+├── CODE_OF_CONDUCT.md # Contributor code of conduct
+├── CONTRIBUTING.md # Contribution guidelines
+├── LICENSE # Project license
+├── README.md # Project documentation
+├── ... # Other config and meta files
+
+### Key Points
+
+- All backend logic, APIs, and database models are now in the `server/` folder.
+- All frontend React code is in the `src/` folder.
+- All machine learning and analysis modules are in the `ml_modules/` folder.
+- Static assets are in `public/`.
+
+Refer to each folder’s README or documentation for more details on usage and contribution.
 
 ---
 
 ## 🛠️ Technology Stack (Proposed)
 
-* **Frontend:** React.js / Next.js / Vue.js
-* **Backend:** Node.js (Express.js) / Django / FastAPI
-* **Database:** MongoDB / PostgreSQL
-* **AI/ML:** Python, TensorFlow, PyTorch, OpenCV, NLP
-* **Cloud & DevOps:** Vercel, Render, AWS, Google Cloud, Azure
+- **Frontend:** React.js / Next.js / Vue.js
+- **Backend:** Node.js (Express.js) / Django / FastAPI
+- **Database:** MongoDB / PostgreSQL
+- **AI/ML:** Python, TensorFlow, PyTorch, OpenCV, NLP
+- **Cloud & DevOps:** Vercel, Render, AWS, Google Cloud, Azure
 
 ---
 
@@ -134,9 +154,9 @@ Want to run Placify on your local machine? Here’s how 👇
 
 ### ✅ Prerequisites
 
-* Node.js & npm installed
-* Git installed
-* Code editor (VS Code recommended)
+- Node.js & npm installed
+- Git installed
+- Code editor (VS Code recommended)
 
 ### 🔧 Steps
 
@@ -173,13 +193,13 @@ Visit `http://localhost:5174` in your browser to see it live.
 
 We welcome all contributions! 🚀
 
-Please read our [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE\_OF\_CONDUCT.md](CODE_OF_CONDUCT.md) before starting.
+Please read our [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before starting.
 
 ### 📌 Contributor Checklist
 
-* Responsive, clean code
-* Compress and optimize assets
-* Sync your fork before PRs
+- Responsive, clean code
+- Compress and optimize assets
+- Sync your fork before PRs
 
 ### 🛠 Contribution Steps
 
@@ -218,15 +238,15 @@ git push origin main
 
 ### 🚦 Rollout Plan
 
-* **Phase 1 (2025):** MVP with core AI Interview Bot
-* **Phase 2 (2025):** Pilots across 3 colleges
-* **Phase 3 (2026):** Partner with HR & universities
-* **Phase 4 (2027):** PAN-India scale with multi-language support
+- **Phase 1 (2025):** MVP with core AI Interview Bot
+- **Phase 2 (2025):** Pilots across 3 colleges
+- **Phase 3 (2026):** Partner with HR & universities
+- **Phase 4 (2027):** PAN-India scale with multi-language support
 
 ### 🎯 Vision 2027
 
-* Impact 1M+ students
-* Become India’s leading smart recruitment platform
+- Impact 1M+ students
+- Become India’s leading smart recruitment platform
 
 ---
 
@@ -240,10 +260,10 @@ git push origin main
 
 Built with ❤️ by:
 
-* **Monish R** – Founder
-* **Prashanth A N** – Co-Founder
+- **Monish R** – Founder
+- **Prashanth A N** – Co-Founder
 
-*Final Year, DSATM Bangalore*
+_Final Year, DSATM Bangalore_
 
 ---
 
@@ -255,11 +275,11 @@ This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for m
 
 ## 📞 Contact
 
-* 📧 **Monish R:** [monishr608@gmail.com](mailto:monishr608@gmail.com)
-* 📧 **Prashanth A N:** [prashanth3792@gmail.com](mailto:prashanth3792@gmail.com)
-* 🌐 **Portfolio:** [monishraman.netlify.app](http://www.monishraman.netlify.app)
-* 📱 **Phone:** +91 82968 63444
+- 📧 **Monish R:** [monishr608@gmail.com](mailto:monishr608@gmail.com)
+- 📧 **Prashanth A N:** [prashanth3792@gmail.com](mailto:prashanth3792@gmail.com)
+- 🌐 **Portfolio:** [monishraman.netlify.app](http://www.monishraman.netlify.app)
+- 📱 **Phone:** +91 82968 63444
 
 ---
 
-> *"If we can transform recruitment for 500 students in hours instead of weeks, imagine what we can do for a nation.."*
+> _"If we can transform recruitment for 500 students in hours instead of weeks, imagine what we can do for a nation.."_
