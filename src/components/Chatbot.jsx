@@ -315,7 +315,7 @@ const Chatbot = () => {
 
           {/* Input Container */}
           <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 flex-shrink-0">
-            <div className="flex items-end space-x-2">
+            <div className="flex items-center space-x-2">
               <div className="flex-1 relative">
                 <textarea
                   ref={inputRef}
@@ -341,7 +341,7 @@ const Chatbot = () => {
               <button
                 onClick={sendMessage}
                 disabled={!input.trim() || isLoading}
-                className="p-2 sm:p-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105 flex-shrink-0 will-change-transform"
+                className="p-2 sm:p-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-500 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105 flex-shrink-0 will-change-transform"
                 aria-label="Send message"
               >
                 <Send className="w-3 h-3 sm:w-4 sm:h-4" />
