@@ -8,3 +8,4 @@ speechrecognition
 rapidfuzz
 flake8
 black
+sentence-transformers
