@@ -392,3 +392,40 @@ export const getAdminScoreAnalytics = async (req, res) => {
     handleErrorResponse(res, error, "fetch admin analytics");
   }
 };
+
+// ==================== AI-DRIVEN RESUME-JOB MATCHING ====================
+import { spawn } from "child_process";
+import Job from "../models/Jobs.js";
+import Resume from "../models/Resume.js";
+
+export const getResumeJobMatch = async (req, res) => {
+  try {
+    const { resumeId, jobId } = req.body;
+    if (!resumeId || !jobId) {
+      return res.status(400).json({ success: false, message: "resumeId and jobId are required" });
+    }
+    const resume = await Resume.findById(resumeId).lean();
+    const job = await Job.findById(jobId).lean();
+    if (!resume || !job) {
+      return res.status(404).json({ success: false, message: "Resume or Job not found" });
+    }
+    // Call Python ML module
+    const py = spawn("python", ["./ml_modules/call_match.py"]);
+    const input = JSON.stringify({ resume, job });
+    let output = "";
+    py.stdin.write(input);
+    py.stdin.end();
+    py.stdout.on("data", (data) => { output += data.toString(); });
+    py.stderr.on("data", (data) => { console.error("ML Error:", data.toString()); });
+    py.on("close", (code) => {
+      try {
+        const result = JSON.parse(output);
+        res.status(200).json({ success: true, data: result });
+      } catch (e) {
+        res.status(500).json({ success: false, message: "ML analysis failed", error: output });
+      }
+    });
+  } catch (error) {
+    handleErrorResponse(res, error, "AI-driven resume-job match");
+  }
+};
