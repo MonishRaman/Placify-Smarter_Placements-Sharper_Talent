@@ -430,7 +430,33 @@ const StudentDashboard = () => {
                   Upload New Resume
                 </button>
               </div>
-
+              {/* --- AI Resume-Job Match Section --- */}
+              {resumeAnalysis && resumeAnalysis.matchScore !== undefined && (
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border dark:border-blue-700 mb-6">
+                  <h3 className="font-bold text-lg mb-2 text-blue-800 dark:text-blue-300">Resume Match Score</h3>
+                  <p className="text-gray-700 dark:text-gray-300 mb-2">Your resume matches <span className="font-bold text-blue-700 dark:text-blue-200">{resumeAnalysis.matchScore}%</span> with the selected job description.</p>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {resumeAnalysis.missingSkills && resumeAnalysis.missingSkills.length > 0 && (
+                      <>
+                        <span className="font-semibold text-red-700 dark:text-red-300">Missing Skills:</span>
+                        {resumeAnalysis.missingSkills.map((skill, idx) => (
+                          <span key={idx} className="bg-red-200 dark:bg-red-700 text-red-800 dark:text-red-200 px-3 py-1 rounded-full text-sm">{skill}</span>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                  <div className="mb-2">
+                    {resumeAnalysis.suggestions && resumeAnalysis.suggestions.map((tip, idx) => (
+                      <div key={idx} className="text-sm text-blue-700 dark:text-blue-200">• {tip}</div>
+                    ))}
+                  </div>
+                  <div className="mb-2">
+                    {resumeAnalysis.learningRecommendations && resumeAnalysis.learningRecommendations.map((rec, idx) => (
+                      <div key={idx} className="text-sm text-green-700 dark:text-green-200">→ {rec}</div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border dark:border-gray-700 p-4 sm:p-6">
                   <div className="flex items-center gap-3 mb-3 sm:mb-4">
