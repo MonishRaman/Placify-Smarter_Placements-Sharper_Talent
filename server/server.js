@@ -15,8 +15,13 @@ import settingsRoutes from "./routes/settingsI.js";
 import atsRoutes from "./routes/ats.js";
 import resumeRoutes from "./routes/resume.js"; // New import for resume routes
 import resumeScoreRoutes from "./routes/resumeScore.js"; // New import for resume score routes
+import interviewExperienceRoutes from "./routes/interviewExperience.js"; // New import for interview experience routes
 
 import studentRoutes from "./routes/studentRoutes.js"; // Corrected import for studentRoutes
+
+
+import questionsRoutes from "./routes/questions.js"; // Aptitude questions API
+import chatRoutes from "./routes/chat.js"; // Gemini chat API
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -47,7 +52,16 @@ app.use("/api/students", studentRoutes); // New route for student progress track
 app.use("/api/ats", atsRoutes);
 app.use("/api/resume/score", resumeScoreRoutes); // New route for resume score persistence - MUST come before /api/resume
 app.use("/api/resume", resumeRoutes);
-app.use("api/jobs",jobRoute)
+app.use("/api/interviewExperience", interviewExperienceRoutes);
+
+// NOTE: Missing leading slash would break the route (returning index.html or 404 to frontend)
+app.use("/api/jobs", jobRoute);
+
+// Aptitude questions API
+
+app.use("/api/chat", chatRoutes);
+app.use("/api/questions", questionsRoutes);
+
 
 app.get("/", (req, res) => {
   res.json({
@@ -57,7 +71,8 @@ app.get("/", (req, res) => {
       feedback: "/api/feedback",
       test: "/api/feedback/test",
       resume: "/api/resume",
-      resumeScore: "/api/resume/score"
+      resumeScore: "/api/resume/score",
+      interviewExperience: "/api/interview-experience"
     }
   });
 });

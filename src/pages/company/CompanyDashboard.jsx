@@ -35,47 +35,36 @@ const CompanyDashboard = () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) return;
-        console.log("Fetching profile with token:", token);
-    
-        // With our new request interceptor, we don't need to explicitly set the token
+
         const response = await apiClient.get("/auth/profile");
-
-        console.log("Raw Response Status:", response.status);
-        console.log("Profile Response Data:", response.data);
-
         if (response.status === 200) {
-          setUserData(data);
-        } else {
-          console.error(
-            "Failed to fetch profile:",
-            data?.message || "Unknown error"
-          );
+          setUserData(response.data);
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
       }
     };
-
     fetchProfile();
   }, []);
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      transition={{ duration: 0.6 }} 
-      className="p-6"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+      className="min-h-screen w-full bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 
+                 dark:from-gray-900 dark:via-gray-950 dark:to-black p-6"
     >
-      <main className="max-w-7xl mx-auto">
+      <main className="max-w-7xl mx-auto space-y-8">
         {/* Company Header Card */}
-        <motion.div 
-          initial={{ y: -20, opacity: 0 }} 
-          animate={{ y: 0, opacity: 1 }} 
-          transition={{ delay: 0.2 }} 
-          className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-8 rounded-xl mb-8"
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-8 rounded-2xl shadow-lg"
         >
           <div className="flex flex-wrap items-center space-x-6">
-            <div className="w-20 h-20 bg-white/20 rounded-xl flex items-center justify-center">
+            <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center shadow-inner">
               <span className="text-2xl font-bold">
                 {userData?.companyName ? userData.companyName.substring(0, 2).toUpperCase() : "TC"}
               </span>
@@ -101,87 +90,43 @@ const CompanyDashboard = () => {
         </motion.div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <motion.div 
-            whileHover={{ scale: 1.05 }} 
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border border-gray-200 dark:border-gray-700"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Employees</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">{companyData.totalEmployees}</p>
-                <p className="text-sm text-gray-400 dark:text-gray-500">Active workforce</p>
-                <div className="flex items-center mt-2 text-green-500">
-                  <TrendingUp className="w-4 h-4 mr-1" />
-                  <span className="text-sm font-medium">+{companyData.growthRate}%</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            { label: "Total Employees", value: companyData.totalEmployees, desc: "Active workforce", icon: <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />, bg: "bg-purple-100 dark:bg-purple-900/30" },
+            { label: "Departments", value: companyData.departments, desc: "Operational divisions", icon: <Building2 className="w-6 h-6 text-pink-600 dark:text-pink-400" />, bg: "bg-pink-100 dark:bg-pink-900/30" },
+            { label: "Average Performance", value: companyData.avgPerformance, desc: "Out of 10", icon: <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />, bg: "bg-blue-100 dark:bg-blue-900/30" },
+            { label: "Top Performers", value: companyData.topPerformers, desc: "High achievers", icon: <Users className="w-6 h-6 text-green-600 dark:text-green-400" />, bg: "bg-green-100 dark:bg-green-900/30" }
+          ].map((stat, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ scale: 1.05 }}
+              className="bg-white/90 dark:bg-gray-800/90 rounded-2xl p-6 shadow-lg border border-gray-200/60 dark:border-gray-700/50 backdrop-blur-sm"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{stat.label}</p>
+                  <p className="text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+                  <p className="text-sm text-gray-400 dark:text-gray-500">{stat.desc}</p>
+                </div>
+                <div className={`w-12 h-12 ${stat.bg} rounded-xl flex items-center justify-center`}>
+                  {stat.icon}
                 </div>
               </div>
-              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
-                <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div 
-            whileHover={{ scale: 1.05 }} 
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border border-gray-200 dark:border-gray-700"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Departments</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">{companyData.departments}</p>
-                <p className="text-sm text-gray-400 dark:text-gray-500">Operational divisions</p>
-              </div>
-              <div className="w-12 h-12 bg-pink-100 dark:bg-pink-900/30 rounded-xl flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-pink-600 dark:text-pink-400" />
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div 
-            whileHover={{ scale: 1.05 }} 
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border border-gray-200 dark:border-gray-700"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Average Performance</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">{companyData.avgPerformance}</p>
-                <p className="text-sm text-gray-400 dark:text-gray-500">Out of 10</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div 
-            whileHover={{ scale: 1.05 }} 
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border border-gray-200 dark:border-gray-700"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Top Performers</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">{companyData.topPerformers}</p>
-                <p className="text-sm text-gray-400 dark:text-gray-500">High achievers</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
-                <Users className="w-6 h-6 text-green-600 dark:text-green-400" />
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          ))}
         </div>
 
         {/* Recent Employees */}
-        <motion.div 
-          initial={{ y: 20, opacity: 0 }} 
-          animate={{ y: 0, opacity: 1 }} 
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border border-gray-200 dark:border-gray-700 mb-8"
+          className="bg-white/90 dark:bg-gray-800/90 rounded-2xl p-6 shadow-lg border border-gray-200/60 dark:border-gray-700/50 backdrop-blur-sm"
         >
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Employee Activities</h3>
           <div className="space-y-3">
             {companyData.employees.slice(0, 3).map((employee) => (
-              <div key={employee.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div key={employee.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/80 rounded-lg shadow-sm">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
                     <span className="text-white font-medium text-sm">
@@ -202,22 +147,22 @@ const CompanyDashboard = () => {
           </div>
         </motion.div>
 
-        {/* Placeholder for More Content */}
-        <div className="bg-white dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-700 rounded-xl min-h-[200px] flex items-center justify-center text-gray-400 dark:text-gray-600 text-sm italic">
+        {/* Placeholder */}
+        <div className="bg-white/70 dark:bg-gray-800/80 border border-dashed border-gray-300 dark:border-gray-700 rounded-2xl min-h-[200px] flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm italic shadow-inner">
           More metrics and charts coming soon...
         </div>
       </main>
 
-      <ToastContainer 
-        position="top-right" 
-        autoClose={3000} 
-        hideProgressBar 
-        newestOnTop 
-        closeOnClick 
-        pauseOnFocusLoss 
-        draggable 
-        pauseOnHover 
-        theme="colored" 
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
       />
     </motion.div>
   );

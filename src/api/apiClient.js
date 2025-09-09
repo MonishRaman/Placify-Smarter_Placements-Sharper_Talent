@@ -3,13 +3,28 @@ import axios from 'axios';
 // Determine if we're in development mode
 const isDev = import.meta.env.MODE === 'development' || !import.meta.env.PROD;
 
+// Compute a robust base URL with fallbacks
+let rawBase = import.meta.env.VITE_API_URL;
+if (!rawBase || rawBase === 'undefined' || rawBase === 'null') {
+  // Fallback to common local backend port
+  rawBase = 'http://localhost:5000';
+}
+// Remove trailing slash
+rawBase = rawBase.replace(/\/$/, '');
+
+const computedBaseURL = `${rawBase}/api`;
+
 // Create a new instance of axios with a custom configuration
 const apiClient = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL}/api`,
+  baseURL: computedBaseURL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+if (isDev) {
+  console.log('🛠️ apiClient baseURL set to:', computedBaseURL);
+}
 
 // For debugging in development only
 if (isDev) {
@@ -25,12 +40,12 @@ apiClient.interceptors.request.use(
   (config) => {
     // Get token from localStorage
     const token = localStorage.getItem('token');
-    
+
     // If token exists and Authorization header isn't already set by the request
     if (token && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     return config;
   },
   (error) => {
@@ -54,18 +69,18 @@ apiClient.interceptors.response.use(
       // that falls out of the range of 2xx
       console.error('API Error Response:', error.response.data);
       errorMessage = error.response.data?.message || `Error: ${error.response.status}`;
-      
+
       // Handle authentication errors - redirect to login page
       if (error.response.status === 401) {
         // Clear auth data
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        
+
         // Redirect to login page (if not already there)
         if (!window.location.pathname.includes('/auth')) {
           console.warn('Session expired. Redirecting to login...');
           window.location.href = '/auth';
-          
+
           // Show error only if not redirecting
           return Promise.reject(error);
         }

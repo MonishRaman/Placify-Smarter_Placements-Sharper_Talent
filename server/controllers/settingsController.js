@@ -1,53 +1,98 @@
-import Settings from '../models/Settings.js';
-import User from '../models/User.js';
-import bcrypt from 'bcryptjs';
+import Settings from "../models/Settings.js";
+import User from "../models/User.js";
+import bcrypt from "bcryptjs";
+
+// Helper function to get or create settings
+const getOrCreateSettings = async (userId) => {
+  let settings = await Settings.findOne({ userId });
+
+  if (!settings) {
+    settings = await Settings.create({
+      userId,
+      notifications: {
+        emailNotifications: true,
+        smsNotifications: false,
+        placementUpdates: true,
+        studentRegistrations: true,
+        reportGeneration: false,
+        systemMaintenance: true,
+        emailConfig: {
+          smtpServer: "",
+          smtpPort: "",
+          emailUsername: "",
+          emailPassword: "",
+        },
+      },
+      integrations: {
+        resumeParserApi: "",
+        thirdPartyApiKey: "",
+        smsGateway: "twilio",
+        emailProvider: "smtp",
+      },
+    });
+  }
+
+  return settings;
+};
+
+// Helper function to encrypt sensitive data
+const encryptSensitiveData = async (data, fieldsToEncrypt) => {
+  const encryptedData = { ...data };
+
+  for (const field of fieldsToEncrypt) {
+    if (encryptedData[field]) {
+      encryptedData[field] = await bcrypt.hash(encryptedData[field], 10);
+    }
+  }
+
+  return encryptedData;
+};
+
+// Default notification settings
+const defaultNotifications = {
+  emailNotifications: true,
+  smsNotifications: false,
+  placementUpdates: true,
+  studentRegistrations: true,
+  reportGeneration: false,
+  systemMaintenance: true,
+  emailConfig: {
+    smtpServer: "",
+    smtpPort: "",
+    emailUsername: "",
+    emailPassword: "",
+  },
+};
+
+// Default integration settings
+const defaultIntegrations = {
+  resumeParserApi: "",
+  thirdPartyApiKey: "",
+  smsGateway: "twilio",
+  emailProvider: "smtp",
+};
 
 // Get all settings for a user
 export const getSettings = async (req, res) => {
   try {
     const userId = req.user.userId;
-    
+
     // Get user profile data
-    const user = await User.findById(userId).select('-password');
+    const user = await User.findById(userId).select("-password");
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Get or create settings
-    let settings = await Settings.findOne({ userId });
-    if (!settings) {
-      settings = await Settings.create({
-        userId,
-        notifications: {
-          emailNotifications: true,
-          smsNotifications: false,
-          placementUpdates: true,
-          studentRegistrations: true,
-          reportGeneration: false,
-          systemMaintenance: true,
-          emailConfig: {
-            smtpServer: '',
-            smtpPort: '',
-            emailUsername: '',
-            emailPassword: ''
-          }
-        },
-        integrations: {
-          resumeParserApi: '',
-          thirdPartyApiKey: '',
-          smsGateway: 'twilio',
-          emailProvider: 'smtp'
-        }
-      });
-    }
+    const settings = await getOrCreateSettings(userId);
 
     res.json({
       profile: user,
-      settings
+      settings,
     });
   } catch (error) {
-    console.error('Get settings error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Get settings error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -58,38 +103,36 @@ export const updateNotifications = async (req, res) => {
     const notificationData = req.body;
 
     // Encrypt email password if provided
-    if (notificationData.emailConfig && notificationData.emailConfig.emailPassword) {
-      notificationData.emailConfig.emailPassword = await bcrypt.hash(
-        notificationData.emailConfig.emailPassword, 
-        10
-      );
+    const fieldsToEncrypt = [];
+    if (
+      notificationData.emailConfig &&
+      notificationData.emailConfig.emailPassword
+    ) {
+      fieldsToEncrypt.push("emailConfig.emailPassword");
     }
 
-    let settings = await Settings.findOne({ userId });
-    
-    if (!settings) {
-      settings = await Settings.create({
-        userId,
-        notifications: notificationData,
-        integrations: {
-          resumeParserApi: '',
-          thirdPartyApiKey: '',
-          smsGateway: 'twilio',
-          emailProvider: 'smtp'
-        }
-      });
-    } else {
-      settings.notifications = { ...settings.notifications.toObject(), ...notificationData };
-      await settings.save();
-    }
+    const encryptedNotificationData = await encryptSensitiveData(
+      notificationData,
+      fieldsToEncrypt
+    );
 
-    res.json({ 
-      message: 'Notification settings updated successfully',
-      settings: settings.notifications
+    const settings = await getOrCreateSettings(userId);
+
+    // Merge existing notifications with new data
+    settings.notifications = {
+      ...settings.notifications.toObject(),
+      ...encryptedNotificationData,
+    };
+
+    await settings.save();
+
+    res.json({
+      message: "Notification settings updated successfully",
+      settings: settings.notifications,
     });
   } catch (error) {
-    console.error('Update notifications error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Update notifications error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -99,47 +142,30 @@ export const updateIntegrations = async (req, res) => {
     const userId = req.user.userId;
     const integrationData = req.body;
 
-    // Encrypt API keys (you might want to use a more sophisticated encryption)
-    if (integrationData.resumeParserApi) {
-      integrationData.resumeParserApi = await bcrypt.hash(integrationData.resumeParserApi, 10);
-    }
-    if (integrationData.thirdPartyApiKey) {
-      integrationData.thirdPartyApiKey = await bcrypt.hash(integrationData.thirdPartyApiKey, 10);
-    }
+    // Encrypt API keys
+    const fieldsToEncrypt = ["resumeParserApi", "thirdPartyApiKey"];
+    const encryptedIntegrationData = await encryptSensitiveData(
+      integrationData,
+      fieldsToEncrypt
+    );
 
-    let settings = await Settings.findOne({ userId });
-    
-    if (!settings) {
-      settings = await Settings.create({
-        userId,
-        notifications: {
-          emailNotifications: true,
-          smsNotifications: false,
-          placementUpdates: true,
-          studentRegistrations: true,
-          reportGeneration: false,
-          systemMaintenance: true,
-          emailConfig: {
-            smtpServer: '',
-            smtpPort: '',
-            emailUsername: '',
-            emailPassword: ''
-          }
-        },
-        integrations: integrationData
-      });
-    } else {
-      settings.integrations = { ...settings.integrations.toObject(), ...integrationData };
-      await settings.save();
-    }
+    const settings = await getOrCreateSettings(userId);
 
-    res.json({ 
-      message: 'Integration settings updated successfully',
-      settings: settings.integrations
+    // Merge existing integrations with new data
+    settings.integrations = {
+      ...settings.integrations.toObject(),
+      ...encryptedIntegrationData,
+    };
+
+    await settings.save();
+
+    res.json({
+      message: "Integration settings updated successfully",
+      settings: settings.integrations,
     });
   } catch (error) {
-    console.error('Update integrations error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Update integrations error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -147,24 +173,24 @@ export const updateIntegrations = async (req, res) => {
 export const uploadLogo = async (req, res) => {
   try {
     const userId = req.user.userId;
-    
+
     if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
+      return res.status(400).json({ message: "No file uploaded" });
     }
 
     // Update user profile with new logo path
     const logoPath = `/uploads/${req.file.filename}`;
-    
-    await User.findByIdAndUpdate(userId, { 
-      profileImage: logoPath 
+
+    await User.findByIdAndUpdate(userId, {
+      profileImage: logoPath,
     });
 
     res.json({
-      message: 'Logo uploaded successfully',
-      logoPath
+      message: "Logo uploaded successfully",
+      logoPath,
     });
   } catch (error) {
-    console.error('Upload logo error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Upload logo error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

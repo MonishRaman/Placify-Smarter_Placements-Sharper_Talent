@@ -1,41 +1,76 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { FaBriefcase } from "react-icons/fa";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const PostJob = () => {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
   const [formData, setFormData] = useState({
     title: "",
-    company: "",
-    location: "",
     type: "",
+    domain: "",
+    location: "",
+    status: "Open",
     salary: "",
     description: "",
     requirements: "",
-    benefits: "",
+    responsibilities: "",
   });
 
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value || "", // always keep controlled
     }));
   };
 
-  // Auto expand textarea
   const autoResize = (e) => {
     e.target.style.height = "auto";
     e.target.style.height = e.target.scrollHeight + "px";
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Job Post Data:", formData);
+
+    try {
+      const payload = {
+        title: formData.title,
+        type: formData.type,
+        domain: formData.domain,
+        location: formData.location,
+        status: formData.status,
+        salary: formData.salary,
+        description: formData.description,
+        requirements: formData.requirements
+          ? formData.requirements.split(",").map((r) => r.trim())
+          : [],
+        responsibilities: formData.responsibilities
+          ? formData.responsibilities.split(",").map((r) => r.trim())
+          : [],
+      };
+
+      const response = await axios.post(`${API_BASE}/api/jobs`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      toast.success("Job posted successfully!");
+      console.log("Job created:", response.data);
+
+      navigate("/dashboard/company");
+    } catch (err) {
+      console.error("Error posting job:", err);
+      toast.error(err.response?.data?.message || "Failed to post job");
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 to-blue-200 dark:from-gray-950 dark:to-gray-900 py-10 px-4 transition-colors duration-300">
       <div className="max-w-4xl mx-auto bg-white/90 dark:bg-gray-900/80 backdrop-blur-lg rounded-2xl shadow-2xl p-6 sm:p-10 border border-gray-200 dark:border-gray-700">
-        
-        {/* Header */}
         <div className="flex items-center justify-center gap-3 mb-8">
           <FaBriefcase className="text-blue-600 dark:text-blue-400 text-3xl sm:text-4xl" />
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 dark:text-white text-center">
@@ -43,9 +78,7 @@ const PostJob = () => {
           </h1>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-
           {/* Job Title */}
           <div>
             <label className="block text-sm font-semibold text-gray-600 dark:text-gray-300 mb-1">
@@ -63,18 +96,18 @@ const PostJob = () => {
             />
           </div>
 
-          {/* Company & Location */}
+          {/* Domain & Location */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-600 dark:text-gray-300 mb-1">
-                Company Name
+                Domain
               </label>
               <input
                 type="text"
-                name="company"
-                value={formData.company}
+                name="domain"
+                value={formData.domain}
                 onChange={handleChange}
-                placeholder="e.g. Google"
+                placeholder="e.g. Web Development"
                 className="w-full border rounded-lg px-4 py-2 
                   focus:outline-none focus:ring-2 focus:ring-blue-400 
                   bg-white dark:bg-gray-800/80 dark:border-gray-700 dark:text-gray-100"
@@ -112,10 +145,9 @@ const PostJob = () => {
                   bg-white dark:bg-gray-800/80 dark:border-gray-700 dark:text-gray-100"
               >
                 <option value="">Select Type</option>
-                <option value="Full-Time">Full-Time</option>
-                <option value="Part-Time">Part-Time</option>
+                <option value="Full-time">Full-time</option>
+                <option value="Part-time">Part-time</option>
                 <option value="Internship">Internship</option>
-                <option value="Contract">Contract</option>
               </select>
             </div>
             <div>
@@ -169,24 +201,42 @@ const PostJob = () => {
             />
           </div>
 
-          {/* Benefits */}
+          {/* Responsibilities */}
           <div>
             <label className="block text-sm font-semibold text-gray-600 dark:text-gray-300 mb-1">
-              Benefits
+              Responsibilities (comma separated)
             </label>
             <textarea
-              name="benefits"
-              value={formData.benefits}
+              name="responsibilities"
+              value={formData.responsibilities}
               onChange={handleChange}
               onInput={autoResize}
-              placeholder="Perks and benefits of this job..."
+              placeholder="e.g. Write clean code, Manage team..."
               className="w-full border rounded-lg px-4 py-2 resize-none
                 focus:outline-none focus:ring-2 focus:ring-blue-400 
                 bg-white dark:bg-gray-800/80 dark:border-gray-700 dark:text-gray-100 overflow-hidden"
             />
           </div>
 
-          {/* Submit Button */}
+          {/* Status */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-600 dark:text-gray-300 mb-1">
+              Job Status
+            </label>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-2 
+                focus:outline-none focus:ring-2 focus:ring-blue-400 
+                bg-white dark:bg-gray-800/80 dark:border-gray-700 dark:text-gray-100"
+            >
+              <option value="Open">Open</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </div>
+
+          {/* Submit */}
           <div className="text-center">
             <button
               type="submit"

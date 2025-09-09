@@ -110,12 +110,76 @@ Go to your forked repo, click on `Compare & Pull Request`, and submit your chang
 - `AI/`: Study Buddy GPT integration, prompt improvements
 - `utils/`: Tools, resume engine, file conversion, etc.
 - `docs/`: Improve README, add guides, GIFs, or flowcharts
+- `ml_modules/`: Machine learning components, data analysis, AI models
 
 We also welcome:
 
 - New roadmap or quiz content
 - Resume templates
 - AI datasets or chatbot prompts
+
+---
+
+## 🐍 Python Code Quality (ml_modules)
+
+The `ml_modules` directory uses automated code linting and formatting to maintain high code quality:
+
+### 📦 Install Dependencies
+
+Before working on Python files in `ml_modules`, install the development dependencies:
+
+```bash
+cd ml_modules
+pip install -r requirements.txt
+```
+
+### 🔧 Code Formatting with Black
+
+Format your Python code automatically:
+
+```bash
+# Format a specific file
+black filename.py
+
+# Format all Python files in ml_modules
+black .
+```
+
+### 🧹 Code Linting with Flake8
+
+Check your code for style and quality issues:
+
+```bash
+# Lint a specific file
+flake8 filename.py
+
+# Lint all Python files in ml_modules
+flake8 .
+```
+
+### ✅ Pre-commit Checklist for ml_modules
+
+Before submitting a PR with Python changes:
+
+1. **Format your code**: `black .`
+2. **Check linting**: `flake8 .`
+3. **Fix any linting errors** that aren't automatically handled
+4. **Test your changes** to ensure functionality
+
+**🚀 Quick Helper Script**: Use the provided helper script for convenience:
+
+```bash
+# Format and lint all code
+python code_quality.py --all
+
+# Format only
+python code_quality.py --format
+
+# Lint only
+python code_quality.py --lint
+```
+
+**Note**: The linting configuration is in `ml_modules/.flake8` and follows PEP 8 standards with Black compatibility.
 
 ---
 

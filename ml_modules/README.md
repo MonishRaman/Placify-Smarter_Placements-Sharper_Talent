@@ -65,7 +65,44 @@ cd ml_modules
 pip install -r requirements.txt
 ```
 
-## 🚀 Usage Examples
+## � Code Quality & Development
+
+This module uses automated code formatting and linting to maintain high code quality:
+
+### Code Formatting (Black)
+```bash
+# Format all Python files
+black .
+
+# Format specific file
+black filename.py
+```
+
+### Code Linting (Flake8)
+```bash
+# Lint all Python files
+flake8 .
+
+# Lint specific file
+flake8 filename.py
+```
+
+### Helper Script
+Use the provided helper script for convenience:
+```bash
+# Format and lint all code
+python code_quality.py --all
+
+# Format only
+python code_quality.py --format
+
+# Lint only
+python code_quality.py --lint
+```
+
+**Configuration**: Linting rules are defined in `.flake8` file and follow PEP 8 standards with Black compatibility.
+
+## �🚀 Usage Examples
 
 ### Single Interview Analysis
 ```python

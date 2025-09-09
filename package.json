@@ -12,6 +12,7 @@
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@google/generative-ai": "^0.24.1",
+    "@gunjanghate/git-genie": "^1.0.7",
     "@headlessui/react": "^2.2.5",
     "@material-tailwind/react": "^2.1.10",
     "@monaco-editor/react": "^4.7.0",
