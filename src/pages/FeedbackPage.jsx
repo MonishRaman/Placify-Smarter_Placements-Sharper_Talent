@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Star, Send, Brain, CheckCircle, AlertCircle } from 'lucide-react';
+// NEW: Import useNavigate to handle navigation and X for the close icon
+import { useNavigate } from 'react-router-dom';
+import { Star, Send, Brain, CheckCircle, AlertCircle, X} from 'lucide-react';
 import { sendFeedbackEmail } from '../utils/emailService';
 
 const FeedbackForm = () => {
@@ -10,6 +12,14 @@ const FeedbackForm = () => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+
+  // NEW: Initialize the navigate function from the hook
+  const navigate = useNavigate();
+
+  // NEW: Create a handler to navigate to the previous page
+  const handleClose = () => {
+    navigate(-1);
+  };
 
   const improvementOptions = [
     'Better camera quality',
@@ -75,8 +85,19 @@ const FeedbackForm = () => {
         // FIX: The outer background should also respect the theme for consistency.
         className="min-h-screen bg-gray-100 dark:bg-slate-900 flex items-center justify-center p-4"
       >
+        {/* NEW: Added 'relative' class to this container */}
+        <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+          {/* NEW: Added a close button to the success screen for consistency */}
+          <button
+            onClick={handleClose}
+            aria-label="Close"
+            className="absolute top-4 right-4 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          >
+            <X className="w-6 h-6" />
+          </button>
+
         {/* FIX: Changed bg-white and text colors */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+        {/* <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 max-w-md w-full text-center"> */}
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Thank You!</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
@@ -106,6 +127,15 @@ const FeedbackForm = () => {
         // FIX: Changed bg-white to support dark mode
         className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 max-w-2xl w-full"
       >
+        {/* NEW: The close button is placed here */}
+        <button
+          onClick={handleClose}
+          aria-label="Close"
+          className="absolute top-4 right-4 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+        >
+          <X className="w-6 h-6" />
+        </button>
+
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-2 mb-4">
