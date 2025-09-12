@@ -61,6 +61,7 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
   const menuItems = [
     { icon: User, label: "Profile", path: "/dashboard/company/profile", type: "link" },
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard/company", type: "link" },
+    { icon: Briefcase, label: "My Jobs", path: "/dashboard/company/my-jobs", type: "link" },
     { icon: Users, label: "Employee Directory", path: "/dashboard/company/employees", type: "link" },
     { icon: BarChart3, label: "Employee Performance Reports", path: "/dashboard/company/performance", type: "link" },
     { icon: Plus, label: "Post New Job", path: "/dashboard/company/post-job", type: "link" },
