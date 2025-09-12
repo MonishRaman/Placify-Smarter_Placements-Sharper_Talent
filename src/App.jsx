@@ -89,6 +89,8 @@ import useLenis from "./components/useLenis";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import PaymentGateway from './components/payment/PaymentGateway';
+
 // ✅ Import your Cursor effect:
 import CursorTrail from "./components/CursorTrail";
 
@@ -120,7 +122,7 @@ const AppWrapper = () => {
             <Route path="/register/company" element={<CompanyForm />} />
             <Route path="/feedback" element={<FeedbackPage />} />
             <Route path="/contact" element={<ContactPage />} />
-
+            <Route path="/payment" element={<PaymentGateway />} />
             {/* Standalone Route */}
             <Route path="/interview" element={<InterviewInterface />} />
 
@@ -219,6 +221,7 @@ const AppWrapper = () => {
               <Route index element={<Dashboard />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="resume-builder" element={<ResumeBuilder />} />
+              
               <Route path="resume-ats" element={<ResumeATS />} />
               <Route path="jobs" element={<Jobs />} />
               <Route path="user-jobs" element={<UserJobs />} />

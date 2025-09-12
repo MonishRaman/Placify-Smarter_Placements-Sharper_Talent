@@ -11,9 +11,11 @@ import {
   FaSave,
   FaCloud,
   FaList,
+  FaDollarSign, // Add this import
 } from "react-icons/fa";
 import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from 'react-router-dom'; // Move this import here
 import PersonalInfoForm from "../../components/ResumeBuilder/PersonalInfoForm";
 import EducationForm from "../../components/ResumeBuilder/EducationForm";
 import ExperienceForm from "../../components/ResumeBuilder/ExperienceForm";
@@ -36,6 +38,7 @@ import {
 const ResumeBuilder = () => {
   const { darkMode, setDarkMode } = useTheme();
   const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("edit");
   const [errors, setErrors] = useState({});
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
@@ -584,6 +587,18 @@ const ResumeBuilder = () => {
                 </button>
               </>
             )}
+
+<button
+  onClick={() => {
+    navigate('/payment'); // or whatever route path you've set up for PaymentGateway
+    toast.info("Redirecting to pricing plans!");
+  }}
+  className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-lg font-semibold transition shadow-lg hover:shadow-xl flex items-center gap-2"
+  title="View our pricing plans"
+>
+  <FaDollarSign />
+  Pricing Plans
+</button>
 
             <button
               onClick={fillSampleData}

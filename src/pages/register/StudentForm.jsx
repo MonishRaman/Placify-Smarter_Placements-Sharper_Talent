@@ -19,7 +19,7 @@ export default function StudentForm() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "candidate",
+    role: "student",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
