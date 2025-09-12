@@ -5,6 +5,121 @@ import { useNavigate } from "react-router-dom";
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const PAGE_SIZE = 6; // cards per page
 
+// Dummy job data
+const dummyJobs = [
+  {
+    _id: "1",
+    title: "Frontend Developer",
+    description: "Build and maintain responsive web applications using React and Tailwind CSS.",
+    company: {
+      _id: "c1",
+      name: "TechCorp",
+      profileImage: "https://via.placeholder.com/100"
+    }
+  },
+  {
+    _id: "2",
+    title: "Backend Developer",
+    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
+    company: {
+      _id: "c1",
+      name: "TechCorp",
+      profileImage: "https://via.placeholder.com/100"
+    }
+  },
+  {
+    _id: "3",
+    title: "UI/UX Designer",
+    description: "Design user-friendly interfaces and ensure seamless user experience.",
+    company: {
+      _id: "c1",
+      name: "TechCorp",
+      profileImage: "https://via.placeholder.com/100"
+    }
+  },
+  {
+    _id: "2",
+    title: "Backend Developer",
+    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
+    company: {
+      _id: "c1",
+      name: "TechCorp",
+      profileImage: "https://via.placeholder.com/100"
+    }
+  },
+  {
+    _id: "2",
+    title: "Backend Developer",
+    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
+    company: {
+      _id: "c1",
+      name: "TechCorp",
+      profileImage: "https://via.placeholder.com/100"
+    }
+  },
+  {
+    _id: "2",
+    title: "Backend Developer",
+    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
+    company: {
+      _id: "c1",
+      name: "TechCorp",
+      profileImage: "https://via.placeholder.com/100"
+    }
+  },
+  {
+    _id: "2",
+    title: "Backend Developer",
+    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
+    company: {
+      _id: "c1",
+      name: "TechCorp",
+      profileImage: "https://via.placeholder.com/100"
+    }
+  },
+  {
+    _id: "2",
+    title: "Backend Developer",
+    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
+    company: {
+      _id: "c1",
+      name: "TechCorp",
+      profileImage: "https://via.placeholder.com/100"
+    }
+  },
+  {
+    _id: "2",
+    title: "Backend Developer",
+    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
+    company: {
+      _id: "c1",
+      name: "TechCorp",
+      profileImage: "https://via.placeholder.com/100"
+    }
+  },
+  {
+    _id: "2",
+    title: "Backend Developer",
+    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
+    company: {
+      _id: "c1",
+      name: "TechCorp",
+      profileImage: "https://via.placeholder.com/100"
+    }
+  },
+  {
+    _id: "2",
+    title: "Backend Developer",
+    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
+    company: {
+      _id: "c1",
+      name: "TechCorp",
+      profileImage: "https://via.placeholder.com/100"
+    }
+  },
+  
+];
+
 const MyCompanyJobs = () => {
   const [allJobs, setAllJobs] = useState([]);      // all (filtered = only this company)
   const [loading, setLoading] = useState(true);
@@ -18,11 +133,14 @@ const MyCompanyJobs = () => {
 
   // Fetch open jobs then keep only this company's; paginate client-side
   const fetchJobs = useCallback(async () => {
-    if (!token) return;
+    if (!token) {
+      setAllJobs(dummyJobs); // token na ho to dummy data
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError("");
     try {
-      // large limit so we get all (since backend filters only status:"Open")
       const res = await fetch(`${API_BASE}/api/jobs?limit=500&page=1`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -36,10 +154,11 @@ const MyCompanyJobs = () => {
         if (typeof j.company === "string") return j.company === companyId;
         return j.company._id === companyId;
       });
-      setAllJobs(mine);
+      setAllJobs(mine.length > 0 ? mine : dummyJobs); // fallback to dummy
       setPage(1);
     } catch (e) {
       setError(e.message);
+      setAllJobs(dummyJobs); // error pe bhi dummy jobs
     } finally {
       setLoading(false);
     }

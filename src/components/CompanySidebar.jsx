@@ -18,6 +18,7 @@ import {
   Moon,
   Sun,
   Search,
+  Briefcase
 } from "lucide-react";
 
 const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
