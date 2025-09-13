@@ -63,6 +63,7 @@ import Performance from "./pages/company/performance";
 import PostJob from "./pages/company/postJob";
 import CompanyProfile from "./pages/company/CompanyProfile";
 import CompanyReports from "./pages/company/Reports";
+import MyCompanyJobs from "./pages/company/MyCompanyJobs";
 
 // Employee Dashboard Layout and Pages
 import EmployeeDashboardLayout from "./layouts/EmployeeDashboardLayout";
@@ -168,6 +169,7 @@ const AppWrapper = () => {
               <Route path="performance" element={<Performance />} />
               <Route path="post-job" element={<PostJob />} />
               <Route path="applicants" element={<Applicants />} />
+              <Route path="/dashboard/company/my-jobs" element={<MyCompanyJobs />} />
               <Route path="insights" element={<Insights />} />
               <Route path="collaboration" element={<Collaboration />} />
               <Route path="reports" element={<CompanyReports />} />
