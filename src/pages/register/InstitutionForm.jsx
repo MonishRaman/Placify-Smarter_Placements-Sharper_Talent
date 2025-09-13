@@ -72,6 +72,15 @@ export default function InstitutionForm() {
   // Check if all password rules are satisfied
   const allPasswordRulesSatisfied = Object.values(passwordRules).every(rule => rule);
 
+  const handleFormDataChange = (field, value) => {
+     setFormData(prevData => ({
+       ...prevData,
+      [field]: value
+   }));
+    if (error) {
+      setError("");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
