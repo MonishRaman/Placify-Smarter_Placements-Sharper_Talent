@@ -22,6 +22,8 @@ import studentRoutes from "./routes/studentRoutes.js"; // Corrected import for s
 
 import questionsRoutes from "./routes/questions.js"; // Aptitude questions API
 import chatRoutes from "./routes/chat.js"; // Gemini chat API
+import paymentRoutes from "./routes/Payment.js";
+
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -53,7 +55,7 @@ app.use("/api/ats", atsRoutes);
 app.use("/api/resume/score", resumeScoreRoutes); // New route for resume score persistence - MUST come before /api/resume
 app.use("/api/resume", resumeRoutes);
 app.use("/api/interviewExperience", interviewExperienceRoutes);
-
+app.use('/api', paymentRoutes);
 // NOTE: Missing leading slash would break the route (returning index.html or 404 to frontend)
 app.use("/api/jobs", jobRoute);
 
