@@ -11,12 +11,14 @@ import Footer from "../../components/Footer";
 import apiClient from "../../api/apiClient";
 import { CheckCircle, XCircle } from "lucide-react";
 
+
 // =================== PERFORMANCE MONITORING ===================
 const componentStartTime = performance.now();
 console.group("⚡ InstitutionForm Component Performance Monitoring");
 console.log("🚀 Component file loaded at:", new Date().toISOString());
 console.log("📊 Performance start time:", componentStartTime);
 console.groupEnd();
+
 export default function InstitutionForm() {
   const navigate = useNavigate();
 
@@ -47,104 +49,8 @@ export default function InstitutionForm() {
     special: false,
   });
 
-  console.log("📋 Initial form state:", formData);
-  console.log("🔐 Initial password rules:", passwordRules);
-  console.log("⚡ Initial loading state:", loading);
-  console.log("❌ Initial error state:", error);
-  console.groupEnd();
-
-  // =================== COMPONENT LIFECYCLE DEBUGGING ===================
-  useEffect(() => {
-    console.group("🔄 InstitutionForm useEffect - Component Mount");
-    console.log("🎯 Component fully mounted and ready");
-    console.log(
-      "📊 Component render time:",
-      performance.now() - componentStartTime,
-      "ms"
-    );
-    console.log("🌐 Current URL:", window.location.href);
-    console.log("📱 User agent:", navigator.userAgent);
-    console.log("🖥️ Screen resolution:", `${screen.width}x${screen.height}`);
-    console.log(
-      "🎨 Color scheme preference:",
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light"
-    );
-    console.groupEnd();
-
-    // Cleanup function for debugging unmount
-    return () => {
-      console.group("🧹 InstitutionForm Cleanup - Component Unmount");
-      console.log("👋 Component unmounting at:", new Date().toISOString());
-      console.log(
-        "⏱️ Component lifetime:",
-        performance.now() - componentStartTime,
-        "ms"
-      );
-      console.groupEnd();
-    };
-  }, []);
-
-  // =================== ERROR STATE DEBUGGING ===================
-  useEffect(() => {
-    if (error) {
-      console.group("❌ Error State Change Detected");
-      console.log("🚨 New error:", error);
-      console.log("⏰ Error timestamp:", new Date().toISOString());
-      console.log("📋 Current form data when error occurred:", formData);
-      console.log("⚡ Loading state:", loading);
-      console.groupEnd();
-    } else {
-      console.log("✅ Error state cleared");
-    }
-  }, [error]);
-
-  // =================== LOADING STATE DEBUGGING ===================
-  useEffect(() => {
-    console.group("⏳ Loading State Change");
-    console.log("🔄 Loading state:", loading ? "STARTED" : "STOPPED");
-    console.log("⏰ Timestamp:", new Date().toISOString());
-    if (loading) {
-      console.log("🚀 Form submission in progress...");
-      console.time("⏱️ Total Loading Duration");
-    } else {
-      console.log("✅ Form submission completed");
-      console.timeEnd("⏱️ Total Loading Duration");
-    }
-    console.groupEnd();
-  }, [loading]);
-
-  // =================== FORM DATA CHANGE HANDLER WITH DEBUGGING ===================
-  const handleFormDataChange = (field, value) => {
-    console.group(`📝 Form Field Update: ${field}`);
-    console.log("🔄 Previous value:", formData[field]);
-    console.log("🆕 New value:", value);
-    console.log("📊 Field type:", typeof value);
-    console.log("📏 Value length:", value?.length || 0);
-
-    const newFormData = { ...formData, [field]: value };
-    setFormData(newFormData);
-
-    console.log("✅ Updated form data:", newFormData);
-
-    // Special handling for password field
-    if (field === "password") {
-      console.log("🔐 Triggering password validation...");
-      validatePassword(value);
-    }
-
-    console.groupEnd();
-  };
 
   const validatePassword = (password) => {
-    // =================== PASSWORD VALIDATION DEBUGGING ===================
-    console.group("🔐 Password Validation Analysis");
-    console.log(
-      "📝 Password being validated:",
-      password ? `${password.length} characters` : "empty"
-    );
-
     const rules = {
       length: password.length >= 8,
       upper: /[A-Z]/.test(password),
@@ -153,45 +59,19 @@ export default function InstitutionForm() {
       special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
     };
 
-    console.log("📊 Password strength analysis:");
-    console.table(
-      Object.entries(rules).map(([rule, passed]) => ({
-        rule: rule,
-        requirement:
-          rule === "length"
-            ? "At least 8 characters"
-            : rule === "upper"
-            ? "One uppercase letter (A-Z)"
-            : rule === "lower"
-            ? "One lowercase letter (a-z)"
-            : rule === "number"
-            ? "One number (0-9)"
-            : 'One special character (!@#$%^&*(),.?":{}|<>)',
-        status: passed ? "✅ PASSED" : "❌ FAILED",
-        passed: passed,
-      }))
-    );
-
-    const totalRulesPassed = Object.values(rules).filter(Boolean).length;
-    const passwordStrength = (totalRulesPassed / 5) * 100;
-
-    console.log(
-      `💪 Password strength: ${passwordStrength}% (${totalRulesPassed}/5 rules passed)`
-    );
-
-    if (passwordStrength === 100) {
-      console.log("🎉 Excellent! Password meets all security requirements");
-    } else if (passwordStrength >= 80) {
-      console.warn("⚠️ Good password, but missing some requirements");
-    } else if (passwordStrength >= 60) {
-      console.warn("⚠️ Weak password, please strengthen");
-    } else {
-      console.error("❌ Very weak password, major improvements needed");
-    }
-
     setPasswordRules(rules);
-    console.groupEnd();
+    return rules;
   };
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setFormData({ ...formData, password: newPassword });
+    validatePassword(newPassword);
+  };
+
+  // Check if all password rules are satisfied
+  const allPasswordRulesSatisfied = Object.values(passwordRules).every(rule => rule);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -241,10 +121,7 @@ export default function InstitutionForm() {
       console.groupEnd();
       return;
     }
-    console.log("✅ All required fields present");
 
-    // Validate website URL
-    console.log("🌐 Validating website URL:", formData.website);
     try {
       const urlObj = new URL(formData.website);
       console.log("✅ Website URL is valid:", {
@@ -261,18 +138,11 @@ export default function InstitutionForm() {
       return;
     }
 
-    // Password validation
-    console.log("🔐 Validating password requirements:");
-    console.log("Password length:", formData.password.length);
-    console.log("Password rules status:", passwordRules);
 
-    if (formData.password.length < 6) {
-      console.error(
-        "❌ Password too short:",
-        formData.password.length,
-        "characters"
-      );
-      setError("Password must be at least 6 characters long");
+    // Check if all password rules are satisfied
+    if (!allPasswordRulesSatisfied) {
+      setError("Password must meet all security requirements");
+
       setLoading(false);
       console.groupEnd();
       console.groupEnd();
@@ -478,20 +348,15 @@ export default function InstitutionForm() {
     }
   };
 
-  // =================== RENDER DEBUGGING ===================
-  console.group("🎨 InstitutionForm Render Cycle");
-  console.log("🖼️ Component re-rendering at:", new Date().toISOString());
-  console.log("📊 Current state snapshot:", {
-    formData: formData,
-    error: error,
-    loading: loading,
-    passwordRules: passwordRules,
-  });
-  console.log(
-    "🔄 Render count since mount:",
-    Math.floor((performance.now() - componentStartTime) / 16.67)
-  ); // Approximate based on 60fps
-  console.groupEnd();
+
+  const passwordValidationRules = [
+    { label: "At least 8 characters", key: "length" },
+    { label: "One uppercase letter", key: "upper" },
+    { label: "One lowercase letter", key: "lower" },
+    { label: "One number", key: "number" },
+    { label: "One special character", key: "special" },
+  ];
+
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
@@ -513,6 +378,7 @@ export default function InstitutionForm() {
           userType="institution"
         />
       </div>
+      
       <div className="py-12 px-4">
         <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 transition-colors duration-200">
           {error && (
@@ -565,38 +431,64 @@ export default function InstitutionForm() {
               type="password"
               label="Password"
               value={formData.password}
-              onChange={(e) => handleFormDataChange("password", e.target.value)}
+
+              onChange={handlePasswordChange}
+
               onCopy={(e) => e.preventDefault()}
               onPaste={(e) => e.preventDefault()}
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
-            <div className="mt-2 space-y-1 text-sm">
-              {[
-                { label: "At least 8 characters", key: "length" },
-                { label: "One uppercase letter", key: "upper" },
-                { label: "One lowercase letter", key: "lower" },
-                { label: "One number", key: "number" },
-                { label: "One special character", key: "special" },
-              ].map((rule) => (
-                <div key={rule.key} className="flex items-center gap-2">
-                  {passwordRules[rule.key] ? (
-                    <CheckCircle className="text-green-500 w-4 h-4" />
-                  ) : (
-                    <XCircle className="text-red-500 w-4 h-4" />
-                  )}
-                  <span
-                    className={
-                      passwordRules[rule.key]
-                        ? "text-green-600"
-                        : "text-red-500"
-                    }
-                  >
-                    {rule.label}
-                  </span>
-                </div>
-              ))}
-            </div>
+
+
+            {/* Dynamic Password Validation - Only show if password field has content */}
+            {formData.password && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-2 space-y-2"
+              >
+                {passwordValidationRules.map((rule) => {
+                  const isValid = passwordRules[rule.key];
+                  return (
+                    <motion.div
+                      key={rule.key}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="flex items-center gap-2 text-sm"
+                    >
+                      <motion.div
+                        initial={false}
+                        animate={{ 
+                          scale: isValid ? 1.1 : 1,
+                          rotate: isValid ? 360 : 0 
+                        }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {isValid ? (
+                          <CheckCircle className="text-green-500 w-4 h-4" />
+                        ) : (
+                          <XCircle className="text-red-500 w-4 h-4" />
+                        )}
+                      </motion.div>
+                      <span
+                        className={`transition-colors duration-200 ${
+                          isValid 
+                            ? "text-green-600 dark:text-green-400" 
+                            : "text-red-500 dark:text-red-400"
+                        }`}
+                      >
+                        {rule.label}
+                      </span>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            )}
+
+
             <FormInput
               type="password"
               label="Confirm Password"
@@ -609,13 +501,41 @@ export default function InstitutionForm() {
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
+            {/* Password Mismatch Indicator */}
+            {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
+              >
+                <XCircle className="w-4 h-4" />
+                <span>Passwords do not match</span>
+              </motion.div>
+            )}
+
+            {/* Password Match Indicator */}
+            {formData.confirmPassword && formData.password === formData.confirmPassword && formData.password.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
+              >
+                <CheckCircle className="w-4 h-4" />
+                <span>Passwords match</span>
+              </motion.div>
+            )}
+
             {/* Submit */}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               type="submit"
-              disabled={loading}
-              className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white py-2 px-4 rounded-md shadow-lg hover:from-blue-600 hover:to-indigo-600 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-70"
+              disabled={loading || !allPasswordRulesSatisfied || (formData.password !== formData.confirmPassword)}
+              className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded-md shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 ${
+                loading || !allPasswordRulesSatisfied || (formData.password !== formData.confirmPassword)
+                  ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70'
+                  : 'bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white'
+              }`}
             >
               {loading && <Loader2 className="animate-spin w-5 h-5" />}
               {loading ? "Registering..." : "Register Institution"}
