@@ -4,14 +4,14 @@ import { Building2, School } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const InstitutionProfile = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const [profile, setProfile] = useState({
-    institutionName: "",
+    name: "", // This maps to institutionName from backend
     website: "",
     contactPerson: "",
     email: "",
@@ -39,6 +39,9 @@ const InstitutionProfile = () => {
         const res = await axios.get(`${API_BASE}/api/auth/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        // The backend returns all the fields including the ones from registration
+        // name, email, website, contactPerson are all prefetched from the user's profile
         setProfile(res.data);
         if (res.data.profileImage) {
           setImagePreview(`${API_BASE}${res.data.profileImage}`);
@@ -74,31 +77,33 @@ const InstitutionProfile = () => {
   const handleSave = async () => {
     try {
       const formData = new FormData();
-      // Only editable fields 
+      // Only editable fields that can be updated
       [
         "website",
-        "contactPerson", 
-        "phone", 
-        "address", 
-        "establishedYear", 
-        "description", 
-        "accreditation", 
-        "totalStudents"
-      ].forEach((key) =>
-        formData.append(key, profile[key] || "")
-      );
-      
+        "contactPerson",
+        "phone",
+        "address",
+        "establishedYear",
+        "description",
+        "accreditation",
+        "totalStudents",
+      ].forEach((key) => formData.append(key, profile[key] || ""));
+
       if (imageFile) {
         formData.append("profileImage", imageFile);
       }
-      
-      const response = await axios.put(`${API_BASE}/api/auth/profile`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      
+
+      const response = await axios.put(
+        `${API_BASE}/api/auth/profile`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
       setProfile(response.data);
       if (response.data.profileImage) {
         setImagePreview(`${API_BASE}${response.data.profileImage}`);
@@ -114,16 +119,31 @@ const InstitutionProfile = () => {
   const handleBlur = () => setFocusedField(null);
 
   const fields = [
-    { key: "institutionName", label: "Institution Name", editable: false },
+    { key: "name", label: "Institution Name", editable: false },
     { key: "email", label: "Email", editable: false },
     { key: "website", label: "Website", editable: true, type: "url" },
     { key: "contactPerson", label: "Contact Person", editable: true },
     { key: "phone", label: "Phone", editable: true, type: "tel" },
     { key: "address", label: "Address", editable: true },
-    { key: "establishedYear", label: "Established Year", editable: true, type: "number" },
-    { key: "totalStudents", label: "Total Students", editable: true, type: "number" },
+    {
+      key: "establishedYear",
+      label: "Established Year",
+      editable: true,
+      type: "number",
+    },
+    {
+      key: "totalStudents",
+      label: "Total Students",
+      editable: true,
+      type: "number",
+    },
     { key: "accreditation", label: "Accreditation", editable: true },
-    { key: "description", label: "Description", editable: true, isTextarea: true },
+    {
+      key: "description",
+      label: "Description",
+      editable: true,
+      isTextarea: true,
+    },
   ];
 
   return (
@@ -188,12 +208,18 @@ const InstitutionProfile = () => {
             {fields.map(({ key, label, editable, type, isTextarea }, index) => (
               <div
                 key={key}
-                className={`transition-transform ${isTextarea ? 'md:col-span-2' : ''}`}
+                className={`transition-transform ${
+                  isTextarea ? "md:col-span-2" : ""
+                }`}
                 style={{ transitionDelay: `${index * 50}ms` }}
               >
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   {label}
-                  {!editable && <span className="text-gray-400 text-xs ml-2">(Read-only)</span>}
+                  {!editable && (
+                    <span className="text-gray-400 text-xs ml-2">
+                      (Read-only)
+                    </span>
+                  )}
                 </label>
                 {isTextarea ? (
                   <textarea
