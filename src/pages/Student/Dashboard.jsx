@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Brain,
   Calculator,
@@ -47,11 +47,88 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion';
+
+// NEW: A custom hook to detect clicks outside the notification panel
+const useOnClickOutside = (ref, handler) => {
+  useEffect(() => {
+    const listener = (event) => {
+      if (!ref.current || ref.current.contains(event.target)) {
+        return;
+      }
+      handler(event);
+    };
+    document.addEventListener("mousedown", listener);
+    document.addEventListener("touchstart", listener);
+    return () => {
+      document.removeEventListener("mousedown", listener);
+      document.removeEventListener("touchstart", listener);
+    };
+  }, [ref, handler]);
+};
+
+// NEW: The NotificationPanel component
+const NotificationPanel = ({ notifications, onClose }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.2 }}
+      className="absolute top-full right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border dark:border-gray-700 z-50"
+    >
+      <div className="p-4 border-b dark:border-gray-700">
+        <h4 className="font-semibold text-gray-900 dark:text-gray-100">Notifications</h4>
+      </div>
+      <div className="max-h-96 overflow-y-auto">
+        {notifications.length > 0 ? (
+          notifications.map((notif) => (
+            <div
+              key={notif.id}
+              className="flex items-start gap-4 p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+            >
+              <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center flex-shrink-0">
+                <Zap className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{notif.title}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{notif.description}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{notif.time}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="p-8 text-center">
+            <p className="text-sm text-gray-500 dark:text-gray-400">No new notifications</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">You're all caught up! 🎉</p>
+          </div>
+        )}
+      </div>
+      <div className="p-2 bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 text-center">
+        <button className="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline">
+          View all notifications
+        </button>
+      </div>
+    </motion.div>
+  );
+};
 
 const StudentDashboard = () => {
   const [selectedTimeframe, setSelectedTimeframe] = useState("week");
   const [activeSection, setActiveSection] = useState("overview");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+
+  // NEW: Mock notification data (replace with real data later)
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: "New Resume Score!", description: "Your ATS score improved to 85%. Great job!", time: "2 hours ago" },
+    { id: 2, title: "Upcoming Interview", description: "Your technical interview is scheduled for tomorrow at 2 PM.", time: "1 day ago" },
+    { id: 3, title: "Weekly Goal Met", description: "You've completed your weekly goal of 50 aptitude questions.", time: "3 days ago" },
+  ]);
+
+  // NEW: Ref for the notification area to detect outside clicks
+  const notificationRef = useRef();
+  useOnClickOutside(notificationRef, () => setIsNotificationsOpen(false));
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
@@ -212,10 +289,25 @@ const StudentDashboard = () => {
             </div>
 
             <div className="flex items-center gap-3 sm:gap-4">
-              <div className="relative">
-                <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400 cursor-pointer hover:text-purple-600" />
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+              {/* NEW: Updated Notification Bell section */}
+              <div ref={notificationRef} className="relative">
+                <button
+                  onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                  aria-label="Toggle notifications"
+                  className="p-1 rounded-full text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                >
+                  <Bell className="w-5 h-5" />
+                  {notifications.length > 0 && (
+                     <div className="absolute -top-0 -right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-gray-800"></div>
+                  )}
+                </button>
+                <AnimatePresence>
+                  {isNotificationsOpen && (
+                    <NotificationPanel notifications={notifications} onClose={() => setIsNotificationsOpen(false)} />
+                  )}
+                </AnimatePresence>
               </div>
+              
               <button className="flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all duration-300">
                 <RefreshCw className="w-4 h-4" />
                 Sync Data
