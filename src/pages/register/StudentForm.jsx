@@ -10,6 +10,7 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import apiClient from "../../api/apiClient";
 import { CheckCircle, XCircle } from "lucide-react";
+
 export default function StudentForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -23,24 +24,36 @@ export default function StudentForm() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  
   // Track password validation
-const [passwordRules, setPasswordRules] = useState({
-  length: false,
-  upper: false,
-  lower: false,
-  number: false,
-  special: false,
-});
-
-const validatePassword = (password) => {
-  setPasswordRules({
-    length: password.length >= 8,
-    upper: /[A-Z]/.test(password),
-    lower: /[a-z]/.test(password),
-    number: /[0-9]/.test(password),
-    special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  const [passwordRules, setPasswordRules] = useState({
+    length: false,
+    upper: false,
+    lower: false,
+    number: false,
+    special: false,
   });
-};
+
+  const validatePassword = (password) => {
+    const rules = {
+      length: password.length >= 8,
+      upper: /[A-Z]/.test(password),
+      lower: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    };
+    setPasswordRules(rules);
+    return rules;
+  };
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setFormData({ ...formData, password: newPassword });
+    validatePassword(newPassword);
+  };
+
+  // Check if all password rules are satisfied
+  const allPasswordRulesSatisfied = Object.values(passwordRules).every(rule => rule);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,17 +73,21 @@ const validatePassword = (password) => {
       setLoading(false);
       return;
     }
+    
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setError("Please enter a valid email address");
       setLoading(false);
       return;
     }
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long");
+    
+    // Check if all password rules are satisfied
+    if (!allPasswordRulesSatisfied) {
+      setError("Password must meet all security requirements");
       setLoading(false);
       return;
     }
+    
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       setLoading(false);
@@ -101,6 +118,14 @@ const validatePassword = (password) => {
       setLoading(false);
     }
   };
+
+  const passwordValidationRules = [
+    { label: "At least 8 characters", key: "length" },
+    { label: "One uppercase letter", key: "upper" },
+    { label: "One lowercase letter", key: "lower" },
+    { label: "One number", key: "number" },
+    { label: "One special character", key: "special" },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
@@ -191,39 +216,58 @@ const validatePassword = (password) => {
               type="password"
               label="Password"
               value={formData.password}
-
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
+              onChange={handlePasswordChange}
               onCopy={(e) => e.preventDefault()}
               onPaste={(e) => e.preventDefault()}
               required
-
             />
-            <div className="mt-2 space-y-1 text-sm">
-  {[
-    { label: "At least 8 characters", key: "length" },
-    { label: "One uppercase letter", key: "upper" },
-    { label: "One lowercase letter", key: "lower" },
-    { label: "One number", key: "number" },
-    { label: "One special character", key: "special" },
-  ].map((rule) => (
-    <div key={rule.key} className="flex items-center gap-2">
-      {passwordRules[rule.key] ? (
-        <CheckCircle className="text-green-500 w-4 h-4" />
-      ) : (
-        <XCircle className="text-red-500 w-4 h-4" />
-      )}
-      <span
-        className={
-          passwordRules[rule.key] ? "text-green-600" : "text-red-500"
-        }
-      >
-        {rule.label}
-      </span>
-    </div>
-  ))}
-</div>
+
+            {/* Dynamic Password Validation - Only show if password field has content */}
+            {formData.password && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-2 space-y-2"
+              >
+                {passwordValidationRules.map((rule) => {
+                  const isValid = passwordRules[rule.key];
+                  return (
+                    <motion.div
+                      key={rule.key}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="flex items-center gap-2 text-sm"
+                    >
+                      <motion.div
+                        initial={false}
+                        animate={{ 
+                          scale: isValid ? 1.1 : 1,
+                          rotate: isValid ? 360 : 0 
+                        }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {isValid ? (
+                          <CheckCircle className="text-green-500 w-4 h-4" />
+                        ) : (
+                          <XCircle className="text-red-500 w-4 h-4" />
+                        )}
+                      </motion.div>
+                      <span
+                        className={`transition-colors duration-200 ${
+                          isValid 
+                            ? "text-green-600 dark:text-green-400" 
+                            : "text-red-500 dark:text-red-400"
+                        }`}
+                      >
+                        {rule.label}
+                      </span>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            )}
 
             <FormInput
               type="password"
@@ -236,13 +280,41 @@ const validatePassword = (password) => {
               required
             />
 
+            {/* Password Mismatch Indicator */}
+            {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
+              >
+                <XCircle className="w-4 h-4" />
+                <span>Passwords do not match</span>
+              </motion.div>
+            )}
+
+            {/* Password Match Indicator */}
+            {formData.confirmPassword && formData.password === formData.confirmPassword && formData.password.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
+              >
+                <CheckCircle className="w-4 h-4" />
+                <span>Passwords match</span>
+              </motion.div>
+            )}
+
             {/* Submit Button */}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               type="submit"
-              disabled={loading}
-              className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-4 text-lg font-medium rounded-md shadow-lg hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-purple-400 disabled:opacity-70"
+              disabled={loading || !allPasswordRulesSatisfied || (formData.password !== formData.confirmPassword)}
+              className={`w-full flex justify-center items-center gap-2 py-3 px-4 text-lg font-medium rounded-md shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-200 ${
+                loading || !allPasswordRulesSatisfied || (formData.password !== formData.confirmPassword)
+                  ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70'
+                  : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white'
+              }`}
             >
               {loading && <Loader2 className="animate-spin w-5 h-5" />}
               {loading ? "Registering..." : "Register as Student"}

@@ -8,7 +8,7 @@ import FormInput from "../../components/FormInput";
 import RegistrationHeader from "../../components/RegistrationHeader";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import apiClient from "../../api/apiClient"; // Import the new apiClient
+import apiClient from "../../api/apiClient";
 import { CheckCircle, XCircle } from "lucide-react";
 
 export default function EmployeeForm() {
@@ -20,28 +20,40 @@ export default function EmployeeForm() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "employee", // Role is important
+    role: "employee",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  
   // Track password validation
-const [passwordRules, setPasswordRules] = useState({
-  length: false,
-  upper: false,
-  lower: false,
-  number: false,
-  special: false,
-});
-
-const validatePassword = (password) => {
-  setPasswordRules({
-    length: password.length >= 8,
-    upper: /[A-Z]/.test(password),
-    lower: /[a-z]/.test(password),
-    number: /[0-9]/.test(password),
-    special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  const [passwordRules, setPasswordRules] = useState({
+    length: false,
+    upper: false,
+    lower: false,
+    number: false,
+    special: false,
   });
-};
+
+  const validatePassword = (password) => {
+    const rules = {
+      length: password.length >= 8,
+      upper: /[A-Z]/.test(password),
+      lower: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    };
+    setPasswordRules(rules);
+    return rules;
+  };
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setFormData({ ...formData, password: newPassword });
+    validatePassword(newPassword);
+  };
+
+  // Check if all password rules are satisfied
+  const allPasswordRulesSatisfied = Object.values(passwordRules).every(rule => rule);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,6 +73,21 @@ const validatePassword = (password) => {
       setLoading(false);
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      setLoading(false);
+      return;
+    }
+
+    // Check if all password rules are satisfied
+    if (!allPasswordRulesSatisfied) {
+      setError("Password must meet all security requirements");
+      setLoading(false);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       setLoading(false);
@@ -68,7 +95,6 @@ const validatePassword = (password) => {
     }
 
     try {
-      // REFACTORED API CALL - Fixed endpoint to match server routes
       console.log("Sending registration data:", formData);
       await apiClient.post("/auth/register/employee", formData);
 
@@ -78,8 +104,6 @@ const validatePassword = (password) => {
       console.error("Registration error:", err);
 
       if (err.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
         console.error("Error response data:", err.response.data);
         console.error("Error response status:", err.response.status);
         setError(
@@ -89,12 +113,10 @@ const validatePassword = (password) => {
           err.response?.data?.message || `Server error: ${err.response.status}`
         );
       } else if (err.request) {
-        // The request was made but no response was received
         console.error("No response received:", err.request);
         setError("No response from server. Please check your connection.");
         toast.error("No response from server. Please check your connection.");
       } else {
-        // Something happened in setting up the request that triggered an Error
         console.error("Error setting up request:", err.message);
         setError(`Error: ${err.message}`);
         toast.error(`Error: ${err.message}`);
@@ -104,9 +126,15 @@ const validatePassword = (password) => {
     }
   };
 
-  // JSX remains the same
+  const passwordValidationRules = [
+    { label: "At least 8 characters", key: "length" },
+    { label: "One uppercase letter", key: "upper" },
+    { label: "One lowercase letter", key: "lower" },
+    { label: "One number", key: "number" },
+    { label: "One special character", key: "special" },
+  ];
+
   return (
-    // 1. ADDED dark mode background to the main container
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
       <Header />
       <ToastContainer
@@ -126,10 +154,8 @@ const validatePassword = (password) => {
         />
       </div>
       <div className="py-12 px-4">
-        {/* 2. ADDED dark mode background to the form card */}
         <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg dark:bg-slate-800">
           {error && (
-            // 3. ADDED dark mode styles for the error message
             <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md border border-red-200 dark:bg-red-900/50 dark:text-red-300 dark:border-red-500/50">
               {error}
             </div>
@@ -173,18 +199,62 @@ const validatePassword = (password) => {
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
-
               type="password"
               label="Password"
               value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
+              onChange={handlePasswordChange}
               onCopy={(e) => e.preventDefault()}
               onPaste={(e) => e.preventDefault()}
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
+
+            {/* Dynamic Password Validation - Only show if password field has content */}
+            {formData.password && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-2 space-y-2"
+              >
+                {passwordValidationRules.map((rule) => {
+                  const isValid = passwordRules[rule.key];
+                  return (
+                    <motion.div
+                      key={rule.key}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="flex items-center gap-2 text-sm"
+                    >
+                      <motion.div
+                        initial={false}
+                        animate={{ 
+                          scale: isValid ? 1.1 : 1,
+                          rotate: isValid ? 360 : 0 
+                        }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {isValid ? (
+                          <CheckCircle className="text-green-500 w-4 h-4" />
+                        ) : (
+                          <XCircle className="text-red-500 w-4 h-4" />
+                        )}
+                      </motion.div>
+                      <span
+                        className={`transition-colors duration-200 ${
+                          isValid 
+                            ? "text-green-600 dark:text-green-400" 
+                            : "text-red-500 dark:text-red-400"
+                        }`}
+                      >
+                        {rule.label}
+                      </span>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            )}
 
             <FormInput
               type="password"
@@ -197,12 +267,41 @@ const validatePassword = (password) => {
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
+
+            {/* Password Mismatch Indicator */}
+            {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
+              >
+                <XCircle className="w-4 h-4" />
+                <span>Passwords do not match</span>
+              </motion.div>
+            )}
+
+            {/* Password Match Indicator */}
+            {formData.confirmPassword && formData.password === formData.confirmPassword && formData.password.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
+              >
+                <CheckCircle className="w-4 h-4" />
+                <span>Passwords match</span>
+              </motion.div>
+            )}
+
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               type="submit"
-              disabled={loading}
-              className="w-full flex justify-center items-center gap-2 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 disabled:bg-blue-400 dark:hover:bg-blue-500 dark:disabled:bg-blue-800"
+              disabled={loading || !allPasswordRulesSatisfied || (formData.password !== formData.confirmPassword)}
+              className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded-md transition duration-200 ${
+                loading || !allPasswordRulesSatisfied || (formData.password !== formData.confirmPassword)
+                  ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70'
+                  : 'bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-500 text-white'
+              }`}
             >
               {loading && <Loader2 className="animate-spin w-5 h-5" />}
               {loading ? "Registering..." : "Register as Employee"}
