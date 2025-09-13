@@ -81,7 +81,7 @@ export const registerInstitution = async (req, res) => {
       contactPerson,
       email,
       password: hashedPassword,
-      role: "Institution",
+      role: "institution",
     });
 
     res.status(201).json({ message: "Institution registered successfully" });
