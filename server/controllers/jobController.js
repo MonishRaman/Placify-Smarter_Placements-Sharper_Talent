@@ -376,3 +376,82 @@ export const withdrawApplication = async (req, res) => {
     });
   }
 };
+
+// ...existing code...
+// Logged-in company can see ONLY its own posted jobs with optional filters (title, description, date range)
+export const getCompanyJobs = async (req, res) => {
+  try {
+    const companyId = req.user.userId;
+    const page = parseInt(req.query.page) || 1;
+    const limit = Math.min(parseInt(req.query.limit) || 10, 50);
+    const skip = (page - 1) * limit;
+
+    const {
+      status,
+      title,
+      description,
+      fromDate,
+      toDate,
+    } = req.query;
+
+    const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    const query = { company: companyId };
+    if (status) query.status = status;
+
+    if (title) {
+      query.title = new RegExp(escapeRegex(title.trim()), "i");
+    }
+    if (description) {
+      query.description = new RegExp(escapeRegex(description.trim()), "i");
+    }
+
+    if (fromDate || toDate) {
+      query.createdAt = {};
+      if (fromDate) query.createdAt.$gte = new Date(fromDate);
+      if (toDate) {
+        const end = new Date(toDate);
+        end.setHours(23, 59, 59, 999);
+        query.createdAt.$lte = end;
+      }
+    }
+
+    const [totalJobs, jobs] = await Promise.all([
+      Job.countDocuments(query),
+      Job.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate({
+          path: "company",
+          select: "name email industry website employeeCount profileImage",
+        })
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      filters: {
+        status: status || null,
+        title: title || null,
+        description: description || null,
+        fromDate: fromDate || null,
+        toDate: toDate || null,
+      },
+      count: jobs.length,
+      totalJobs,
+      currentPage: page,
+      totalPages: Math.ceil(totalJobs / limit),
+      jobs,
+    });
+  } catch (error) {
+    console.error("Error fetching company jobs:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error: Could not fetch company jobs",
+      error: error.message,
+    });
+  }
+};
+
+
+

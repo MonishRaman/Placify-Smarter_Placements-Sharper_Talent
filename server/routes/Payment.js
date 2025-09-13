@@ -1,6 +1,5 @@
 import express from "express";
-import Payment from "../models/Payment.js";
-import Coupon from "../models/Coupon.js";
+
 
 const router = express.Router();
 
