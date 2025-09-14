@@ -157,6 +157,7 @@ dmypy.json
 data/
 datasets/
 models/
+!server/models/
 checkpoints/
 
 # OS generated files
