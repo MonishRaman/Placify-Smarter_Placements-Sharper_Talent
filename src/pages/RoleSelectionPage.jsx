@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import {
   GraduationCap,
   School,
@@ -26,6 +26,7 @@ import { useAuth } from "../context/AuthContext";
 const RoleSelectionPage = () => {
   const [isDark, setIsDark] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, loading, user } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -49,6 +50,21 @@ const RoleSelectionPage = () => {
         return "/register";
     }
   };
+
+  const [hasScrolled, setHasScrolled] = React.useState(false);
+
+  // Scroll to role cards if navigated with scrollToCards state only once
+  useEffect(() => {
+    if (location.state && location.state.scrollToCards && !hasScrolled) {
+      setTimeout(() => {
+        const cardsContainer = document.getElementById("role-cards-container");
+        if (cardsContainer) {
+          cardsContainer.scrollIntoView({ behavior: "smooth" });
+          setHasScrolled(true);
+        }
+      }, 100);
+    }
+  }, [location, hasScrolled]);
 
   // Handle Get Started button click
   const handleGetStarted = () => {
@@ -600,7 +616,7 @@ const RoleSelectionPage = () => {
           </div>
 
           {/* Enhanced Role Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8 mb-16">
+          <div id="role-cards-container" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8 mb-16">
             {roles.map((role, index) => (
               <div
                 key={role.title}
@@ -652,7 +668,7 @@ const RoleSelectionPage = () => {
                   </div>
 
                   {/* Registration Button */}
-                  <div className="flex justify-center">
+                  <div className="flex justify-center" id="register-btn">
                     <button
                       className={`w-full bg-gradient-to-r ${role.gradient} text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2`}
                       onClick={(e) => handleRoleNavigation(role.route, e)}

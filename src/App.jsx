@@ -98,7 +98,7 @@ const AppWrapper = () => {
     <>
       <ScrollToTop />
       <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex flex-col justify-between">
-        <div>
+        <div className="pt-16">
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} /> {/* ✅ moved before wildcard */}
