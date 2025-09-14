@@ -282,28 +282,60 @@ const PerformanceOverviewDashboard = () => {
 
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Skills Assessment</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <RadialBarChart cx="50%" cy="50%" innerRadius="20%" outerRadius="80%" data={skillsData}>
-                  <RadialBar 
-                    minAngle={15} 
-                    label={{ position: 'insideStart', fill: '#fff', fontSize: 12 }}
-                    background 
-                    clockWise 
-                    dataKey="value" 
-                  />
-                  <Tooltip formatter={(value) => [`${value}%`, 'Skill Level']} />
-                </RadialBarChart>
-              </ResponsiveContainer>
-              <div className="grid grid-cols-2 gap-2 mt-4">
+              <div className="space-y-4">
                 {skillsData.map((skill, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: skill.color }}
-                    ></div>
-                    <span className="text-sm text-gray-600">{skill.name}</span>
+                  <div key={index} className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center space-x-2">
+                        <div 
+                          className="w-3 h-3 rounded-full" 
+                          style={{ backgroundColor: skill.color }}
+                        ></div>
+                        <span className="font-medium text-gray-700">{skill.name}</span>
+                      </div>
+                      <span className="text-sm font-semibold text-gray-900">{skill.value}%</span>
+                    </div>
+                    <div className="relative">
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div 
+                          className="h-3 rounded-full transition-all duration-1000 ease-out"
+                          style={{ 
+                            width: `${skill.value}%`, 
+                            backgroundColor: skill.color,
+                            boxShadow: `0 0 10px ${skill.color}40`
+                          }}
+                        ></div>
+                      </div>
+                      <div 
+                        className="absolute top-0 h-3 bg-white rounded-full opacity-30"
+                        style={{ 
+                          width: `${skill.value}%`,
+                          background: `linear-gradient(90deg, transparent 0%, ${skill.color}30 50%, transparent 100%)`
+                        }}
+                      ></div>
+                    </div>
                   </div>
                 ))}
+              </div>
+              <div className="mt-6 grid grid-cols-3 gap-4 text-center">
+                <div className="p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg">
+                  <div className="text-lg font-bold text-purple-600">
+                    {Math.round(skillsData.reduce((acc, skill) => acc + skill.value, 0) / skillsData.length)}%
+                  </div>
+                  <div className="text-xs text-purple-700">Average Score</div>
+                </div>
+                <div className="p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
+                  <div className="text-lg font-bold text-green-600">
+                    {skillsData.find(s => s.value === Math.max(...skillsData.map(skill => skill.value)))?.name.split(' ')[0] || 'Technical'}
+                  </div>
+                  <div className="text-xs text-green-700">Top Skill</div>
+                </div>
+                <div className="p-3 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg">
+                  <div className="text-lg font-bold text-orange-600">
+                    {skillsData.filter(skill => skill.value >= 85).length}
+                  </div>
+                  <div className="text-xs text-orange-700">High Proficiency</div>
+                </div>
               </div>
             </div>
           </div>
@@ -341,60 +373,70 @@ const PerformanceOverviewDashboard = () => {
 
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Completion Rates</h3>
-              <div className="space-y-4">
-                {achievementsData.map((item, index) => {
-                  const percentage = Math.round((item.completed / item.total) * 100);
-                  const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B'];
-                  return (
-                    <div key={index} className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center space-x-3">
-                          <div 
-                            className="w-4 h-4 rounded-full"
-                            style={{ backgroundColor: colors[index] }}
-                          ></div>
-                          <span className="font-medium text-gray-700">{item.category}</span>
-                        </div>
-                        <div className="text-right">
-                          <div 
-                            className="text-sm font-semibold"
-                            style={{ color: colors[index] }}
-                          >
-                            {percentage}%
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {item.completed}/{item.total}
-                          </div>
+              <div className="flex flex-col items-center">
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={achievementsData.map((item, index) => ({
+                        name: item.category,
+                        value: Math.round((item.completed / item.total) * 100),
+                        completed: item.completed,
+                        total: item.total,
+                        fill: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B'][index]
+                      }))}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {achievementsData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B'][index]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      formatter={(value, name, props) => [
+                        `${value}% (${props.payload.completed}/${props.payload.total})`,
+                        props.payload.name
+                      ]}
+                      contentStyle={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px' }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                
+                <div className="grid grid-cols-2 gap-3 mt-4 w-full">
+                  {achievementsData.map((item, index) => {
+                    const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B'];
+                    const percentage = Math.round((item.completed / item.total) * 100);
+                    return (
+                      <div key={index} className="flex items-center space-x-2 p-2 rounded-lg bg-gray-50">
+                        <div 
+                          className="w-3 h-3 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: colors[index] }}
+                        ></div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-gray-700 truncate">{item.category}</div>
+                          <div className="text-xs text-gray-500">{percentage}%</div>
                         </div>
                       </div>
-                      <div className="relative">
-                        <div className="w-full bg-gray-200 rounded-full h-3">
-                          <div 
-                            className="h-3 rounded-full transition-all duration-1000 ease-out"
-                            style={{ 
-                              width: `${percentage}%`, 
-                              backgroundColor: colors[index],
-                              boxShadow: `0 0 8px ${colors[index]}60`
-                            }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="mt-6 grid grid-cols-2 gap-4">
-                <div className="p-3 bg-green-50 rounded-lg text-center">
-                  <div className="text-lg font-bold text-green-600">
-                    {Math.round(achievementsData.reduce((acc, item) => acc + (item.completed / item.total * 100), 0) / achievementsData.length)}%
-                  </div>
-                  <div className="text-xs text-green-700">Average Completion</div>
+                    );
+                  })}
                 </div>
-                <div className="p-3 bg-blue-50 rounded-lg text-center">
-                  <div className="text-lg font-bold text-blue-600">
-                    {achievementsData.reduce((acc, item) => acc + item.completed, 0)}
+                
+                <div className="mt-4 grid grid-cols-2 gap-4 w-full">
+                  <div className="p-3 bg-green-50 rounded-lg text-center">
+                    <div className="text-lg font-bold text-green-600">
+                      {Math.round(achievementsData.reduce((acc, item) => acc + (item.completed / item.total * 100), 0) / achievementsData.length)}%
+                    </div>
+                    <div className="text-xs text-green-700">Average Completion</div>
                   </div>
-                  <div className="text-xs text-blue-700">Total Completed</div>
+                  <div className="p-3 bg-blue-50 rounded-lg text-center">
+                    <div className="text-lg font-bold text-blue-600">
+                      {achievementsData.reduce((acc, item) => acc + item.completed, 0)}
+                    </div>
+                    <div className="text-xs text-blue-700">Total Completed</div>
+                  </div>
                 </div>
               </div>
             </div>
