@@ -4,22 +4,24 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Create reusable transporter object
-const createTransporter = () => {
-  return nodemailer.createTransport({
+const createTransporter = () =>
+  nodemailer.createTransport({
     service: "gmail",
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
   });
-};
 
 // Format feedback content
-const formatFeedbackContent = (feedbackData) => {
-  const { name, email, rating, testimonial, improvements, additionalFeedback } =
-    feedbackData;
-
-  return `
+const formatFeedbackContent = ({
+  name,
+  email,
+  rating,
+  testimonial,
+  improvements,
+  additionalFeedback,
+}) => `
 🎯 NEW FEEDBACK RECEIVED - PLACIFY PLATFORM
 ═══════════════════════════════════════════
 
@@ -34,8 +36,8 @@ ${testimonial || "No testimonial provided"}
 
 🚀 SUGGESTED IMPROVEMENTS:
 ${
-  improvements && improvements.length > 0
-    ? improvements.map((improvement) => `   • ${improvement}`).join("\n")
+  improvements?.length
+    ? improvements.map((i) => `   • ${i}`).join("\n")
     : "   • No specific improvements mentioned"
 }
 
@@ -45,40 +47,32 @@ ${additionalFeedback || "No additional feedback provided"}
 ═══════════════════════════════════════════
 📧 This feedback was submitted through the Placify feedback form.
 🕒 Timestamp: ${new Date().toLocaleString()}
-    `;
-};
+`;
 
 // Send email helper function
 const sendEmail = async (mailOptions) => {
   const transporter = createTransporter();
-  return await transporter.sendMail(mailOptions);
+  return transporter.sendMail(mailOptions);
 };
 
 // Validate feedback data
-const validateFeedback = (feedbackData) => {
-  const { rating } = feedbackData;
-
-  if (!rating) {
-    throw new Error("Rating is required");
-  }
-
-  if (rating < 1 || rating > 5) {
+const validateFeedback = ({ rating }) => {
+  if (!rating) throw new Error("Rating is required");
+  if (rating < 1 || rating > 5)
     throw new Error("Rating must be between 1 and 5");
-  }
 };
 
 // Send feedback email
 export const sendFeedback = async (req, res) => {
   try {
     const feedbackData = req.body;
-
     validateFeedback(feedbackData);
 
     console.log("📧 Sending feedback email...");
 
     const emailContent = formatFeedbackContent(feedbackData);
 
-    const mailOptions = {
+    await sendEmail({
       from: process.env.EMAIL_USER,
       to: process.env.FEEDBACK_EMAIL,
       subject: `🎯 New Feedback - ${feedbackData.rating}⭐ Rating from ${
@@ -86,59 +80,53 @@ export const sendFeedback = async (req, res) => {
       }`,
       text: emailContent,
       html: emailContent.replace(/\n/g, "<br>"),
-    };
-
-    await sendEmail(mailOptions);
+    });
 
     console.log("✅ Feedback email sent successfully!");
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Feedback sent successfully! Thank you for your input.",
     });
   } catch (error) {
     console.error("❌ Error sending feedback email:", error.message);
 
-    const statusCode =
-      error.message.includes("required") || error.message.includes("must be")
-        ? 400
-        : 500;
+    const isValidationError =
+      error.message.includes("required") || error.message.includes("must be");
 
-    res.status(statusCode).json({
+    return res.status(isValidationError ? 400 : 500).json({
       success: false,
-      message:
-        error.message.includes("required") || error.message.includes("must be")
-          ? error.message
-          : "Failed to send feedback. Please try again later.",
+      message: isValidationError
+        ? error.message
+        : "Failed to send feedback. Please try again later.",
       error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
 
 // Test email configuration
-export const testEmailConfig = async (req, res) => {
+export const testEmailConfig = async (_req, res) => {
   try {
     console.log("🧪 Testing email configuration...");
 
-    const testMailOptions = {
+    await sendEmail({
       from: process.env.EMAIL_USER,
       to: process.env.FEEDBACK_EMAIL,
       subject: "✅ Placify Email Test",
       text: "Email configuration working correctly!",
       html: "<p>✅ <strong>Success!</strong> Email working!</p>",
-    };
-
-    await sendEmail(testMailOptions);
+    });
 
     console.log("✅ Test email sent successfully!");
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Email test successful!",
     });
   } catch (error) {
     console.error("❌ Email test failed:", error.message);
-    res.status(500).json({
+
+    return res.status(500).json({
       success: false,
       message: "Email test failed",
       error: process.env.NODE_ENV === "development" ? error.message : undefined,
