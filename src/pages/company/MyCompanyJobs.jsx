@@ -6,119 +6,122 @@ const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const PAGE_SIZE = 6; // cards per page
 
 // Dummy job data
+// ...existing code...
+// Dummy job data
 const dummyJobs = [
   {
     _id: "1",
     title: "Frontend Developer",
-    description: "Build and maintain responsive web applications using React and Tailwind CSS.",
+    type: "Full-time",
+    domain: "Web Development",
+    location: "Remote",
+    status: "Open",
+    salary: "₹8–12 LPA",
+    description: "Build and maintain responsive web applications using React, Tailwind CSS and modern tooling.",
+    requirements: ["React", "JavaScript (ES6+)", "Tailwind CSS", "REST APIs", "Git"],
+    responsibilities: ["Implement UI components", "Optimize performance", "Collaborate with backend team"],
     company: {
       _id: "c1",
       name: "TechCorp",
+      website: "https://techcorp.example.com",
       profileImage: "https://via.placeholder.com/100"
     }
   },
   {
     _id: "2",
     title: "Backend Developer",
-    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
+    type: "Full-time",
+    domain: "Platform Engineering",
+    location: "Bangalore",
+    status: "Open",
+    salary: "₹12–18 LPA",
+    description: "Develop scalable REST APIs with Node.js, Express and MongoDB. Focus on performance & security.",
+    requirements: ["Node.js", "Express", "MongoDB", "JWT", "Docker"],
+    responsibilities: ["Design APIs", "Write clean code", "Implement authentication", "Database schema design"],
     company: {
       _id: "c1",
       name: "TechCorp",
+      website: "https://techcorp.example.com",
       profileImage: "https://via.placeholder.com/100"
     }
   },
   {
     _id: "3",
     title: "UI/UX Designer",
-    description: "Design user-friendly interfaces and ensure seamless user experience.",
+    type: "Internship",
+    domain: "Design",
+    location: "Remote",
+    status: "Open",
+    salary: "₹15K stipend",
+    description: "Design clean, accessible and modern user interfaces and collaborate with product + frontend teams.",
+    requirements: ["Figma", "Wireframing", "Prototyping", "Basic HTML/CSS"],
+    responsibilities: ["Create mockups", "Maintain design system", "Research user flows"],
     company: {
       _id: "c1",
       name: "TechCorp",
+      website: "https://techcorp.example.com",
       profileImage: "https://via.placeholder.com/100"
     }
   },
   {
-    _id: "2",
-    title: "Backend Developer",
-    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
+    _id: "4",
+    title: "DevOps Engineer",
+    type: "Full-time",
+    domain: "Infrastructure",
+    location: "Hyderabad",
+    status: "Open",
+    salary: "₹14–20 LPA",
+    description: "Automate deployments, manage CI/CD pipelines and improve system reliability.",
+    requirements: ["Linux", "CI/CD", "Docker", "Kubernetes", "Monitoring"],
+    responsibilities: ["Manage pipelines", "Infra automation", "Setup monitoring", "Optimize costs"],
     company: {
       _id: "c1",
       name: "TechCorp",
+      website: "https://techcorp.example.com",
       profileImage: "https://via.placeholder.com/100"
     }
   },
   {
-    _id: "2",
-    title: "Backend Developer",
-    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
+    _id: "5",
+    title: "Data Analyst",
+    type: "Part-time",
+    domain: "Analytics",
+    location: "Remote",
+    status: "Open",
+    salary: "₹6–9 LPA (pro-rated)",
+    description: "Analyze product metrics and generate actionable insights for business teams.",
+    requirements: ["SQL", "Excel", "Data Visualization", "Statistics"],
+    responsibilities: ["Dashboard creation", "Ad-hoc analysis", "Data cleaning"],
     company: {
       _id: "c1",
       name: "TechCorp",
+      website: "https://techcorp.example.com",
       profileImage: "https://via.placeholder.com/100"
     }
   },
   {
-    _id: "2",
-    title: "Backend Developer",
-    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
+    _id: "6",
+    title: "Security Engineer",
+    type: "Full-time",
+    domain: "Cybersecurity",
+    location: "Delhi",
+    status: "Open",
+    salary: "₹18–24 LPA",
+    description: "Own application and infrastructure security posture. Review code and implement safeguards.",
+    requirements: ["OWASP", "Threat Modeling", "Node.js basics", "Vulnerability scanning"],
+    responsibilities: ["Code reviews", "Security audits", "Patch management"],
     company: {
       _id: "c1",
       name: "TechCorp",
+      website: "https://techcorp.example.com",
       profileImage: "https://via.placeholder.com/100"
     }
-  },
-  {
-    _id: "2",
-    title: "Backend Developer",
-    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
-    company: {
-      _id: "c1",
-      name: "TechCorp",
-      profileImage: "https://via.placeholder.com/100"
-    }
-  },
-  {
-    _id: "2",
-    title: "Backend Developer",
-    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
-    company: {
-      _id: "c1",
-      name: "TechCorp",
-      profileImage: "https://via.placeholder.com/100"
-    }
-  },
-  {
-    _id: "2",
-    title: "Backend Developer",
-    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
-    company: {
-      _id: "c1",
-      name: "TechCorp",
-      profileImage: "https://via.placeholder.com/100"
-    }
-  },
-  {
-    _id: "2",
-    title: "Backend Developer",
-    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
-    company: {
-      _id: "c1",
-      name: "TechCorp",
-      profileImage: "https://via.placeholder.com/100"
-    }
-  },
-  {
-    _id: "2",
-    title: "Backend Developer",
-    description: "Develop scalable REST APIs with Node.js, Express, and MongoDB.",
-    company: {
-      _id: "c1",
-      name: "TechCorp",
-      profileImage: "https://via.placeholder.com/100"
-    }
-  },
-  
+  }
 ];
+
+
+
+
 
 const MyCompanyJobs = () => {
   const [allJobs, setAllJobs] = useState([]);      // all (filtered = only this company)
@@ -171,7 +174,7 @@ const MyCompanyJobs = () => {
   const currentJobs = allJobs.slice(startIdx, startIdx + PAGE_SIZE);
 
   const handleUpdate = (job) => {
-    navigate(`/dashboard/company/jobs/${job._id}/edit`);
+    navigate(`/dashboard/company/jobs/${job._id}/edit`, { state: { job } });
   };
 
   const changePage = (p) => {
@@ -211,9 +214,7 @@ const MyCompanyJobs = () => {
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
               No jobs posted
             </h3>
-            <p className="text-gray-500 dark:text-slate-400 text-sm mt-2">
-              Aapke open jobs yahan dikhenge.
-            </p>
+           
           </div>
         ) : (
           <>
@@ -251,7 +252,7 @@ const MyCompanyJobs = () => {
                     {job.description || "No description provided."}
                   </p>
 
-                  <button
+                 <button
                     onClick={() => handleUpdate(job)}
                     className="mt-auto flex items-center justify-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 rounded-lg transition-colors"
                   >
