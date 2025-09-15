@@ -107,7 +107,7 @@ export const registerEmployee = async (req, res) => {
       jobTitle,
       email,
       password: hashedPassword,
-      role: "Employee",
+      role: "employee",
     });
 
     res.status(201).json({ message: "Employee registered successfully" });
