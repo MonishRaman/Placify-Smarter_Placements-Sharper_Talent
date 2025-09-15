@@ -293,7 +293,7 @@ const AuthPage = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={
-                  isLogin ? () => navigate("/register") : () => setIsLogin(true)
+                  isLogin ? () => navigate("/register", { state: { scrollToCards: true } }) : () => setIsLogin(true)
                 }
                 className="ml-2 text-purple-600 font-semibold"
               >
