@@ -59,7 +59,9 @@ import PostJob from "./pages/company/postJob";         // ⚠️ check filename 
 import CompanyProfile from "./pages/company/CompanyProfile";
 import CompanyReports from "./pages/company/Reports";
 import MyCompanyJobs from "./pages/company/MyCompanyJobs";
+
 // ⚠️ CompanySettings component missing? currently uses Student Settings
+
 
 import EmployeeDashboardLayout from "./layouts/EmployeeDashboardLayout";
 import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
@@ -124,9 +126,11 @@ const AppWrapper = () => {
               }
             >
               <Route index element={<InstitutionDashboard />} />
+
               <Route path="profile" element={<ProfilePage />} />
               <Route path="student-performance" element={<StudentPerformance />} />
               <Route path="department-performance" element={<DepartmentPerformance />} />
+
               <Route path="reports" element={<Reports />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="settings" element={<InstitutionSettings />} />
@@ -148,6 +152,7 @@ const AppWrapper = () => {
               <Route path="post-job" element={<PostJob />} />
               <Route path="applicants" element={<Applicants />} />
               <Route path="my-jobs" element={<MyCompanyJobs />} /> {/* ✅ fixed path */}
+
               <Route path="insights" element={<Insights />} />
               <Route path="collaboration" element={<Collaboration />} />
               <Route path="reports" element={<CompanyReports />} />
