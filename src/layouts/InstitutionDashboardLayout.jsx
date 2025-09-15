@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import InstitutionSidebar from '../components/InstitutionSidebar';
 import { User, LogOut, ChevronDown } from 'lucide-react';
+import CursorToggle from '../components/CursorToggle';
 
 const ProfileDropdown = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -80,8 +81,9 @@ const InstitutionDashboardLayout = () => {
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
               {getPageTitle()}
             </h1>
-            
-            <div className="flex items-center">
+
+            <div className="flex items-center space-x-4">
+              <CursorToggle />
               <ProfileDropdown />
             </div>
           </div>

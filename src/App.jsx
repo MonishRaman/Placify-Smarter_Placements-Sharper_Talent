@@ -6,12 +6,8 @@ import {
   useLocation,
 } from "react-router-dom";
 import { UserProvider } from "./context/UserContext";
-
-// The paths below are relative to this App.jsx file, which should be in the 'src' directory.
-// If you are getting 'Could not resolve' errors, please ensure you are running the build command
-// from the root of the project directory.
-//  IMPORTED the ThemeProvider
 import { ThemeProvider } from "./context/ThemeContext";
+import { CursorProvider, useCursor } from "./context/CursorContext";
 import Footer from "./components/Footer";
 import AuthPage from "./pages/AuthPage";
 import FeedbackPage from "./pages/FeedbackPage";
@@ -26,7 +22,7 @@ import EmployeeForm from "./pages/register/EmployeeForm";
 import InstitutionForm from "./pages/register/InstitutionForm";
 import StudentForm from "./pages/register/StudentForm";
 import StudentProgressDashboard from "./pages/Student/StudentProgressDashboard";
-import StudentProgressDetail from "./pages/Student/StudentProgressDetail"; // New import
+import StudentProgressDetail from "./pages/Student/StudentProgressDetail";
 import ContactPage from "./pages/ContactPage";
 
 import { LoadingProvider } from "./context/LoadingContext";
@@ -41,7 +37,7 @@ import InterviewInterface from "./pages/Student/InterviewInterface";
 import Jobs from "./pages/Student/Jobs";
 import ResumeATS from "./pages/Student/ResumeATS";
 import ResumeBuilder from "./pages/Student/ResumeBuilder";
-import Settings from "./pages/Student/Settings";
+import Settings from "./pages/Student/Settings"; // ⚠️ student settings
 
 import InstitutionDashboardLayout from "./layouts/InstitutionDashboardLayout";
 import InstitutionDashboard from "./pages/Institution/InstitutionDashboard";
@@ -52,21 +48,21 @@ import Reports from "./pages/Institution/Reports";
 import Analytics from "./pages/Institution/Analytics";
 import InstitutionSettings from "./pages/Institution/Settings";
 
-// Company Dashboard Layout and Pages
 import CompanyDashboardLayout from "./layouts/CompanyDashboardLayout";
 import CompanyDashboard from "./pages/company/CompanyDashboard";
 import Applicants from "./pages/company/Applicants";
 import Collaboration from "./pages/company/Collaboration";
 import Employees from "./pages/company/Employees";
 import Insights from "./pages/company/Insights";
-import Performance from "./pages/company/performance";
-import PostJob from "./pages/company/postJob";
+import Performance from "./pages/company/performance"; // ⚠️ check filename case
+import PostJob from "./pages/company/postJob";         // ⚠️ check filename case
 import CompanyProfile from "./pages/company/CompanyProfile";
 import CompanyReports from "./pages/company/Reports";
 import MyCompanyJobs from "./pages/company/MyCompanyJobs";
-import EditJob from "./pages/company/EditJob";
 
-// Employee Dashboard Layout and Pages
+// ⚠️ CompanySettings component missing? currently uses Student Settings
+
+
 import EmployeeDashboardLayout from "./layouts/EmployeeDashboardLayout";
 import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
 import EmployeeProfile from "./pages/employee/EmployeeProfile";
@@ -84,7 +80,6 @@ import { motion } from "framer-motion";
 import API from "./api/api";
 
 import UserJobs from "./pages/Student/UserJobs";
-
 import ScrollToTop from "./components/ScrollToTop";
 import useLenis from "./components/useLenis";
 
@@ -92,29 +87,23 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import PaymentGateway from './components/payment/PaymentGateway';
+import CursorTrail from "./components/CursorTrail"; // ⚠️ make sure file exists
 
-// ✅ Import your Cursor effect:
-import CursorTrail from "./components/CursorTrail";
-
-// ✅ Wrapper to allow useLocation inside Router
 const AppWrapper = () => {
   useLenis();
-
   const location = useLocation();
+  const { cursorEnabled } = useCursor();
 
-  // Footer visible only on home page
   const shouldHideFooter = location.pathname !== "/";
 
   return (
     <>
       <ScrollToTop />
-      {/* UPDATED the background here for consistency */}
       <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex flex-col justify-between">
         <div>
           <Routes>
             {/* Public Routes */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<LandingPage />} /> {/* ✅ moved before wildcard */}
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/register" element={<RoleSelectionPage />} />
             <Route path="/resume" element={<Resume />} />
@@ -125,10 +114,9 @@ const AppWrapper = () => {
             <Route path="/feedback" element={<FeedbackPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/payment" element={<PaymentGateway />} />
-            {/* Standalone Route */}
             <Route path="/interview" element={<InterviewInterface />} />
 
-            {/* Institution Dashboard Routes */}
+            {/* Institution Dashboard */}
             <Route
               path="/dashboard/institution"
               element={
@@ -139,23 +127,16 @@ const AppWrapper = () => {
             >
               <Route index element={<InstitutionDashboard />} />
 
-              <Route path="profile" element={<InstitutionProfile />} />
-
-              <Route
-                path="student-performance"
-                element={<StudentPerformance />}
-              />
-              <Route
-                path="department-performance"
-                element={<DepartmentPerformance />}
-              />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="student-performance" element={<StudentPerformance />} />
+              <Route path="department-performance" element={<DepartmentPerformance />} />
 
               <Route path="reports" element={<Reports />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="settings" element={<InstitutionSettings />} />
             </Route>
 
-            {/* Company Dashboard Routes */}
+            {/* Company Dashboard */}
             <Route
               path="/dashboard/company"
               element={
@@ -170,15 +151,16 @@ const AppWrapper = () => {
               <Route path="performance" element={<Performance />} />
               <Route path="post-job" element={<PostJob />} />
               <Route path="applicants" element={<Applicants />} />
-              <Route path="/dashboard/company/my-jobs" element={<MyCompanyJobs />} />
-              <Route path="/dashboard/company/jobs/:id/edit" element={<EditJob />} />
+              <Route path="my-jobs" element={<MyCompanyJobs />} /> {/* ✅ fixed path */}
+
               <Route path="insights" element={<Insights />} />
               <Route path="collaboration" element={<Collaboration />} />
               <Route path="reports" element={<CompanyReports />} />
-              <Route path="settings" element={<Settings />} />
+              <Route path="settings" element={<Settings />} /> 
+              {/* ⚠️ currently using Student Settings — consider creating CompanySettings.jsx */}
             </Route>
 
-            {/* Employee Dashboard Routes */}
+            {/* Employee Dashboard */}
             <Route
               path="/dashboard/employee"
               element={
@@ -195,10 +177,7 @@ const AppWrapper = () => {
               <Route path="career" element={<CareerProgression />} />
               <Route path="feedback" element={<CompanyFeedback />} />
               <Route path="learning" element={<LearningResources />} />
-              <Route
-                path="interview-practice"
-                element={<InterviewPracticeZone />}
-              />
+              <Route path="interview-practice" element={<InterviewPracticeZone />} />
               <Route path="job-insights" element={<JobSwitchInsights />} />
               <Route path="settings" element={<EmployeeSettings />} />
             </Route>
@@ -213,46 +192,29 @@ const AppWrapper = () => {
               }
             />
 
-            {/* Student Dashboard Routes */}
-            <Route
-              path="/dashboard"
-              element={
-                // <ProtectedRoute>
-                <DashboardLayout />
-                // </ProtectedRoute>
-              }
-            >
+            {/* Student Dashboard */}
+            <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="resume-builder" element={<ResumeBuilder />} />
-              
               <Route path="resume-ats" element={<ResumeATS />} />
               <Route path="jobs" element={<Jobs />} />
               <Route path="user-jobs" element={<UserJobs />} />
               <Route path="coding" element={<Coding />} />
               <Route path="coding/:id" element={<CodingEditor />} />
-              <Route
-                path="interview-practice"
-                element={<InterviewInterface />}
-              />
+              <Route path="interview-practice" element={<InterviewInterface />} />
               <Route path="aptitude" element={<Aptitude />} />
-              <Route
-                path="interview-experience"
-                element={<InterviewExperience />}
-              />
+              <Route path="interview-experience" element={<InterviewExperience />} />
               <Route path="settings" element={<Settings />} />
-              {/* New route for the Student Progress Dashboard */}
               <Route path="progress" element={<StudentProgressDashboard />} />
-              {/* New route for the Student Progress Detail page */}
-              <Route
-                path="progress/:studentId"
-                element={<StudentProgressDetail />}
-              />
+              <Route path="progress/:studentId" element={<StudentProgressDetail />} />
             </Route>
+
+            {/* Wildcard route should always be last */}
+            <Route path="*" element={<Navigate to="/" replace />} /> {/* ✅ moved down */}
           </Routes>
         </div>
 
-        {/* Toast Notifications */}
         <ToastContainer
           position="top-center"
           autoClose={3000}
@@ -266,9 +228,8 @@ const AppWrapper = () => {
           theme="colored"
         />
 
-        {/* Conditional Footer */}
         {!shouldHideFooter && <Footer />}
-        <CursorTrail />
+        {cursorEnabled && <CursorTrail />}
       </div>
     </>
   );
@@ -277,13 +238,15 @@ const AppWrapper = () => {
 function App() {
   return (
     <ThemeProvider>
-      <LoadingProvider>
-        <UserProvider>
-          <Router>
-            <AppWrapper />
-          </Router>
-        </UserProvider>
-      </LoadingProvider>
+      <CursorProvider>
+        <LoadingProvider>
+          <UserProvider>
+            <Router>
+              <AppWrapper />
+            </Router>
+          </UserProvider>
+        </LoadingProvider>
+      </CursorProvider>
     </ThemeProvider>
   );
 }

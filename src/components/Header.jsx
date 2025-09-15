@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, Menu, X, Home, LogIn, UserPlus, Phone, Mail } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
+import CursorToggle from './CursorToggle';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -102,8 +103,9 @@ const Header = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex items-center space-x-4"
           >
+            <CursorToggle />
             <ThemeToggle />
-            
+
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

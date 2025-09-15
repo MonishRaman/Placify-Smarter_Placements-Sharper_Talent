@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle";
+import CursorToggle from "../components/CursorToggle";
 import { motion, AnimatePresence } from "framer-motion";
 import Chatbot from "../components/Chatbot";
 import { useAuth } from "../context/AuthContext";
@@ -213,6 +214,14 @@ const LandingPage = () => {
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
                   <ThemeToggle />
+                </motion.div>
+
+                {/* Cursor Toggle */}
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                  <CursorToggle />
                 </motion.div>
               </motion.div>
 
