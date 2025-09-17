@@ -59,6 +59,7 @@ import PostJob from "./pages/company/postJob";         // ⚠️ check filename 
 import CompanyProfile from "./pages/company/CompanyProfile";
 import CompanyReports from "./pages/company/Reports";
 import MyCompanyJobs from "./pages/company/MyCompanyJobs";
+import EditJob from "./pages/company/EditJob";
 
 // ⚠️ CompanySettings component missing? currently uses Student Settings
 
@@ -152,6 +153,7 @@ const AppWrapper = () => {
               <Route path="post-job" element={<PostJob />} />
               <Route path="applicants" element={<Applicants />} />
               <Route path="my-jobs" element={<MyCompanyJobs />} /> {/* ✅ fixed path */}
+               <Route path="/dashboard/company/jobs/:id/edit" element={<EditJob />} />
 
               <Route path="insights" element={<Insights />} />
               <Route path="collaboration" element={<Collaboration />} />
