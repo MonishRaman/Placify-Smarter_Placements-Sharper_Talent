@@ -24,7 +24,7 @@ export default function EmployeeForm() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
   // Track password validation
   const [passwordRules, setPasswordRules] = useState({
     length: false,
@@ -53,7 +53,9 @@ export default function EmployeeForm() {
   };
 
   // Check if all password rules are satisfied
-  const allPasswordRulesSatisfied = Object.values(passwordRules).every(rule => rule);
+  const allPasswordRulesSatisfied = Object.values(passwordRules).every(
+    (rule) => rule
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -162,6 +164,7 @@ export default function EmployeeForm() {
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <FormInput
+              id="employee-fullname"
               label="Full Name"
               value={formData.fullName}
               onChange={(e) =>
@@ -171,6 +174,7 @@ export default function EmployeeForm() {
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
+              id="employee-current-company"
               label="Current Company"
               value={formData.currentCompany}
               onChange={(e) =>
@@ -180,6 +184,7 @@ export default function EmployeeForm() {
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
+              id="employee-job-title"
               label="Job Title"
               value={formData.jobTitle}
               onChange={(e) =>
@@ -189,6 +194,7 @@ export default function EmployeeForm() {
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
+              id="employee-email"
               type="email"
               label="Email"
               value={formData.email}
@@ -199,6 +205,7 @@ export default function EmployeeForm() {
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <FormInput
+              id="employee-password"
               type="password"
               label="Password"
               value={formData.password}
@@ -211,9 +218,9 @@ export default function EmployeeForm() {
 
             {/* Dynamic Password Validation - Only show if password field has content */}
             {formData.password && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
+                animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
                 className="mt-2 space-y-2"
@@ -229,9 +236,9 @@ export default function EmployeeForm() {
                     >
                       <motion.div
                         initial={false}
-                        animate={{ 
+                        animate={{
                           scale: isValid ? 1.1 : 1,
-                          rotate: isValid ? 360 : 0 
+                          rotate: isValid ? 360 : 0,
                         }}
                         transition={{ duration: 0.3 }}
                       >
@@ -243,8 +250,8 @@ export default function EmployeeForm() {
                       </motion.div>
                       <span
                         className={`transition-colors duration-200 ${
-                          isValid 
-                            ? "text-green-600 dark:text-green-400" 
+                          isValid
+                            ? "text-green-600 dark:text-green-400"
                             : "text-red-500 dark:text-red-400"
                         }`}
                       >
@@ -257,6 +264,7 @@ export default function EmployeeForm() {
             )}
 
             <FormInput
+              id="employee-confirm-password"
               type="password"
               label="Confirm Password"
               value={formData.confirmPassword}

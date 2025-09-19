@@ -24,7 +24,7 @@ export default function StudentForm() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
   // Track password validation
   const [passwordRules, setPasswordRules] = useState({
     length: false,
@@ -53,7 +53,9 @@ export default function StudentForm() {
   };
 
   // Check if all password rules are satisfied
-  const allPasswordRulesSatisfied = Object.values(passwordRules).every(rule => rule);
+  const allPasswordRulesSatisfied = Object.values(passwordRules).every(
+    (rule) => rule
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,21 +75,21 @@ export default function StudentForm() {
       setLoading(false);
       return;
     }
-    
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setError("Please enter a valid email address");
       setLoading(false);
       return;
     }
-    
+
     // Check if all password rules are satisfied
     if (!allPasswordRulesSatisfied) {
       setError("Password must meet all security requirements");
       setLoading(false);
       return;
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       setLoading(false);
@@ -180,6 +182,7 @@ export default function StudentForm() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <FormInput
+              id="student-fullname"
               label="Full Name"
               value={formData.fullName}
               onChange={(e) =>
@@ -188,6 +191,7 @@ export default function StudentForm() {
               required
             />
             <FormInput
+              id="student-university"
               label="University Name"
               value={formData.university}
               onChange={(e) =>
@@ -196,6 +200,7 @@ export default function StudentForm() {
               required
             />
             <FormInput
+              id="student-major"
               label="Major/Field of Study"
               value={formData.major}
               onChange={(e) =>
@@ -204,6 +209,7 @@ export default function StudentForm() {
               required
             />
             <FormInput
+              id="student-email"
               type="email"
               label="Email"
               value={formData.email}
@@ -213,6 +219,7 @@ export default function StudentForm() {
               required
             />
             <FormInput
+              id="student-password"
               type="password"
               label="Password"
               value={formData.password}
@@ -224,9 +231,9 @@ export default function StudentForm() {
 
             {/* Dynamic Password Validation - Only show if password field has content */}
             {formData.password && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
+                animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
                 className="mt-2 space-y-2"
@@ -242,9 +249,9 @@ export default function StudentForm() {
                     >
                       <motion.div
                         initial={false}
-                        animate={{ 
+                        animate={{
                           scale: isValid ? 1.1 : 1,
-                          rotate: isValid ? 360 : 0 
+                          rotate: isValid ? 360 : 0,
                         }}
                         transition={{ duration: 0.3 }}
                       >
@@ -256,8 +263,8 @@ export default function StudentForm() {
                       </motion.div>
                       <span
                         className={`transition-colors duration-200 ${
-                          isValid 
-                            ? "text-green-600 dark:text-green-400" 
+                          isValid
+                            ? "text-green-600 dark:text-green-400"
                             : "text-red-500 dark:text-red-400"
                         }`}
                       >
@@ -270,6 +277,7 @@ export default function StudentForm() {
             )}
 
             <FormInput
+              id="student-confirm-password"
               type="password"
               label="Confirm Password"
               value={formData.confirmPassword}
@@ -309,11 +317,17 @@ export default function StudentForm() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               type="submit"
-              disabled={loading || !allPasswordRulesSatisfied || (formData.password !== formData.confirmPassword)}
+              disabled={
+                loading ||
+                !allPasswordRulesSatisfied ||
+                formData.password !== formData.confirmPassword
+              }
               className={`w-full flex justify-center items-center gap-2 py-3 px-4 text-lg font-medium rounded-md shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-200 ${
-                loading || !allPasswordRulesSatisfied || (formData.password !== formData.confirmPassword)
-                  ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70'
-                  : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white'
+                loading ||
+                !allPasswordRulesSatisfied ||
+                formData.password !== formData.confirmPassword
+                  ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70"
+                  : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
               }`}
             >
               {loading && <Loader2 className="animate-spin w-5 h-5" />}

@@ -9,7 +9,8 @@ export default function FormInput({
   required = false,
   focusColor = 'purple', // Default focus color is purple
   onCopy,
-  onPaste
+  onPaste,
+  id,
 }) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -22,15 +23,22 @@ export default function FormInput({
   };
 
   const focusClass = focusColors[focusColor] || focusColors.purple;
+  const inputId = id || label; // Use provided id or fallback to label
 
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <label
+        htmlFor={inputId}
+        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+      >
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <div className="relative">
         <input
-          type={type === 'password' ? (showPassword ? 'text' : 'password') : type}
+          id={inputId}
+          type={
+            type === "password" ? (showPassword ? "text" : "password") : type
+          }
           value={value}
           onChange={onChange}
           onCopy={onCopy}
@@ -43,7 +51,7 @@ export default function FormInput({
             ${focusClass}
           `}
         />
-        {type === 'password' && (
+        {type === "password" && (
           <button
             type="button"
             className="absolute inset-y-0 right-0 pr-3 flex items-center"
