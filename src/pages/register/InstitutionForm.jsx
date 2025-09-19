@@ -11,7 +11,6 @@ import Footer from "../../components/Footer";
 import apiClient from "../../api/apiClient";
 import { CheckCircle, XCircle } from "lucide-react";
 
-
 // =================== PERFORMANCE MONITORING ===================
 const componentStartTime = performance.now();
 console.group("⚡ InstitutionForm Component Performance Monitoring");
@@ -49,7 +48,6 @@ export default function InstitutionForm() {
     special: false,
   });
 
-
   const validatePassword = (password) => {
     const rules = {
       length: password.length >= 8,
@@ -70,13 +68,15 @@ export default function InstitutionForm() {
   };
 
   // Check if all password rules are satisfied
-  const allPasswordRulesSatisfied = Object.values(passwordRules).every(rule => rule);
+  const allPasswordRulesSatisfied = Object.values(passwordRules).every(
+    (rule) => rule
+  );
 
   const handleFormDataChange = (field, value) => {
-     setFormData(prevData => ({
-       ...prevData,
-      [field]: value
-   }));
+    setFormData((prevData) => ({
+      ...prevData,
+      [field]: value,
+    }));
     if (error) {
       setError("");
     }
@@ -146,7 +146,6 @@ export default function InstitutionForm() {
       console.groupEnd();
       return;
     }
-
 
     // Check if all password rules are satisfied
     if (!allPasswordRulesSatisfied) {
@@ -357,7 +356,6 @@ export default function InstitutionForm() {
     }
   };
 
-
   const passwordValidationRules = [
     { label: "At least 8 characters", key: "length" },
     { label: "One uppercase letter", key: "upper" },
@@ -365,7 +363,6 @@ export default function InstitutionForm() {
     { label: "One number", key: "number" },
     { label: "One special character", key: "special" },
   ];
-
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
@@ -387,7 +384,7 @@ export default function InstitutionForm() {
           userType="institution"
         />
       </div>
-      
+
       <div className="py-12 px-4">
         <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 transition-colors duration-200">
           {error && (
@@ -399,6 +396,7 @@ export default function InstitutionForm() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <FormInput
+              id="institution-name"
               label="Institution Name"
               value={formData.institutionName}
               onChange={(e) =>
@@ -409,6 +407,7 @@ export default function InstitutionForm() {
             />
 
             <FormInput
+              id="institution-website"
               label="Website"
               type="url"
               value={formData.website}
@@ -418,6 +417,7 @@ export default function InstitutionForm() {
             />
 
             <FormInput
+              id="institution-contact-person"
               label="Contact Person"
               value={formData.contactPerson}
               onChange={(e) =>
@@ -428,6 +428,7 @@ export default function InstitutionForm() {
             />
 
             <FormInput
+              id="institution-email"
               type="email"
               label="Email"
               value={formData.email}
@@ -437,18 +438,16 @@ export default function InstitutionForm() {
             />
 
             <FormInput
+              id="institution-password"
               type="password"
               label="Password"
               value={formData.password}
-
               onChange={handlePasswordChange}
-
               onCopy={(e) => e.preventDefault()}
               onPaste={(e) => e.preventDefault()}
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
-
 
             {/* Dynamic Password Validation - Only show if password field has content */}
             {formData.password && (
@@ -484,8 +483,8 @@ export default function InstitutionForm() {
                       </motion.div>
                       <span
                         className={`transition-colors duration-200 ${
-                          isValid 
-                            ? "text-green-600 dark:text-green-400" 
+                          isValid
+                            ? "text-green-600 dark:text-green-400"
                             : "text-red-500 dark:text-red-400"
                         }`}
                       >
@@ -497,8 +496,8 @@ export default function InstitutionForm() {
               </motion.div>
             )}
 
-
             <FormInput
+              id="institution-confirm-password"
               type="password"
               label="Confirm Password"
               value={formData.confirmPassword}
@@ -539,11 +538,17 @@ export default function InstitutionForm() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               type="submit"
-              disabled={loading || !allPasswordRulesSatisfied || (formData.password !== formData.confirmPassword)}
+              disabled={
+                loading ||
+                !allPasswordRulesSatisfied ||
+                formData.password !== formData.confirmPassword
+              }
               className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded-md shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 ${
-                loading || !allPasswordRulesSatisfied || (formData.password !== formData.confirmPassword)
-                  ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70'
-                  : 'bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white'
+                loading ||
+                !allPasswordRulesSatisfied ||
+                formData.password !== formData.confirmPassword
+                  ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70"
+                  : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white"
               }`}
             >
               {loading && <Loader2 className="animate-spin w-5 h-5" />}

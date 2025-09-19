@@ -24,7 +24,7 @@ export default function CompanyForm() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
   // Track password validation
   const [passwordRules, setPasswordRules] = useState({
     length: false,
@@ -53,7 +53,9 @@ export default function CompanyForm() {
   };
 
   // Check if all password rules are satisfied
-  const allPasswordRulesSatisfied = Object.values(passwordRules).every(rule => rule);
+  const allPasswordRulesSatisfied = Object.values(passwordRules).every(
+    (rule) => rule
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -158,6 +160,7 @@ export default function CompanyForm() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <FormInput
+              id="company-name"
               label="Company Name"
               value={formData.companyName}
               onChange={(e) =>
@@ -168,6 +171,7 @@ export default function CompanyForm() {
             />
 
             <FormInput
+              id="company-industry"
               label="Industry"
               value={formData.industry}
               onChange={(e) =>
@@ -178,6 +182,7 @@ export default function CompanyForm() {
             />
 
             <FormInput
+              id="company-website"
               label="Website"
               value={formData.website}
               onChange={(e) =>
@@ -188,6 +193,7 @@ export default function CompanyForm() {
             />
 
             <FormInput
+              id="company-hr-email"
               type="email"
               label="HR Contact Email"
               value={formData.hrEmail}
@@ -199,6 +205,7 @@ export default function CompanyForm() {
             />
 
             <FormInput
+              id="company-password"
               type="password"
               label="Password"
               value={formData.password}
@@ -211,9 +218,9 @@ export default function CompanyForm() {
 
             {/* Dynamic Password Validation - Only show if password field has content */}
             {formData.password && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
+                animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
                 className="mt-2 space-y-2"
@@ -229,9 +236,9 @@ export default function CompanyForm() {
                     >
                       <motion.div
                         initial={false}
-                        animate={{ 
+                        animate={{
                           scale: isValid ? 1.1 : 1,
-                          rotate: isValid ? 360 : 0 
+                          rotate: isValid ? 360 : 0,
                         }}
                         transition={{ duration: 0.3 }}
                       >
@@ -243,8 +250,8 @@ export default function CompanyForm() {
                       </motion.div>
                       <span
                         className={`transition-colors duration-200 ${
-                          isValid 
-                            ? "text-green-600 dark:text-green-400" 
+                          isValid
+                            ? "text-green-600 dark:text-green-400"
                             : "text-red-500 dark:text-red-400"
                         }`}
                       >
@@ -257,6 +264,7 @@ export default function CompanyForm() {
             )}
 
             <FormInput
+              id="company-confirm-password"
               type="password"
               label="Confirm Password"
               value={formData.confirmPassword}
@@ -297,11 +305,17 @@ export default function CompanyForm() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               type="submit"
-              disabled={loading || !allPasswordRulesSatisfied || (formData.password !== formData.confirmPassword)}
+              disabled={
+                loading ||
+                !allPasswordRulesSatisfied ||
+                formData.password !== formData.confirmPassword
+              }
               className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded-md shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all duration-200 ${
-                loading || !allPasswordRulesSatisfied || (formData.password !== formData.confirmPassword)
-                  ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70'
-                  : 'bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white'
+                loading ||
+                !allPasswordRulesSatisfied ||
+                formData.password !== formData.confirmPassword
+                  ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70"
+                  : "bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white"
               }`}
             >
               {loading && <Loader2 className="animate-spin w-5 h-5" />}
