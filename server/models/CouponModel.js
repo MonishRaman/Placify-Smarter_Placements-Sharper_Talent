@@ -74,7 +74,7 @@ const couponSchema = new mongoose.Schema(
 );
 
 // Add indexes for better performance
-couponSchema.index({ code: 1 });
+
 couponSchema.index({ isActive: 1 });
 couponSchema.index({ applicableRoles: 1 });
 couponSchema.index({ validFrom: 1, validUntil: 1 });
