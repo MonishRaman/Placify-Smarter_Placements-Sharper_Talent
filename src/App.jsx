@@ -15,7 +15,6 @@ import LandingPage from "./pages/LandingPage";
 import ProfilePage from "./pages/ProfilePage";
 import Resume from "./pages/Resume";
 import ResultsPage from "./pages/ResultsPage";
-
 import RoleSelectionPage from "./pages/RoleSelectionPage";
 import CompanyForm from "./pages/register/CompanyForm";
 import EmployeeForm from "./pages/register/EmployeeForm";
@@ -24,7 +23,6 @@ import StudentForm from "./pages/register/StudentForm";
 import StudentProgressDashboard from "./pages/Student/StudentProgressDashboard";
 import StudentProgressDetail from "./pages/Student/StudentProgressDetail";
 import ContactPage from "./pages/ContactPage";
-
 import { LoadingProvider } from "./context/LoadingContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
@@ -37,7 +35,7 @@ import InterviewInterface from "./pages/Student/InterviewInterface";
 import Jobs from "./pages/Student/Jobs";
 import ResumeATS from "./pages/Student/ResumeATS";
 import ResumeBuilder from "./pages/Student/ResumeBuilder";
-import Settings from "./pages/Student/Settings"; // ⚠️ student settings
+import Settings from "./pages/Student/Settings";
 
 import InstitutionDashboardLayout from "./layouts/InstitutionDashboardLayout";
 import InstitutionDashboard from "./pages/Institution/InstitutionDashboard";
@@ -54,15 +52,12 @@ import Applicants from "./pages/company/Applicants";
 import Collaboration from "./pages/company/Collaboration";
 import Employees from "./pages/company/Employees";
 import Insights from "./pages/company/Insights";
-import Performance from "./pages/company/performance"; // ⚠️ check filename case
-import PostJob from "./pages/company/postJob";         // ⚠️ check filename case
+import Performance from "./pages/company/performance";
+import PostJob from "./pages/company/postJob";
 import CompanyProfile from "./pages/company/CompanyProfile";
 import CompanyReports from "./pages/company/Reports";
 import MyCompanyJobs from "./pages/company/MyCompanyJobs";
 import EditJob from "./pages/company/EditJob";
-
-// ⚠️ CompanySettings component missing? currently uses Student Settings
-
 
 import EmployeeDashboardLayout from "./layouts/EmployeeDashboardLayout";
 import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
@@ -77,34 +72,30 @@ import InterviewPracticeZone from "./pages/employee/InterviewPracticeZone";
 import JobSwitchInsights from "./pages/employee/JobSwitchInsights";
 import EmployeeSettings from "./pages/employee/Settings";
 
-import { motion } from "framer-motion";
-import API from "./api/api";
-
+import API from "./api/api"; // (unused? keep if needed elsewhere)
 import UserJobs from "./pages/Student/UserJobs";
 import ScrollToTop from "./components/ScrollToTop";
 import useLenis from "./components/useLenis";
-
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-import PaymentGateway from './components/payment/PaymentGateway';
-import CursorTrail from "./components/CursorTrail"; // ⚠️ make sure file exists
+import PaymentGateway from "./components/payment/PaymentGateway";
+import CursorTrail from "./components/CursorTrail";
 
 const AppWrapper = () => {
   useLenis();
   const location = useLocation();
   const { cursorEnabled } = useCursor();
-
   const shouldHideFooter = location.pathname !== "/";
 
   return (
     <>
       <ScrollToTop />
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex flex-col justify-between">
-        <div className="pt-16">
+      {/* Removed extra top padding causing header gap */}
+      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-slate-900">
+        <div className="flex-1 flex flex-col min-h-0">
           <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<LandingPage />} /> {/* ✅ moved before wildcard */}
+            {/* Public */}
+            <Route path="/" element={<LandingPage />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/register" element={<RoleSelectionPage />} />
             <Route path="/resume" element={<Resume />} />
@@ -127,11 +118,9 @@ const AppWrapper = () => {
               }
             >
               <Route index element={<InstitutionDashboard />} />
-
-              <Route path="profile" element={<ProfilePage />} />
+              <Route path="profile" element={<InstitutionProfile />} />
               <Route path="student-performance" element={<StudentPerformance />} />
               <Route path="department-performance" element={<DepartmentPerformance />} />
-
               <Route path="reports" element={<Reports />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="settings" element={<InstitutionSettings />} />
@@ -152,14 +141,12 @@ const AppWrapper = () => {
               <Route path="performance" element={<Performance />} />
               <Route path="post-job" element={<PostJob />} />
               <Route path="applicants" element={<Applicants />} />
-              <Route path="my-jobs" element={<MyCompanyJobs />} /> {/* ✅ fixed path */}
-               <Route path="/dashboard/company/jobs/:id/edit" element={<EditJob />} />
-
+              <Route path="my-jobs" element={<MyCompanyJobs />} />
+              <Route path="jobs/:id/edit" element={<EditJob />} />
               <Route path="insights" element={<Insights />} />
               <Route path="collaboration" element={<Collaboration />} />
               <Route path="reports" element={<CompanyReports />} />
-              <Route path="settings" element={<Settings />} /> 
-              {/* ⚠️ currently using Student Settings — consider creating CompanySettings.jsx */}
+              <Route path="settings" element={<Settings />} />
             </Route>
 
             {/* Employee Dashboard */}
@@ -195,7 +182,14 @@ const AppWrapper = () => {
             />
 
             {/* Student Dashboard */}
-            <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route index element={<Dashboard />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="resume-builder" element={<ResumeBuilder />} />
@@ -212,8 +206,8 @@ const AppWrapper = () => {
               <Route path="progress/:studentId" element={<StudentProgressDetail />} />
             </Route>
 
-            {/* Wildcard route should always be last */}
-            <Route path="*" element={<Navigate to="/" replace />} /> {/* ✅ moved down */}
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
 

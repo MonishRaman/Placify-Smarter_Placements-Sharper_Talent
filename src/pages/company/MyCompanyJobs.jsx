@@ -116,16 +116,6 @@ const MyCompanyJobs = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900 p-6 md:p-8">
       <div className="max-w-5xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2 text-gray-900 dark:text-white">
-            <Briefcase className="text-purple-600 dark:text-purple-400" />
-            My Jobs
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-slate-400 mt-1">
-            Company ke jobs. Update pe click karke edit karein.
-          </p>
-        </header>
-
         {/* Filters */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8 border border-gray-100 dark:border-gray-700">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
