@@ -140,8 +140,9 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
         </div>
 
         {/* Search Bar */}
-        <div
-          className={`transition-all duration-300 overflow-hidden ${
+        {isExpanded && (
+                  <div
+          className={`transition-all duration-300  ${
             isExpanded ? "p-4" : "p-0 h-0"
           }`}
         >
@@ -155,10 +156,14 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
           </div>
         </div>
 
+        )}
+
+
         {/* Main Navigation */}
-        <nav className="flex-1 overflow-y-auto px-4">
+        <nav className="flex-1 px-4 ">
           {menuItems.map(({ label, icon: Icon, path }) => (
             <div key={path} className="relative">
+              
               <NavLink
                 to={path}
                 end={path === "/dashboard"}
