@@ -12,7 +12,7 @@ Welcome to the official repository for **Placify**, a project by **Innovision Te
 
 **Tagline:** _Unboxing New Ideas_
 
-**Vision:** _"Reinventing campus placement through AI-powered intelligent interviewing."_
+**Vision:** _"Reinventing campus placement through AI-powered intelligent interviewing..."_
 
 ---
 
