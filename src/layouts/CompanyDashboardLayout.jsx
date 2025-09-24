@@ -4,6 +4,7 @@ import CompanySidebar from "../components/CompanySidebar";
 import { User, LogOut, ChevronDown, Menu } from "lucide-react";
 import apiClient from "../api/apiClient";
 import CursorToggle from "../components/CursorToggle";
+import { Toaster } from "react-hot-toast";
 
 const CompanyDashboardLayout = () => {
   const [sidebarExpanded, setSidebarExpanded] = useState(window.innerWidth >= 1024);
@@ -77,6 +78,25 @@ const CompanyDashboardLayout = () => {
 
   return (
     <>
+    <Toaster 
+        position="top-center" 
+        reverseOrder={false}
+        toastOptions={{
+          className: '',
+          duration: 5000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            theme: {
+              primary: 'green',
+              secondary: 'black',
+            },
+          },
+        }}
+      />
       <style jsx global>{`
         .custom-scrollbar {
           scrollbar-width: thin;

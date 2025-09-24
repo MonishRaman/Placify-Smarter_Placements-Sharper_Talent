@@ -3,8 +3,6 @@ import {
   Users, Building2, TrendingUp, MapPin, Mail, Calendar
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import apiClient from '../../api/apiClient';
 
 const companyData = {
@@ -24,7 +22,7 @@ const companyData = {
   ]
 };
 
-const notify = (msg) => toast.success(msg);
+//const notify = (msg) => toast.success(msg);
 
 const CompanyDashboard = () => {
   const [userData, setUserData] = useState(null);
@@ -153,17 +151,7 @@ const CompanyDashboard = () => {
         </div>
       </main>
 
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar
-        newestOnTop
-        closeOnClick
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+      
     </motion.div>
   );
 };
