@@ -1,40 +1,58 @@
-import Student from '../models/Student.js';
-import Company from '../models/Company.js';
+import Student from "../models/Student.js";
+import Company from "../models/Company.js";
+
+// Utility: Standard error handler
+const handleError = (res, error, message) => {
+  console.error(message, error);
+  return res.status(500).json({
+    success: false,
+    message,
+    error: process.env.NODE_ENV === "development" ? error.message : undefined,
+  });
+};
 
 export const getInstitutionDashboard = async (req, res) => {
   try {
-    const institutionId = req.user.id; // From token
+    const institutionId = req.user.id;
 
-    // Get all students for this institution
-    const students = await Student.find({ institution: institutionId });
-
+    // Fetch students for this institution
+    const students = await Student.find({ institution: institutionId }).lean();
     const totalStudents = students.length;
-    const placedStudents = students.filter(s => s.placementStatus === 'placed').length;
-    const placementRate = totalStudents ? ((placedStudents / totalStudents) * 100).toFixed(2) : 0;
 
-    const performanceData = students.map((s) => ({
-      name: s.name,
-      score: s.performanceScore || 0,
+    const placedStudents = students.filter(
+      (s) => s.placementStatus === "placed"
+    ).length;
+
+    const placementRate =
+      totalStudents > 0
+        ? ((placedStudents / totalStudents) * 100).toFixed(2)
+        : 0;
+
+    const performanceData = students.map(({ name, performanceScore }) => ({
+      name,
+      score: performanceScore || 0,
     }));
 
-    // Optional: Fetch companies who hired students from this institution
-    const companies = await Company.find({ "hiredStudents.institution": institutionId });
+    // Fetch companies that hired students from this institution
+    const companies = await Company.find({
+      "hiredStudents.institution": institutionId,
+    }).lean();
 
-    const companyData = companies.map((c) => ({
-      name: c.name,
-      role: c.role,
-      location: c.location,
+    const companyData = companies.map(({ name, role, location }) => ({
+      name,
+      role,
+      location,
     }));
 
-    res.json({
+    return res.status(200).json({
+      success: true,
       totalStudents,
       placedStudents,
       placementRate,
       performanceData,
       companyData,
     });
-  } catch (err) {
-    console.error("Dashboard error:", err.message);
-    res.status(500).json({ message: "Server error while fetching dashboard" });
+  } catch (error) {
+    return handleError(res, error, "Error fetching institution dashboard");
   }
 };
