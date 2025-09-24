@@ -2,40 +2,24 @@ import Settings from "../models/Settings.js";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 
-// Helper function to get or create settings
+/* -------------------- Helper Functions -------------------- */
+
+// Get or create settings for a user
 const getOrCreateSettings = async (userId) => {
   let settings = await Settings.findOne({ userId });
 
   if (!settings) {
     settings = await Settings.create({
       userId,
-      notifications: {
-        emailNotifications: true,
-        smsNotifications: false,
-        placementUpdates: true,
-        studentRegistrations: true,
-        reportGeneration: false,
-        systemMaintenance: true,
-        emailConfig: {
-          smtpServer: "",
-          smtpPort: "",
-          emailUsername: "",
-          emailPassword: "",
-        },
-      },
-      integrations: {
-        resumeParserApi: "",
-        thirdPartyApiKey: "",
-        smsGateway: "twilio",
-        emailProvider: "smtp",
-      },
+      notifications: { ...defaultNotifications },
+      integrations: { ...defaultIntegrations },
     });
   }
 
   return settings;
 };
 
-// Helper function to encrypt sensitive data
+// Encrypt sensitive fields
 const encryptSensitiveData = async (data, fieldsToEncrypt) => {
   const encryptedData = { ...data };
 
@@ -48,7 +32,8 @@ const encryptSensitiveData = async (data, fieldsToEncrypt) => {
   return encryptedData;
 };
 
-// Default notification settings
+/* -------------------- Default Settings -------------------- */
+
 const defaultNotifications = {
   emailNotifications: true,
   smsNotifications: false,
@@ -64,7 +49,6 @@ const defaultNotifications = {
   },
 };
 
-// Default integration settings
 const defaultIntegrations = {
   resumeParserApi: "",
   thirdPartyApiKey: "",
@@ -72,24 +56,19 @@ const defaultIntegrations = {
   emailProvider: "smtp",
 };
 
-// Get all settings for a user
+/* -------------------- Controller Functions -------------------- */
+
+// Get user profile and settings
 export const getSettings = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const { userId } = req.user;
 
-    // Get user profile data
     const user = await User.findById(userId).select("-password");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Get or create settings
     const settings = await getOrCreateSettings(userId);
 
-    res.json({
-      profile: user,
-      settings,
-    });
+    res.json({ profile: user, settings });
   } catch (error) {
     console.error("Get settings error:", error);
     res.status(500).json({ message: "Server error" });
@@ -99,17 +78,12 @@ export const getSettings = async (req, res) => {
 // Update notification settings
 export const updateNotifications = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const { userId } = req.user;
     const notificationData = req.body;
 
-    // Encrypt email password if provided
-    const fieldsToEncrypt = [];
-    if (
-      notificationData.emailConfig &&
-      notificationData.emailConfig.emailPassword
-    ) {
-      fieldsToEncrypt.push("emailConfig.emailPassword");
-    }
+    const fieldsToEncrypt = notificationData?.emailConfig?.emailPassword
+      ? ["emailConfig.emailPassword"]
+      : [];
 
     const encryptedNotificationData = await encryptSensitiveData(
       notificationData,
@@ -118,7 +92,6 @@ export const updateNotifications = async (req, res) => {
 
     const settings = await getOrCreateSettings(userId);
 
-    // Merge existing notifications with new data
     settings.notifications = {
       ...settings.notifications.toObject(),
       ...encryptedNotificationData,
@@ -139,10 +112,9 @@ export const updateNotifications = async (req, res) => {
 // Update integration settings
 export const updateIntegrations = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const { userId } = req.user;
     const integrationData = req.body;
 
-    // Encrypt API keys
     const fieldsToEncrypt = ["resumeParserApi", "thirdPartyApiKey"];
     const encryptedIntegrationData = await encryptSensitiveData(
       integrationData,
@@ -151,7 +123,6 @@ export const updateIntegrations = async (req, res) => {
 
     const settings = await getOrCreateSettings(userId);
 
-    // Merge existing integrations with new data
     settings.integrations = {
       ...settings.integrations.toObject(),
       ...encryptedIntegrationData,
@@ -169,26 +140,17 @@ export const updateIntegrations = async (req, res) => {
   }
 };
 
-// Upload logo
+// Upload profile logo
 export const uploadLogo = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const { userId } = req.user;
 
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
-    // Update user profile with new logo path
     const logoPath = `/uploads/${req.file.filename}`;
+    await User.findByIdAndUpdate(userId, { profileImage: logoPath });
 
-    await User.findByIdAndUpdate(userId, {
-      profileImage: logoPath,
-    });
-
-    res.json({
-      message: "Logo uploaded successfully",
-      logoPath,
-    });
+    res.json({ message: "Logo uploaded successfully", logoPath });
   } catch (error) {
     console.error("Upload logo error:", error);
     res.status(500).json({ message: "Server error" });
