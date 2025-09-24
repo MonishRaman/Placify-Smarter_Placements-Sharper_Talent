@@ -1,7 +1,13 @@
-
 import Job from "../models/Jobs.js";
 
+/* -------------------- Helpers -------------------- */
 
+// Escape regex for safe search
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/* -------------------- Controllers -------------------- */
+
+// Create a new job
 export const createJob = async (req, res) => {
   try {
     const {
@@ -12,7 +18,7 @@ export const createJob = async (req, res) => {
       salary,
       description,
       requirements,
-      responsibilities
+      responsibilities,
     } = req.body;
 
     if (!title || !type || !domain || !location) {
@@ -24,7 +30,7 @@ export const createJob = async (req, res) => {
 
     const newJob = new Job({
       title,
-      company: req.user.userId, // <-- automatically assign from logged-in user
+      company: req.user.userId, // auto-assign logged-in company
       type,
       domain,
       location,
@@ -41,7 +47,6 @@ export const createJob = async (req, res) => {
       message: "Job created successfully!",
       job: savedJob,
     });
-
   } catch (error) {
     console.error("Error creating job:", error);
     res.status(500).json({
@@ -51,20 +56,14 @@ export const createJob = async (req, res) => {
   }
 };
 
-
-
+// Get open jobs with pagination
 export const getJobs = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-
-    // Skip calculate
     const skip = (page - 1) * limit;
 
-    // Total jobs count 
     const totalJobs = await Job.countDocuments({ status: "Open" });
-
-    // Jobs fetch with pagination
     const jobs = await Job.find({ status: "Open" })
       .populate({
         path: "company",
@@ -73,7 +72,7 @@ export const getJobs = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-    if (!jobs || jobs.length === 0) {
+    if (!jobs.length) {
       return res.status(404).json({
         success: false,
         message: "No open jobs found.",
@@ -98,14 +97,10 @@ export const getJobs = async (req, res) => {
   }
 };
 
-
-
-// PUT /api/jobs/:id - Update job (except company)
+// Update job (except company field)
 export const updateJob = async (req, res) => {
   try {
-    const jobId = req.params.id;
-
-    // destructure request body
+    const { id: jobId } = req.params;
     const {
       title,
       type,
@@ -118,7 +113,6 @@ export const updateJob = async (req, res) => {
       status,
     } = req.body;
 
-    // build update object (without company)
     const updateData = {
       title,
       type,
@@ -130,8 +124,6 @@ export const updateJob = async (req, res) => {
       responsibilities,
       status,
     };
-
-    // filter out undefined fields
     Object.keys(updateData).forEach(
       (key) => updateData[key] === undefined && delete updateData[key]
     );
@@ -165,11 +157,12 @@ export const updateJob = async (req, res) => {
     });
   }
 };
+
+// Delete job
 export const deleteJob = async (req, res) => {
   try {
-    const jobId = req.params.id;
-    const userId = req.user.userId;
-    const userRole = req.user.role; // e.g., 'company', 'admin'
+    const { id: jobId } = req.params;
+    const { userId, role } = req.user;
 
     const job = await Job.findById(jobId);
     if (!job) {
@@ -179,11 +172,7 @@ export const deleteJob = async (req, res) => {
       });
     }
 
-    // Only creator company or admin can delete
-    if (
-      job.company.toString() !== userId.toString() &&
-      userRole !== "admin"
-    ) {
+    if (job.company.toString() !== userId.toString() && role !== "admin") {
       return res.status(403).json({
         success: false,
         message: "Unauthorized. Only creator or admin can delete.",
@@ -192,13 +181,13 @@ export const deleteJob = async (req, res) => {
 
     await job.deleteOne();
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Job deleted successfully",
     });
   } catch (error) {
     console.error("Error deleting job:", error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: "Server Error: Could not delete job",
       error: error.message,
@@ -206,14 +195,14 @@ export const deleteJob = async (req, res) => {
   }
 };
 
+// Apply for a job (student only)
 export const applyForJob = async (req, res) => {
   try {
-    const jobId = req.params.id;
-    const userId = req.user.userId;
-    const userRole = req.user.role; // e.g., 'student'
-    const { resume } = req.body; // resume: string (resumeId or link)
+    const { id: jobId } = req.params;
+    const { userId, role } = req.user;
+    const { resume } = req.body;
 
-    if (userRole !== "student") {
+    if (role !== "student") {
       return res.status(403).json({
         success: false,
         message: "Only students can apply for jobs.",
@@ -228,7 +217,6 @@ export const applyForJob = async (req, res) => {
       });
     }
 
-    // Prevent duplicate application
     const alreadyApplied = job.applicants.some(
       (app) => app.user.toString() === userId.toString()
     );
@@ -239,22 +227,17 @@ export const applyForJob = async (req, res) => {
       });
     }
 
-    // Add applicant
-    job.applicants.push({
-      user: userId,
-      resume: resume,
-      appliedAt: new Date(),
-    });
+    job.applicants.push({ user: userId, resume, appliedAt: new Date() });
     await job.save();
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Applied for job successfully.",
       jobId: job._id,
     });
   } catch (error) {
     console.error("Error applying for job:", error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: "Server Error: Could not apply for job",
       error: error.message,
@@ -262,50 +245,33 @@ export const applyForJob = async (req, res) => {
   }
 };
 
-
-// GET /api/jobs/applied?page=1&limit=10  (STUDENT ONLY)
+// Get applied jobs (student only)
 export const getAppliedJobs = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const { userId } = req.user;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    // Total count for pagination
     const totalJobs = await Job.countDocuments({ "applicants.user": userId });
-
     const jobs = await Job.find({ "applicants.user": userId })
-      .populate({
-        path: "company",
-        select: "name website profileImage", // सिर्फ ज़रूरी fields
-      })
+      .populate({ path: "company", select: "name website profileImage" })
       .skip(skip)
       .limit(limit);
 
-    if (!jobs || jobs.length === 0) {
+    if (!jobs.length) {
       return res.status(404).json({
         success: false,
         message: "No applied jobs found.",
       });
     }
 
-    // student-specific data निकालना
     const formattedJobs = jobs.map((job) => {
       const applicant = job.applicants.find(
         (app) => app.user.toString() === userId.toString()
       );
-
       return {
-        _id: job._id,
-        title: job.title,
-        type: job.type,
-        domain: job.domain,
-        location: job.location,
-        salary: job.salary,
-        description: job.description,         
-        requirements: job.requirements,       
-        responsibilities: job.responsibilities, 
-        company: job.company,   
+        ...job.toObject(),
         appliedAt: applicant?.appliedAt,
         resume: applicant?.resume,
       };
@@ -321,7 +287,7 @@ export const getAppliedJobs = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching applied jobs:", error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: "Server Error: Could not fetch applied jobs",
       error: error.message,
@@ -329,23 +295,17 @@ export const getAppliedJobs = async (req, res) => {
   }
 };
 
-
-
-// DELETE /api/jobs/:id/withdraw  (STUDENT ONLY)
+// Withdraw application (student only)
 export const withdrawApplication = async (req, res) => {
   try {
-    const jobId = req.params.id;
-    const userId = req.user.userId;
+    const { id: jobId } = req.params;
+    const { userId } = req.user;
 
     const job = await Job.findById(jobId);
     if (!job) {
-      return res.status(404).json({
-        success: false,
-        message: "Job not found",
-      });
+      return res.status(404).json({ success: false, message: "Job not found" });
     }
 
-    // Check if student applied before
     const alreadyApplied = job.applicants.some(
       (app) => app.user.toString() === userId.toString()
     );
@@ -356,20 +316,19 @@ export const withdrawApplication = async (req, res) => {
       });
     }
 
-    // Remove student from applicants array
     job.applicants = job.applicants.filter(
       (app) => app.user.toString() !== userId.toString()
     );
     await job.save();
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Application withdrawn successfully.",
       jobId: job._id,
     });
   } catch (error) {
     console.error("Error withdrawing application:", error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: "Server Error: Could not withdraw application",
       error: error.message,
@@ -377,8 +336,7 @@ export const withdrawApplication = async (req, res) => {
   }
 };
 
-// ...existing code...
-// Logged-in company can see ONLY its own posted jobs with optional filters (title, description, date range)
+// Get company jobs (with filters & pagination)
 export const getCompanyJobs = async (req, res) => {
   try {
     const companyId = req.user.userId;
@@ -386,25 +344,13 @@ export const getCompanyJobs = async (req, res) => {
     const limit = Math.min(parseInt(req.query.limit) || 10, 50);
     const skip = (page - 1) * limit;
 
-    const {
-      status,
-      title,
-      description,
-      fromDate,
-      toDate,
-    } = req.query;
-
-    const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const { status, title, description, fromDate, toDate } = req.query;
 
     const query = { company: companyId };
     if (status) query.status = status;
-
-    if (title) {
-      query.title = new RegExp(escapeRegex(title.trim()), "i");
-    }
-    if (description) {
+    if (title) query.title = new RegExp(escapeRegex(title.trim()), "i");
+    if (description)
       query.description = new RegExp(escapeRegex(description.trim()), "i");
-    }
 
     if (fromDate || toDate) {
       query.createdAt = {};
@@ -418,17 +364,13 @@ export const getCompanyJobs = async (req, res) => {
 
     const [totalJobs, jobs] = await Promise.all([
       Job.countDocuments(query),
-      Job.find(query)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .populate({
-          path: "company",
-          select: "name email industry website employeeCount profileImage",
-        })
+      Job.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).populate({
+        path: "company",
+        select: "name email industry website employeeCount profileImage",
+      }),
     ]);
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       filters: {
         status: status || null,
@@ -445,13 +387,10 @@ export const getCompanyJobs = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching company jobs:", error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: "Server Error: Could not fetch company jobs",
       error: error.message,
     });
   }
 };
-
-
-
