@@ -185,7 +185,7 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
         )}
 
         {/* Menu - With scrollbar */}
-        <nav className="flex-1 overflow-y-auto px-3 pt-3 pb-4 sidebar-scrollbar">
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden pt-3 pb-4 sidebar-scrollbar">
           {filteredItems.map(({ label, icon: Icon, path, onClick, type }) => {
             const content = (
               <>
@@ -198,13 +198,13 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
               </>
             );
             return (
-              <div key={label} className="relative group">
+              <div key={label} className="relative group px-3">
                 {type === "link" ? (
                   <NavLink
                     to={path}
                     end={path === "/dashboard/company"}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors ${
+                      `flex items-center gap-3 py-2.5 rounded-lg mb-1 transition-colors ${isExpanded ? 'px-3' : 'justify-center'} ${
                         isActive
                           ? "bg-blue-600 dark:bg-blue-500 text-white"
                           : "text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
@@ -220,7 +220,7 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
                       onClick && onClick();
                       if (isMobile) setIsExpanded(false);
                     }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors"
+                    className={`w-full flex items-center gap-3 py-2.5 rounded-lg mb-1 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors ${isExpanded ? 'px-3' : 'justify-center'}`}
                   >
                     {content}
                   </button>
