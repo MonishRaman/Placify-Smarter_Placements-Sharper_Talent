@@ -9,7 +9,7 @@ import {
   Phone
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import Footer from '../components/Footer'
 const ContactPage = () => {
   const navigate = useNavigate();
 
@@ -270,6 +270,7 @@ const ContactPage = () => {
           </motion.div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
