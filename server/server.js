@@ -23,6 +23,11 @@ import questionsRoutes from "./routes/questions.js";
 import resumeRoutes from "./routes/resume.js";
 import resumeScoreRoutes from "./routes/resumeScore.js";
 import settingsRoutes from "./routes/settingsI.js";
+
+// Dry-Run routes for code validation
+import cDryRunRoutes from "./routes/cDryRun.js";
+import javaDryRunRoutes from "./routes/javaDryRun.js";
+import dryRunRoutes from "./routes/dryrun.js";
 import studentRoutes from "./routes/studentRoutes.js";
 
 // ====== Path Setup ======
@@ -60,6 +65,11 @@ app.use("/api/jobs", companyRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/questions", questionsRoutes);
 app.use("/api/settings", settingsRoutes);
+
+// Dry-Run endpoints for code validation (Python, Java, C/C++)
+app.use("/api", dryRunRoutes); // Python dry-run: POST /api/dryrun
+app.use("/api", javaDryRunRoutes); // Java dry-run: POST /api/java-dry-run
+app.use("/api/c-dry-run", cDryRunRoutes); // C/C++ dry-run: POST /api/c-dry-run
 
 // ====== Default Routes ======
 app.get("/", (req, res) => {
