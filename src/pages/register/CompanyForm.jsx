@@ -17,7 +17,7 @@ export default function CompanyForm() {
     companyName: "",
     industry: "",
     website: "",
-    hrEmail: "",
+    email: "",
     password: "",
     confirmPassword: "",
     role: "company",
@@ -67,7 +67,7 @@ export default function CompanyForm() {
       !formData.companyName ||
       !formData.industry ||
       !formData.website ||
-      !formData.hrEmail ||
+      !formData.email ||
       !formData.password ||
       !formData.confirmPassword
     ) {
@@ -77,7 +77,7 @@ export default function CompanyForm() {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.hrEmail)) {
+    if (!emailRegex.test(formData.email)) {
       setError("Please enter a valid email address for the HR contact");
       setLoading(false);
       return;
@@ -102,15 +102,22 @@ export default function CompanyForm() {
       setTimeout(() => navigate("/auth"), 2000);
     } catch (err) {
       if (err.response) {
-        setError(
-          err.response?.data?.message || `Server error: ${err.response.status}`
-        );
-        toast.error(
-          err.response?.data?.message || `Server error: ${err.response.status}`
-        );
+        // Backend responded with an error
+        let errorMsg =
+          err.response?.data?.message || `Server error: ${err.response.status}`;
+        let errorTitle = "Server Error";
+        if (errorMsg.includes("email") && errorMsg.includes("required")) {
+          errorTitle = "Missing Email";
+        } else if (errorMsg.includes("role") && errorMsg.includes("enum")) {
+          errorTitle = "Invalid Role";
+        } else if (errorMsg.includes("validation failed")) {
+          errorTitle = "Validation Error";
+        }
+        setError(`${errorTitle}: ${errorMsg}`);
+        toast.error(`${errorTitle}: ${errorMsg}`);
       } else if (err.request) {
-        setError("No response from server. Please check your connection.");
-        toast.error("No response from server. Please check your connection.");
+        setError("Backend not connected. Please check your connection.");
+        toast.error("Backend not connected. Please check your connection.");
       } else {
         setError(`Error: ${err.message}`);
         toast.error(`Error: ${err.message}`);
@@ -196,9 +203,9 @@ export default function CompanyForm() {
               id="company-hr-email"
               type="email"
               label="HR Contact Email"
-              value={formData.hrEmail}
+              value={formData.email}
               onChange={(e) =>
-                setFormData({ ...formData, hrEmail: e.target.value })
+                setFormData({ ...formData, email: e.target.value })
               }
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
@@ -277,28 +284,31 @@ export default function CompanyForm() {
             />
 
             {/* Password Mismatch Indicator */}
-            {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
-              >
-                <XCircle className="w-4 h-4" />
-                <span>Passwords do not match</span>
-              </motion.div>
-            )}
+            {formData.confirmPassword &&
+              formData.password !== formData.confirmPassword && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
+                >
+                  <XCircle className="w-4 h-4" />
+                  <span>Passwords do not match</span>
+                </motion.div>
+              )}
 
             {/* Password Match Indicator */}
-            {formData.confirmPassword && formData.password === formData.confirmPassword && formData.password.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
-              >
-                <CheckCircle className="w-4 h-4" />
-                <span>Passwords match</span>
-              </motion.div>
-            )}
+            {formData.confirmPassword &&
+              formData.password === formData.confirmPassword &&
+              formData.password.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Passwords match</span>
+                </motion.div>
+              )}
 
             {/* Submit */}
             <motion.button
