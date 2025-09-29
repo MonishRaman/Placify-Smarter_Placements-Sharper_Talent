@@ -83,7 +83,6 @@ export default function EmployeeForm() {
       return;
     }
 
-    // Check if all password rules are satisfied
     if (!allPasswordRulesSatisfied) {
       setError("Password must meet all security requirements");
       setLoading(false);
@@ -106,8 +105,6 @@ export default function EmployeeForm() {
       console.error("Registration error:", err);
 
       if (err.response) {
-        console.error("Error response data:", err.response.data);
-        console.error("Error response status:", err.response.status);
         setError(
           err.response?.data?.message || `Server error: ${err.response.status}`
         );
@@ -115,11 +112,9 @@ export default function EmployeeForm() {
           err.response?.data?.message || `Server error: ${err.response.status}`
         );
       } else if (err.request) {
-        console.error("No response received:", err.request);
         setError("No response from server. Please check your connection.");
         toast.error("No response from server. Please check your connection.");
       } else {
-        console.error("Error setting up request:", err.message);
         setError(`Error: ${err.message}`);
         toast.error(`Error: ${err.message}`);
       }
@@ -136,8 +131,38 @@ export default function EmployeeForm() {
     { label: "One special character", key: "special" },
   ];
 
+  // 🌟 Bubble particles setup
+  const particleCount = 20;
+  const particles = Array.from({ length: particleCount }, (_, i) => ({
+    size: Math.random() * 15 + 10,
+    left: Math.random() * 100,
+    delay: Math.random() * 5,
+    duration: Math.random() * 10 + 5,
+  }));
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+    <div className="min-h-screen relative overflow-hidden bg-gray-50 dark:bg-slate-900">
+      {/* Floating Bubbles */}
+      {particles.map((p, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-white/20 dark:bg-white/10"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: `${p.left}%`,
+            bottom: `-${p.size}px`,
+          }}
+          animate={{ y: ["0%", "-120vh"] }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: "linear",
+          }}
+        />
+      ))}
+
       <Header />
       <ToastContainer
         position="top-center"
@@ -156,7 +181,7 @@ export default function EmployeeForm() {
         />
       </div>
       <div className="py-12 px-4">
-        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg dark:bg-slate-800">
+        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg dark:bg-slate-800 relative z-10">
           {error && (
             <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md border border-red-200 dark:bg-red-900/50 dark:text-red-300 dark:border-red-500/50">
               {error}
@@ -216,7 +241,7 @@ export default function EmployeeForm() {
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
-            {/* Dynamic Password Validation - Only show if password field has content */}
+            {/* Dynamic Password Validation */}
             {formData.password && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -276,39 +301,47 @@ export default function EmployeeForm() {
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
-            {/* Password Mismatch Indicator */}
-            {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
-              >
-                <XCircle className="w-4 h-4" />
-                <span>Passwords do not match</span>
-              </motion.div>
-            )}
+            {/* Password Match Indicators */}
+            {formData.confirmPassword &&
+              formData.password !== formData.confirmPassword && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
+                >
+                  <XCircle className="w-4 h-4" />
+                  <span>Passwords do not match</span>
+                </motion.div>
+              )}
 
-            {/* Password Match Indicator */}
-            {formData.confirmPassword && formData.password === formData.confirmPassword && formData.password.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
-              >
-                <CheckCircle className="w-4 h-4" />
-                <span>Passwords match</span>
-              </motion.div>
-            )}
+            {formData.confirmPassword &&
+              formData.password === formData.confirmPassword &&
+              formData.password.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Passwords match</span>
+                </motion.div>
+              )}
 
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               type="submit"
-              disabled={loading || !allPasswordRulesSatisfied || (formData.password !== formData.confirmPassword)}
+              disabled={
+                loading ||
+                !allPasswordRulesSatisfied ||
+                formData.password !== formData.confirmPassword
+              }
               className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded-md transition duration-200 ${
-                loading || !allPasswordRulesSatisfied || (formData.password !== formData.confirmPassword)
-                  ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70'
-                  : 'bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-500 text-white'
+                loading ||
+                !allPasswordRulesSatisfied ||
+                formData.password !== formData.confirmPassword
+                  ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70"
+                  : "bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-500 text-white"
               }`}
             >
               {loading && <Loader2 className="animate-spin w-5 h-5" />}
