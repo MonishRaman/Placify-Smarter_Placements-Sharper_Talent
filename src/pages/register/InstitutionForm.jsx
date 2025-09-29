@@ -364,7 +364,6 @@ export default function InstitutionForm() {
     { label: "One special character", key: "special" },
   ];
 
-  // Generate particles
   const particleCount = 20;
   const particles = Array.from({ length: particleCount }, (_, i) => ({
     size: Math.random() * 15 + 10,
@@ -374,7 +373,28 @@ export default function InstitutionForm() {
   }));
 
   return (
-    <div className="min-h-screen relative bg-gradient-radial from-blue-900 via-blue-800 to-green-900 overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Particles */}
+      {particles.map((p, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-white/20 dark:bg-white/10"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: `${p.left}%`,
+            bottom: `-${p.size}px`,
+          }}
+          animate={{ y: ["0%", "-120vh"] }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: "linear",
+          }}
+        />
+      ))}
+
       <Header />
       <ToastContainer
         position="top-center"
