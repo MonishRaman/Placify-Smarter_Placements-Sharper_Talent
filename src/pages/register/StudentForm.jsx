@@ -1,7 +1,7 @@
 import { GraduationCap, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion"; // Animation library
+import { motion } from "framer-motion";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormInput from "../../components/FormInput";
@@ -24,8 +24,6 @@ export default function StudentForm() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // Track password validation
   const [passwordRules, setPasswordRules] = useState({
     length: false,
     upper: false,
@@ -52,7 +50,6 @@ export default function StudentForm() {
     validatePassword(newPassword);
   };
 
-  // Check if all password rules are satisfied
   const allPasswordRulesSatisfied = Object.values(passwordRules).every(
     (rule) => rule
   );
@@ -62,7 +59,6 @@ export default function StudentForm() {
     setError("");
     setLoading(true);
 
-    // Validation
     if (
       !formData.fullName ||
       !formData.university ||
@@ -83,7 +79,6 @@ export default function StudentForm() {
       return;
     }
 
-    // Check if all password rules are satisfied
     if (!allPasswordRulesSatisfied) {
       setError("Password must meet all security requirements");
       setLoading(false);
@@ -97,7 +92,6 @@ export default function StudentForm() {
     }
 
     try {
-      console.log("Sending registration request with data:", formData);
       await apiClient.post("/auth/register/student", formData);
       toast.success("Registration successful! Please login.");
       setTimeout(() => navigate("/auth"), 2000);
@@ -129,8 +123,38 @@ export default function StudentForm() {
     { label: "One special character", key: "special" },
   ];
 
+  // Generate particles
+  const particleCount = 20;
+  const particles = Array.from({ length: particleCount }, (_, i) => ({
+    size: Math.random() * 15 + 10,
+    left: Math.random() * 100,
+    delay: Math.random() * 5,
+    duration: Math.random() * 10 + 5,
+  }));
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen relative overflow-hidden ">
+      {/* Particles */}
+      {particles.map((p, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-white/20 dark:bg-white/10"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: `${p.left}%`,
+            bottom: `-${p.size}px`,
+          }}
+          animate={{ y: ["0%", "-120vh"] }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: "linear",
+          }}
+        />
+      ))}
+
       {/* Top header */}
       <Header />
 
@@ -289,28 +313,31 @@ export default function StudentForm() {
             />
 
             {/* Password Mismatch Indicator */}
-            {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
-              >
-                <XCircle className="w-4 h-4" />
-                <span>Passwords do not match</span>
-              </motion.div>
-            )}
+            {formData.confirmPassword &&
+              formData.password !== formData.confirmPassword && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
+                >
+                  <XCircle className="w-4 h-4" />
+                  <span>Passwords do not match</span>
+                </motion.div>
+              )}
 
             {/* Password Match Indicator */}
-            {formData.confirmPassword && formData.password === formData.confirmPassword && formData.password.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
-              >
-                <CheckCircle className="w-4 h-4" />
-                <span>Passwords match</span>
-              </motion.div>
-            )}
+            {formData.confirmPassword &&
+              formData.password === formData.confirmPassword &&
+              formData.password.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Passwords match</span>
+                </motion.div>
+              )}
 
             {/* Submit Button */}
             <motion.button
