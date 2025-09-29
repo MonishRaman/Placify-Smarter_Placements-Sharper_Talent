@@ -2,6 +2,7 @@ import { Building2, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { CheckCircle, XCircle } from "lucide-react";
@@ -33,6 +34,11 @@ export default function CompanyForm() {
     number: false,
     special: false,
   });
+
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+
 
   const validatePassword = (password) => {
     const rules = {

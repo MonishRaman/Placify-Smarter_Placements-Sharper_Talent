@@ -1,5 +1,6 @@
 import { Briefcase, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ToastContainer, toast } from "react-toastify";
@@ -33,6 +34,11 @@ export default function EmployeeForm() {
     number: false,
     special: false,
   });
+
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+
 
   const validatePassword = (password) => {
     const rules = {
