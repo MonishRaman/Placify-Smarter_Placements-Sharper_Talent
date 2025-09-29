@@ -18,13 +18,18 @@ import {
   Sun,
   Search,
   Briefcase,
-  X
+  X,
 } from "lucide-react";
 
 const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [openSections, setOpenSections] = useState({
+    jobs: false,
+    employees: false,
+    analytics: false,
+  });
   const navigate = useNavigate();
 
   // Screen resize watcher
@@ -46,7 +51,7 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
     };
   }, [isMobile, isExpanded]);
 
-  const toggleSidebar = () => setIsExpanded(prev => !prev);
+  const toggleSidebar = () => setIsExpanded((prev) => !prev);
 
   const toggleDarkMode = () => {
     const next = !isDarkMode;
@@ -72,25 +77,111 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
     navigate("/auth");
   };
 
-  const menuItems = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard/company", type: "link" },
-    { icon: User, label: "Profile", path: "/dashboard/company/profile", type: "link" },
-    { icon: Briefcase, label: "My Jobs", path: "/dashboard/company/my-jobs", type: "link" },
-    { icon: Plus, label: "Post New Job", path: "/dashboard/company/post-job", type: "link" },
-    { icon: UserCheck, label: "Applicants Tracker", path: "/dashboard/company/applicants", type: "link" },
-    { icon: Users, label: "Employee Directory", path: "/dashboard/company/employees", type: "link" },
-    { icon: BarChart3, label: "Employee Performance Reports", path: "/dashboard/company/performance", type: "link" },
-    { icon: TrendingUp, label: "Company Insights", path: "/dashboard/company/insights", type: "link" },
-    { icon: Building2, label: "Institution Collaboration", path: "/dashboard/company/collaboration", type: "link" },
-    { icon: FileText, label: "Generate Reports", path: "/dashboard/company/reports", type: "link" },
-    { icon: Settings, label: "Settings", path: "/dashboard/company/settings", type: "link" },
-    { icon: isDarkMode ? Sun : Moon, label: isDarkMode ? "Light Mode" : "Dark Mode", onClick: toggleDarkMode, type: "button" },
-    { icon: LogOut, label: "Logout", onClick: handleLogout, type: "button" }
+  // Sidebar structure with grouped sections
+  const sidebarStructure = [
+    {
+      icon: LayoutDashboard,
+      label: "Dashboard",
+      path: "/dashboard/company",
+      type: "link",
+    },
+    {
+      icon: User,
+      label: "Profile",
+      path: "/dashboard/company/profile",
+      type: "link",
+    },
+    {
+      icon: Briefcase,
+      label: "Jobs",
+      type: "section",
+      sectionKey: "jobs",
+      children: [
+        {
+          icon: Briefcase,
+          label: "My Jobs",
+          path: "/dashboard/company/my-jobs",
+          type: "link",
+        },
+        {
+          icon: Plus,
+          label: "Post New Job",
+          path: "/dashboard/company/post-job",
+          type: "link",
+        },
+        {
+          icon: UserCheck,
+          label: "Applicants Tracker",
+          path: "/dashboard/company/applicants",
+          type: "link",
+        },
+      ],
+    },
+    {
+      icon: Users,
+      label: "Employees",
+      type: "section",
+      sectionKey: "employees",
+      children: [
+        {
+          icon: Users,
+          label: "Employee Directory",
+          path: "/dashboard/company/employees",
+          type: "link",
+        },
+        {
+          icon: BarChart3,
+          label: "Employee Performance",
+          path: "/dashboard/company/performance",
+          type: "link",
+        },
+      ],
+    },
+    {
+      icon: BarChart3,
+      label: "Analytics & Reports",
+      type: "section",
+      sectionKey: "analytics",
+      children: [
+        {
+          icon: TrendingUp,
+          label: "Company Insights",
+          path: "/dashboard/company/insights",
+          type: "link",
+        },
+        {
+          icon: FileText,
+          label: "Generate Reports",
+          path: "/dashboard/company/reports",
+          type: "link",
+        },
+      ],
+    },
+    {
+      icon: Building2,
+      label: "Collaboration",
+      path: "/dashboard/company/collaboration",
+      type: "link",
+    },
+    {
+      icon: Settings,
+      label: "Settings",
+      path: "/dashboard/company/settings",
+      type: "link",
+    },
+    {
+      icon: isDarkMode ? Sun : Moon,
+      label: isDarkMode ? "Light Mode" : "Dark Mode",
+      onClick: toggleDarkMode,
+      type: "button",
+    },
+    {
+      icon: LogOut,
+      label: "Logout",
+      onClick: handleLogout,
+      type: "button",
+    },
   ];
-
-  const filteredItems = menuItems.filter(m =>
-    m.label.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <>
@@ -126,7 +217,7 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
           background: #64748b;
         }
       `}</style>
-      
+
       {/* Mobile overlay */}
       {isMobile && isExpanded && (
         <div
@@ -138,9 +229,12 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
       <aside
         className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-white dark:bg-slate-900 shadow-lg border-r border-gray-200 dark:border-slate-700 
           transition-[width,transform] duration-300 ease-out
-          ${isMobile
-            ? `w-64 ${isExpanded ? "translate-x-0" : "-translate-x-full"}`
-            : isExpanded ? "w-64" : "w-20"
+          ${
+            isMobile
+              ? `w-64 ${isExpanded ? "translate-x-0" : "-translate-x-full"}`
+              : isExpanded
+              ? "w-64"
+              : "w-20"
           }`}
       >
         {/* Brand & Toggle */}
@@ -164,7 +258,13 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
             className="text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white transition-colors flex-shrink-0"
             aria-label="Toggle sidebar"
           >
-            {isMobile ? <X size={20} /> : isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+            {isMobile ? (
+              <X size={20} />
+            ) : isExpanded ? (
+              <ChevronLeft size={20} />
+            ) : (
+              <ChevronRight size={20} />
+            )}
           </button>
         </div>
 
@@ -177,34 +277,99 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
                 type="text"
                 placeholder="Search..."
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-white pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-slate-700 focus:border-purple-500 dark:focus:border-purple-400 focus:outline-none text-sm"
               />
             </div>
           </div>
         )}
 
-        {/* Menu - With scrollbar */}
+        {/* Menu - With scrollbar and grouped sections */}
         <nav className="flex-1 overflow-y-auto overflow-x-hidden pt-3 pb-4 sidebar-scrollbar">
-          {filteredItems.map(({ label, icon: Icon, path, onClick, type }) => {
-            const content = (
-              <>
-                <Icon className="w-5 h-5 flex-shrink-0" />
-                {isExpanded && (
-                  <span className="text-sm font-medium truncate">
-                    {label}
-                  </span>
-                )}
-              </>
-            );
-            return (
-              <div key={label} className="relative group px-3">
-                {type === "link" ? (
+          {sidebarStructure.map((item) => {
+            if (item.type === "section") {
+              // Collapsible section
+              const isOpen = openSections[item.sectionKey];
+              // Filter children by search
+              const filteredChildren = item.children.filter((child) =>
+                child.label.toLowerCase().includes(searchQuery.toLowerCase())
+              );
+              // Hide section if no children match search
+              if (searchQuery && filteredChildren.length === 0) return null;
+              return (
+                <div key={item.label} className="px-3">
+                  <button
+                    className={`w-full flex items-center gap-3 py-2.5 rounded-lg mb-1 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors ${
+                      isExpanded ? "px-3" : "justify-center"
+                    }`}
+                    onClick={() =>
+                      setOpenSections((s) => ({
+                        ...s,
+                        [item.sectionKey]: !s[item.sectionKey],
+                      }))
+                    }
+                    aria-expanded={isOpen}
+                  >
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
+                    {isExpanded && (
+                      <span className="text-sm font-semibold truncate flex-1">
+                        {item.label}
+                      </span>
+                    )}
+                    {isExpanded && (
+                      <ChevronRight
+                        className={`w-4 h-4 ml-auto transition-transform ${
+                          isOpen ? "rotate-90" : ""
+                        }`}
+                      />
+                    )}
+                  </button>
+                  {/* Collapsible children */}
+                  <div
+                    className={`pl-7 border-l border-gray-200 dark:border-slate-700 overflow-hidden transition-all duration-300 ${
+                      isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                    style={{
+                      height: isOpen
+                        ? `${filteredChildren.length * 44}px`
+                        : "0px",
+                    }}
+                  >
+                    {filteredChildren.map(({ label, icon: Icon, path }) => (
+                      <NavLink
+                        key={label}
+                        to={path}
+                        className={({ isActive }) =>
+                          `flex items-center gap-3 py-2 rounded-lg mb-1 transition-colors px-3 ${
+                            isActive
+                              ? "bg-blue-600 dark:bg-blue-500 text-white"
+                              : "text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
+                          }`
+                        }
+                        onClick={() => isMobile && setIsExpanded(false)}
+                      >
+                        <Icon className="w-4 h-4 flex-shrink-0" />
+                        <span className="text-sm truncate">{label}</span>
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
+            // Regular link or button
+            if (
+              item.type === "link" &&
+              item.label.toLowerCase().includes(searchQuery.toLowerCase())
+            ) {
+              return (
+                <div key={item.label} className="relative group px-3">
                   <NavLink
-                    to={path}
-                    end={path === "/dashboard/company"}
+                    to={item.path}
+                    end={item.path === "/dashboard/company"}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 py-2.5 rounded-lg mb-1 transition-colors ${isExpanded ? 'px-3' : 'justify-center'} ${
+                      `flex items-center gap-3 py-2.5 rounded-lg mb-1 transition-colors ${
+                        isExpanded ? "px-3" : "justify-center"
+                      } ${
                         isActive
                           ? "bg-blue-600 dark:bg-blue-500 text-white"
                           : "text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
@@ -212,26 +377,52 @@ const CompanySidebar = ({ isExpanded, setIsExpanded }) => {
                     }
                     onClick={() => isMobile && setIsExpanded(false)}
                   >
-                    {content}
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
+                    {isExpanded && (
+                      <span className="text-sm font-medium truncate">
+                        {item.label}
+                      </span>
+                    )}
                   </NavLink>
-                ) : (
+                  {!isExpanded && !isMobile && (
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900/90 dark:bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg z-50">
+                      {item.label}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+            if (
+              item.type === "button" &&
+              item.label.toLowerCase().includes(searchQuery.toLowerCase())
+            ) {
+              return (
+                <div key={item.label} className="relative group px-3">
                   <button
                     onClick={() => {
-                      onClick && onClick();
+                      item.onClick && item.onClick();
                       if (isMobile) setIsExpanded(false);
                     }}
-                    className={`w-full flex items-center gap-3 py-2.5 rounded-lg mb-1 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors ${isExpanded ? 'px-3' : 'justify-center'}`}
+                    className={`w-full flex items-center gap-3 py-2.5 rounded-lg mb-1 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors ${
+                      isExpanded ? "px-3" : "justify-center"
+                    }`}
                   >
-                    {content}
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
+                    {isExpanded && (
+                      <span className="text-sm font-medium truncate">
+                        {item.label}
+                      </span>
+                    )}
                   </button>
-                )}
-                {!isExpanded && !isMobile && (
-                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900/90 dark:bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg z-50">
-                    {label}
-                  </div>
-                )}
-              </div>
-            );
+                  {!isExpanded && !isMobile && (
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900/90 dark:bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg z-50">
+                      {item.label}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+            return null;
           })}
         </nav>
       </aside>
