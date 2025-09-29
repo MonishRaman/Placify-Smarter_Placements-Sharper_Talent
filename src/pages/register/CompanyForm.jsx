@@ -135,8 +135,39 @@ export default function CompanyForm() {
     { label: "One special character", key: "special" },
   ];
 
+
+  const particleCount = 20;
+  const particles = Array.from({ length: particleCount }, (_, i) => ({
+    size: Math.random() * 15 + 10,
+    left: Math.random() * 100,
+    delay: Math.random() * 5,
+    duration: Math.random() * 10 + 5,
+  }));
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-radial from-gray-900 via-gray-800 to-black dark:bg-gray-900 transition-colors duration-200">
+      {/* Particles */}
+      {particles.map((p, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-white/20 dark:bg-white/10 blur-3xl pointer-events-none"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: `${p.left}%`,
+            bottom: `-${p.size}px`,
+            zIndex: 0, // ensures particles are behind the content
+          }}
+          animate={{ y: ["0%", "-120vh"] }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: "linear",
+          }}
+        />
+      ))}
+
       <Header />
       <ToastContainer
         position="top-center"
