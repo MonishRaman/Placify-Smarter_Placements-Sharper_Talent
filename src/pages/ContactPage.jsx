@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import Navbar from "../components/Navbar";
 import {
   ArrowRight,
   Brain,
@@ -70,6 +71,7 @@ const ContactPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 transition-colors duration-300">
+      
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
@@ -86,6 +88,7 @@ const ContactPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
+
             {/* Logo/Brand */}
             <motion.div
               className="flex items-center justify-center space-x-3 mb-6 cursor-pointer"
