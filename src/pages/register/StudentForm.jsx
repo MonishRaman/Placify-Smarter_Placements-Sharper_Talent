@@ -133,7 +133,7 @@ export default function StudentForm() {
   }));
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-800 dark:to-indigo-950">
+    <div className="min-h-screen relative overflow-hidden ">
       {/* Particles */}
       {particles.map((p, i) => (
         <motion.div
