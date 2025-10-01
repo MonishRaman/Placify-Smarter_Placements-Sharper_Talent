@@ -80,6 +80,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PaymentGateway from "./components/payment/PaymentGateway";
 import CursorTrail from "./components/CursorTrail";
+import ForgotPass from "./pages/ForgotPass";
 
 const AppWrapper = () => {
   useLenis();
@@ -97,6 +98,7 @@ const AppWrapper = () => {
             {/* Public */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/forgot-password" element={<ForgotPass />} />
             <Route path="/register" element={<RoleSelectionPage />} />
             <Route path="/resume" element={<Resume />} />
             <Route path="/register/student" element={<StudentForm />} />
