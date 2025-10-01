@@ -57,34 +57,121 @@ export const createJob = async (req, res) => {
 };
 
 // Get open jobs with pagination
+// Get open jobs with pagination and filters
 export const getJobs = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    const totalJobs = await Job.countDocuments({ status: "Open" });
-    const jobs = await Job.find({ status: "Open" })
-      .populate({
-        path: "company",
-        select: "name email industry website employeeCount profileImage",
-      })
-      .skip(skip)
-      .limit(limit);
+    // Extract filter parameters
+    const {
+      search,
+      type,
+      domain,
+      location,
+      status,
+      fromDate,
+      toDate,
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
+    } = req.query;
 
-    if (!jobs.length) {
-      return res.status(404).json({
-        success: false,
-        message: "No open jobs found.",
-      });
+    // Build filter query
+    const filterQuery = { status: "Open" }; // Default to open jobs
+
+    // Status filter (allow filtering by other statuses if needed)
+    if (status && status !== "All") {
+      filterQuery.status = status;
     }
+
+    // Search filter (title, description, company name)
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(escapeRegex(search.trim()), "i");
+      filterQuery.$or = [
+        { title: searchRegex },
+        { description: searchRegex },
+        { domain: searchRegex }
+      ];
+    }
+
+    // Type filter
+    if (type && type !== "All") {
+      filterQuery.type = type;
+    }
+
+    // Domain filter
+    if (domain && domain !== "All") {
+      filterQuery.domain = domain;
+    }
+
+    // Location filter
+    if (location && location !== "All") {
+      filterQuery.location = new RegExp(escapeRegex(location), "i");
+    }
+
+    // Date range filter
+    if (fromDate || toDate) {
+      filterQuery.createdAt = {};
+      if (fromDate) {
+        filterQuery.createdAt.$gte = new Date(fromDate);
+      }
+      if (toDate) {
+        const endDate = new Date(toDate);
+        endDate.setHours(23, 59, 59, 999);
+        filterQuery.createdAt.$lte = endDate;
+      }
+    }
+
+    // Build sort object
+    const sortObj = {};
+    sortObj[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    // Execute queries
+    const [totalJobs, jobs] = await Promise.all([
+      Job.countDocuments(filterQuery),
+      Job.find(filterQuery)
+        .populate({
+          path: "company",
+          select: "name email industry website employeeCount profileImage",
+        })
+        .sort(sortObj)
+        .skip(skip)
+        .limit(limit)
+    ]);
+
+    // Get unique filter options for frontend dropdowns
+    const [allTypes, allDomains, allLocations] = await Promise.all([
+      Job.distinct("type", { status: "Open" }),
+      Job.distinct("domain", { status: "Open" }),
+      Job.distinct("location", { status: "Open" })
+    ]);
 
     res.status(200).json({
       success: true,
+      message: jobs.length ? "Jobs fetched successfully" : "No jobs found matching the criteria",
       count: jobs.length,
       totalJobs,
       currentPage: page,
       totalPages: Math.ceil(totalJobs / limit),
+      filters: {
+        applied: {
+          search: search || null,
+          type: type || null,
+          domain: domain || null,
+          location: location || null,
+          status: status || null,
+          fromDate: fromDate || null,
+          toDate: toDate || null,
+          sortBy,
+          sortOrder
+        },
+        available: {
+          types: allTypes,
+          domains: allDomains,
+          locations: allLocations
+        }
+      },
       jobs,
     });
   } catch (error) {
@@ -96,7 +183,6 @@ export const getJobs = async (req, res) => {
     });
   }
 };
-
 // Update job (except company field)
 export const updateJob = async (req, res) => {
   try {

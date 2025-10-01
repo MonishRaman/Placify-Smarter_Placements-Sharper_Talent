@@ -133,7 +133,7 @@ export const registerCompany = async (req, res) => {
       website,
       email,
       password: hashedPassword,
-      role: "Company",
+      role: "company",
     });
 
     res.status(201).json({ message: "Company registered successfully" });

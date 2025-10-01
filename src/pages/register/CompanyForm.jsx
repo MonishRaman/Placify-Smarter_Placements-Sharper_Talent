@@ -2,6 +2,7 @@ import { Building2, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { CheckCircle, XCircle } from "lucide-react";
@@ -17,7 +18,7 @@ export default function CompanyForm() {
     companyName: "",
     industry: "",
     website: "",
-    hrEmail: "",
+    email: "",
     password: "",
     confirmPassword: "",
     role: "company",
@@ -33,6 +34,11 @@ export default function CompanyForm() {
     number: false,
     special: false,
   });
+
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+
 
   const validatePassword = (password) => {
     const rules = {
@@ -67,7 +73,7 @@ export default function CompanyForm() {
       !formData.companyName ||
       !formData.industry ||
       !formData.website ||
-      !formData.hrEmail ||
+      !formData.email ||
       !formData.password ||
       !formData.confirmPassword
     ) {
@@ -77,7 +83,7 @@ export default function CompanyForm() {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.hrEmail)) {
+    if (!emailRegex.test(formData.email)) {
       setError("Please enter a valid email address for the HR contact");
       setLoading(false);
       return;
@@ -102,15 +108,22 @@ export default function CompanyForm() {
       setTimeout(() => navigate("/auth"), 2000);
     } catch (err) {
       if (err.response) {
-        setError(
-          err.response?.data?.message || `Server error: ${err.response.status}`
-        );
-        toast.error(
-          err.response?.data?.message || `Server error: ${err.response.status}`
-        );
+        // Backend responded with an error
+        let errorMsg =
+          err.response?.data?.message || `Server error: ${err.response.status}`;
+        let errorTitle = "Server Error";
+        if (errorMsg.includes("email") && errorMsg.includes("required")) {
+          errorTitle = "Missing Email";
+        } else if (errorMsg.includes("role") && errorMsg.includes("enum")) {
+          errorTitle = "Invalid Role";
+        } else if (errorMsg.includes("validation failed")) {
+          errorTitle = "Validation Error";
+        }
+        setError(`${errorTitle}: ${errorMsg}`);
+        toast.error(`${errorTitle}: ${errorMsg}`);
       } else if (err.request) {
-        setError("No response from server. Please check your connection.");
-        toast.error("No response from server. Please check your connection.");
+        setError("Backend not connected. Please check your connection.");
+        toast.error("Backend not connected. Please check your connection.");
       } else {
         setError(`Error: ${err.message}`);
         toast.error(`Error: ${err.message}`);
@@ -128,8 +141,39 @@ export default function CompanyForm() {
     { label: "One special character", key: "special" },
   ];
 
+
+  const particleCount = 20;
+  const particles = Array.from({ length: particleCount }, (_, i) => ({
+    size: Math.random() * 15 + 10,
+    left: Math.random() * 100,
+    delay: Math.random() * 5,
+    duration: Math.random() * 10 + 5,
+  }));
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-radial from-gray-900 via-gray-800 to-black dark:bg-gray-900 transition-colors duration-200">
+      {/* Particles */}
+      {particles.map((p, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-white/20 dark:bg-white/10 blur-3xl pointer-events-none"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: `${p.left}%`,
+            bottom: `-${p.size}px`,
+            zIndex: 0, // ensures particles are behind the content
+          }}
+          animate={{ y: ["0%", "-120vh"] }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: "linear",
+          }}
+        />
+      ))}
+
       <Header />
       <ToastContainer
         position="top-center"
@@ -196,9 +240,9 @@ export default function CompanyForm() {
               id="company-hr-email"
               type="email"
               label="HR Contact Email"
-              value={formData.hrEmail}
+              value={formData.email}
               onChange={(e) =>
-                setFormData({ ...formData, hrEmail: e.target.value })
+                setFormData({ ...formData, email: e.target.value })
               }
               required
               className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
@@ -277,28 +321,31 @@ export default function CompanyForm() {
             />
 
             {/* Password Mismatch Indicator */}
-            {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
-              >
-                <XCircle className="w-4 h-4" />
-                <span>Passwords do not match</span>
-              </motion.div>
-            )}
+            {formData.confirmPassword &&
+              formData.password !== formData.confirmPassword && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
+                >
+                  <XCircle className="w-4 h-4" />
+                  <span>Passwords do not match</span>
+                </motion.div>
+              )}
 
             {/* Password Match Indicator */}
-            {formData.confirmPassword && formData.password === formData.confirmPassword && formData.password.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
-              >
-                <CheckCircle className="w-4 h-4" />
-                <span>Passwords match</span>
-              </motion.div>
-            )}
+            {formData.confirmPassword &&
+              formData.password === formData.confirmPassword &&
+              formData.password.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Passwords match</span>
+                </motion.div>
+              )}
 
             {/* Submit */}
             <motion.button

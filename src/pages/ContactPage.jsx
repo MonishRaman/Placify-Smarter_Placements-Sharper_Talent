@@ -1,6 +1,7 @@
 import { Navbar } from "@material-tailwind/react";
 import { motion } from "framer-motion";
 import Header from "../components/Header";
+import Navbar from "../components/Navbar";
 import {
   ArrowRight,
   Brain,
@@ -11,7 +12,7 @@ import {
   Phone
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import Footer from '../components/Footer'
 const ContactPage = () => {
   const navigate = useNavigate();
 
@@ -73,6 +74,7 @@ const ContactPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 transition-colors duration-300">
     <Header />
+
       
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-30">
@@ -92,6 +94,7 @@ const ContactPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
+
             {/* Logo/Brand */}
             <motion.div
               className="flex items-center justify-center space-x-3 mt-12 mb-6 cursor-pointer"
@@ -276,6 +279,7 @@ const ContactPage = () => {
           </motion.div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

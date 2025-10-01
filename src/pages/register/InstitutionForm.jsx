@@ -61,6 +61,11 @@ export default function InstitutionForm() {
     return rules;
   };
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
     setFormData({ ...formData, password: newPassword });
@@ -364,8 +369,37 @@ export default function InstitutionForm() {
     { label: "One special character", key: "special" },
   ];
 
+  const particleCount = 20;
+  const particles = Array.from({ length: particleCount }, (_, i) => ({
+    size: Math.random() * 15 + 10,
+    left: Math.random() * 100,
+    delay: Math.random() * 5,
+    duration: Math.random() * 10 + 5,
+  }));
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Particles */}
+      {particles.map((p, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-white/20 dark:bg-white/10"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: `${p.left}%`,
+            bottom: `-${p.size}px`,
+          }}
+          animate={{ y: ["0%", "-120vh"] }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: "linear",
+          }}
+        />
+      ))}
+
       <Header />
       <ToastContainer
         position="top-center"
@@ -451,9 +485,9 @@ export default function InstitutionForm() {
 
             {/* Dynamic Password Validation - Only show if password field has content */}
             {formData.password && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
+                animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
                 className="mt-2 space-y-2"
@@ -469,9 +503,9 @@ export default function InstitutionForm() {
                     >
                       <motion.div
                         initial={false}
-                        animate={{ 
+                        animate={{
                           scale: isValid ? 1.1 : 1,
-                          rotate: isValid ? 360 : 0 
+                          rotate: isValid ? 360 : 0,
                         }}
                         transition={{ duration: 0.3 }}
                       >
@@ -510,28 +544,31 @@ export default function InstitutionForm() {
             />
 
             {/* Password Mismatch Indicator */}
-            {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
-              >
-                <XCircle className="w-4 h-4" />
-                <span>Passwords do not match</span>
-              </motion.div>
-            )}
+            {formData.confirmPassword &&
+              formData.password !== formData.confirmPassword && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
+                >
+                  <XCircle className="w-4 h-4" />
+                  <span>Passwords do not match</span>
+                </motion.div>
+              )}
 
             {/* Password Match Indicator */}
-            {formData.confirmPassword && formData.password === formData.confirmPassword && formData.password.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
-              >
-                <CheckCircle className="w-4 h-4" />
-                <span>Passwords match</span>
-              </motion.div>
-            )}
+            {formData.confirmPassword &&
+              formData.password === formData.confirmPassword &&
+              formData.password.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Passwords match</span>
+                </motion.div>
+              )}
 
             {/* Submit */}
             <motion.button

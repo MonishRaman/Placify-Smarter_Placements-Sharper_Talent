@@ -23,6 +23,7 @@ import questionsRoutes from "./routes/questions.js";
 import resumeRoutes from "./routes/resume.js";
 import resumeScoreRoutes from "./routes/resumeScore.js";
 import settingsRoutes from "./routes/settingsI.js";
+import companyDashboardRoutes from "./routes/companyDashboard.js";
 
 // Dry-Run routes for code validation
 import cDryRunRoutes from "./routes/cDryRun.js";
@@ -65,6 +66,9 @@ app.use("/api/jobs", companyRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/questions", questionsRoutes);
 app.use("/api/settings", settingsRoutes);
+
+// Company Dashboard endpoint
+app.use("/api/company", companyDashboardRoutes);
 
 // Dry-Run endpoints for code validation (Python, Java, C/C++)
 app.use("/api", dryRunRoutes); // Python dry-run: POST /api/dryrun

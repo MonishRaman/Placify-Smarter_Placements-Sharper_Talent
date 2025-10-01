@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 // Import our new apiClient instead of axios directly
 import apiClient from "../api/apiClient"; // <-- CHANGE HERE
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -19,9 +20,19 @@ const AuthPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [passerror, setPasserror] = useState("");
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (password.length < 6) {
+      setPasserror("Password must be at least 6 characters long.");
+      return;
+    }
+
+    setPasserror("");
+
     setLoading(true);
     setError("");
 
@@ -199,6 +210,7 @@ const AuthPage = () => {
                   id="email"
                   type="email"
                   required
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-700 rounded-xl 
@@ -232,6 +244,7 @@ const AuthPage = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   required
+                  minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-700 rounded-xl 
@@ -255,6 +268,14 @@ const AuthPage = () => {
                 </motion.button>
               </div>
             </motion.div>
+                {passerror && <p className="text-red-500 text-sm">{passerror}</p>}
+
+            {/* Forgot password */}
+            <p style={{ marginTop: "20px", textAlign: "center" }}>
+              <Link to="/forgot-password" style={{ color: "#9333EA", textDecoration: "none" }}>
+                Forgot Password?
+              </Link>
+            </p>
 
             {/* Submit Button */}
             <motion.button
