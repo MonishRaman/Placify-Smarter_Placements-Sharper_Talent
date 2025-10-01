@@ -3,7 +3,7 @@ import { FaBriefcase, FaTrashAlt, FaSave, FaArrowLeft, FaMapMarkerAlt, FaBuildin
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import Swal from 'sweetalert2';
+// import Swal from 'sweetalert2';
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
