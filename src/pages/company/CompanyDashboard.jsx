@@ -55,7 +55,7 @@ const CompanyDashboard = () => {
                  dark:from-gray-900 dark:via-gray-950 dark:to-black p-6"
     >
       <main className="max-w-7xl mx-auto space-y-8">
-        {/* Company Header Card */}
+
           <motion.div
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -106,8 +106,6 @@ const CompanyDashboard = () => {
               </div>
             </div>
           </motion.div>
-
-          {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { label: "Total Employees", value: companyData.totalEmployees, desc: "Active workforce", icon: <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />, bg: "bg-purple-100 dark:bg-purple-900/30" },
