@@ -97,45 +97,44 @@ The traditional campus hiring process is inefficient and outdated:
 
 ## 📁 Project Structure (2025)
 
-Placify-Smarter_Placements-Sharper_Talent/
-├── server/ # Backend (Node.js, Express, API, DB, business logic)
-│ ├── config/ # Database and environment configs
-│ ├── controllers/ # API route controllers (auth, chat, resume, etc.)
-│ ├── middleware/ # Express middlewares (auth, file upload, etc.)
-│ ├── models/ # Mongoose models (User, Student, Resume, etc.)
-│ ├── routes/ # Express routes (auth.js, resume.js, etc.)
-│ ├── services/ # Service logic (AI, ATS, PDF extraction)
-│ ├── uploads/ # Uploaded files (images, PDFs)
-│ ├── server.js # Main Express server entry point
-│ ├── package.json # Backend dependencies
-│ └── ...
-├── src/ # Frontend (React)
-│ ├── api/ # API client logic
-│ ├── components/ # Reusable React components
-│ ├── context/ # React context providers
-│ ├── data/ # Static data (questions, challenges)
-│ ├── layouts/ # Dashboard and page layouts
-│ ├── lib/ # Helper libraries (e.g., geminiHelper.js)
-│ ├── pages/ # Main app pages (Landing, Auth, Student, Company, etc.)
-│ ├── utils/ # Utility functions (email, PDF, theme)
-│ ├── App.jsx # App root
-│ ├── main.jsx # React entry point
-│ └── index.css # Global styles
-├── ml_modules/ # Python ML modules (AI, scoring, analysis)
-│ ├── answer_accuracy/ # Fuzzy matching, keyword checking
-│ ├── emotion_detector/ # Emotion detection models
-│ ├── speech_analysis/ # Audio and prosody analysis
-│ ├── code_quality.py # Code quality analysis
-│ ├── main_analyzer.py # Main ML analyzer
-│ ├── requirements.txt # Python dependencies
-│ └── ...
-├── public/ # Static assets (images, redirects)
-├── CODE_OF_CONDUCT.md # Contributor code of conduct
-├── CONTRIBUTING.md # Contribution guidelines
-├── LICENSE # Project license
-├── README.md # Project documentation
-├── ... # Other config and meta files
-
+Placify-Smarter_Placements-Sharper_Talent/<br>
+├── server/                      # Backend (Node.js, Express, API, DB, business logic)<br>
+│   ├── config/                  # Database and environment configs<br>
+│   ├── controllers/             # API route controllers (auth, chat, resume, etc.)<br>
+│   ├── middleware/              # Express middlewares (auth, file upload, etc.)<br>
+│   ├── models/                  # Mongoose models (User, Student, Resume, etc.)<br>
+│   ├── routes/                  # Express routes (auth.js, resume.js, etc.)<br>
+│   ├── services/                # Service logic (AI, ATS, PDF extraction)<br>
+│   ├── uploads/                 # Uploaded files (images, PDFs)<br>
+│   ├── server.js                # Main Express server entry point<br>
+│   ├── package.json             # Backend dependencies<br>
+│   └── ...<br>
+├── src/                         # Frontend (React)<br>
+│   ├── api/                     # API client logic<br>
+│   ├── components/              # Reusable React components<br>
+│   ├── context/                 # React context providers<br>
+│   ├── data/                    # Static data (questions, challenges)<br>
+│   ├── layouts/                 # Dashboard and page layouts<br>
+│   ├── lib/                     # Helper libraries (e.g., geminiHelper.js)<br>
+│   ├── pages/                   # Main app pages (Landing, Auth, Student, Company, etc.)<br>
+│   ├── utils/                   # Utility functions (email, PDF, theme)<br>
+│   ├── App.jsx                  # App root<br>
+│   ├── main.jsx                 # React entry point<br>
+│   └── index.css                # Global styles<br>
+├── ml_modules/                  # Python ML modules (AI, scoring, analysis)<br>
+│   ├── answer_accuracy/         # Fuzzy matching, keyword checking<br>
+│   ├── emotion_detector/        # Emotion detection models<br>
+│   ├── speech_analysis/         # Audio and prosody analysis<br>
+│   ├── code_quality.py          # Code quality analysis<br>
+│   ├── main_analyzer.py         # Main ML analyzer<br>
+│   ├── requirements.txt         # Python dependencies<br>
+│   └── ...<br>
+├── public/             # Static assets (images, redirects)<br>
+├── CODE_OF_CONDUCT.md  # Contributor code of conduct<br>
+├── CONTRIBUTING.md     # Contribution guidelines<br>
+├── LICENSE             # Project license<br>
+├── README.md           # Project documentation<br>
+└── ...                 # Other config and meta files<br>
 ### Key Points
 
 - All backend logic, APIs, and database models are now in the `server/` folder.
