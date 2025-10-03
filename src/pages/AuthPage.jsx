@@ -21,6 +21,7 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [passerror, setPasserror] = useState("");
+  const [emailError, setEmailError] = useState("");
 
 
   const handleSubmit = async (e) => {
@@ -212,7 +213,18 @@ const AuthPage = () => {
                   required
                   pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setEmail(val);
+
+                    // simple regex check
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (val && !emailRegex.test(val)) {
+                      setEmailError("Please enter a valid email (e.g., user@example.com).");
+                    } else {
+                      setEmailError("");
+                    }
+                  }}
                   className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-700 rounded-xl 
                              bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
                              focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent
@@ -221,6 +233,10 @@ const AuthPage = () => {
                 />
               </div>
             </motion.div>
+
+            {emailError && (
+              <p className="text-red-500 text-sm mt-1">{emailError}</p>
+            )}
 
             {/* Password */}
             <motion.div
@@ -285,7 +301,7 @@ const AuthPage = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              disabled={loading}
+              disabled={loading  || emailError}
               className="w-full bg-purple-600 text-white py-3 px-4 rounded-xl font-semibold
                          hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
                          transition-all duration-200 disabled:opacity-50"
