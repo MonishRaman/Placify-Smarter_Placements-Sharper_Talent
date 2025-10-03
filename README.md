@@ -4,9 +4,18 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Status: Active](https://img.shields.io/badge/status-active-success.svg)
 [![GitHub issues](https://img.shields.io/github/issues/MonishRaman/Placify-Smarter_Placements-Sharper_Talent)](https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent/issues)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+![Open PRs](https://img.shields.io/github/issues-pr/MonishRaman/Placify-Smarter_Placements-Sharper_Talent)
+![Closed PRs](https://img.shields.io/github/issues-pr-closed/MonishRaman/Placify-Smarter_Placements-Sharper_Talent)
 [![GitHub forks](https://img.shields.io/github/forks/MonishRaman/Placify-Smarter_Placements-Sharper_Talent)](https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent/network)
 [![GitHub stars](https://img.shields.io/github/stars/MonishRaman/Placify-Smarter_Placements-Sharper_Talent)](https://github.com/MonishRaman/Placify-Smarter_Placements-Sharper_Talent/stargazers)
 [![Join our Discord](https://img.shields.io/badge/Join_Discord-7289DA?logo=discord&logoColor=white)](https://discord.gg/WdAdQPAB)
+![Top Language](https://img.shields.io/github/languages/top/MonishRaman/Placify-Smarter_Placements-Sharper_Talent)
+![Last Commit](https://img.shields.io/github/last-commit/MonishRaman/Placify-Smarter_Placements-Sharper_Talent?logo=github)
+![Commit Activity](https://img.shields.io/github/commit-activity/m/MonishRaman/Placify-Smarter_Placements-Sharper_Talent?color=blue)
+![Monthly Commits](https://img.shields.io/github/commit-activity/m/MonishRaman/Placify-Smarter_Placements-Sharper_Talent?color=green)
+![Weekly Commits](https://img.shields.io/github/commit-activity/w/MonishRaman/Placify-Smarter_Placements-Sharper_Talent?color=yellow)
+
 
 Welcome to the official repository for **Placify**, a project by **Innovision Technologies Pvt Ltd**, participating in **GirlScript Summer of Code (GSSoC) 2025**. We're thrilled to have you join our mission!
 
