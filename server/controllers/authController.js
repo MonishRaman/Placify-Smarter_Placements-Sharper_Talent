@@ -96,7 +96,7 @@ export const registerInstitution = async (req, res) => {
 
 export const registerEmployee = async (req, res) => {
   try {
-    const { fullName, currentCompany, jobTitle, email, password } = req.body;
+    const { fullName, currentCompany, jobTitle, email, password, skills } = req.body;
 
     await checkEmailExists(email);
     const hashedPassword = await hashPassword(password);
@@ -108,6 +108,7 @@ export const registerEmployee = async (req, res) => {
       email,
       password: hashedPassword,
       role: "employee",
+      ...(skills !== undefined && { skills }),
     });
 
     res.status(201).json({ message: "Employee registered successfully" });
@@ -115,6 +116,15 @@ export const registerEmployee = async (req, res) => {
     console.error("Employee Register Error:", error);
     if (error.message === "Email already exists") {
       return res.status(400).json({ message: error.message });
+    }
+    // Handle Mongoose validation errors
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json({ message: "Validation error", errors });
+    }
+    // Handle Mongoose cast errors (e.g., wrong type)
+    if (error.name === "CastError") {
+      return res.status(400).json({ message: `Invalid value for field '${error.path}': ${error.value}` });
     }
     res.status(500).json({ message: "Server error" });
   }
