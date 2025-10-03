@@ -16,6 +16,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import axios from "axios";
+import JobCard from "../../components/JobCard";
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 // Theme Context
 const ThemeContext = createContext();
@@ -370,113 +371,31 @@ useEffect(() => {
           </p>
         </div>
 
-        {/* Job Cards */}
-        <div className="grid gap-6 lg:grid-cols-2">
-  {jobsData.length === 0 ? (
-    <div className="col-span-full text-center py-12">
-      <Briefcase className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-      <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-        No jobs found
-      </h3>
-      <p className="text-gray-500 dark:text-gray-400">
-        Try adjusting your search criteria
-      </p>
-    </div>
-  ) : (
-    jobsData.map((job) => (
-      <div
-        key={job._id}
-        className="group bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden"
-      >
-        <div className="p-6">
-          <div className="flex items-start gap-4 mb-4">
-            {/* Company Logo */}
-            <div className="flex-shrink-0">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900 flex items-center justify-center border border-gray-200 dark:border-gray-700 group-hover:scale-105 transition-transform duration-300">
-                {getImageUrl(job.company?.profileImage) ? (
-                  <img
-                    src={getImageUrl(job.company?.profileImage)}
-                    alt={`${job.company.name} logo`}
-                    className="w-10 h-10 rounded-lg object-cover"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextElementSibling.style.display = 'flex';
-                    }}
-                  />
-                ) : null}
-                <div className={`${job.company?.profileImage ? 'hidden' : 'flex'} items-center justify-center w-10 h-10`}>
-                  <Building2 className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                </div>
+         {/* Job Cards */}
+        <div className="grid gap-8 lg:grid-cols-2">
+          {jobsData.length === 0 ? (
+            <div className="col-span-full text-center py-20">
+              <div className="w-24 h-24 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Briefcase className="w-12 h-12 text-gray-400 dark:text-gray-500" />
               </div>
-            </div>
-
-            {/* Job Info */}
-            <div className="flex-1 min-w-0">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300 truncate">
-                {job.title}
+              <h3 className="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-3">
+                No opportunities found
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 font-medium text-base mb-2 truncate">
-                {job.company?.name || "Company Name"}
-              </p>
-              <p className="text-gray-500 dark:text-gray-500 text-sm line-clamp-2 leading-relaxed">
-                {job.description || "No description available"}
+              <p className="text-gray-500 dark:text-gray-400 text-lg">
+                Try adjusting your search criteria to find more jobs
               </p>
             </div>
-
-            {/* Salary */}
-            <div className="text-right flex-shrink-0">
-              <p className="text-lg font-bold text-green-600 dark:text-green-400">
-                {job.salary || "Not disclosed"}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                
-              </p>
-            </div>
-          </div>
-
-          {/* Job Details */}
-          <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
-            <div className="flex items-center gap-1">
-              <MapPin className="w-4 h-4 text-gray-400" />
-              <span className="truncate">{job.location}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <CalendarDays className="w-4 h-4 text-gray-400" />
-              <span>{formatDate(job.createdAt)}</span>
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-full text-sm font-medium">
-              {job.type}
-            </span>
-            <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium">
-              {job.domain}
-            </span>
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-medium ${
-                job.status === "Open"
-                  ? "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300"
-                  : "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300"
-              }`}
-            >
-              {job.status}
-            </span>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-3">
-            <button className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-2.5 px-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-md hover:shadow-lg">
-              Apply Now
-            </button>
-            
-          </div>
+          ) : (
+            jobsData.map((job) => (
+              <JobCard 
+                key={job._id} 
+                job={job} 
+                getImageUrl={getImageUrl} 
+                formatDate={formatDate} 
+              />
+            ))
+          )}
         </div>
-      </div>
-    ))
-  )}
-</div>
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="mt-12 flex items-center justify-center gap-2">
