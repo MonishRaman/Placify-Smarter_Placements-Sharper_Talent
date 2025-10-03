@@ -37,6 +37,7 @@ const CompanyDashboard = () => {
         const response = await apiClient.get("/auth/profile");
         if (response.status === 200) {
           setUserData(response.data);
+          console.log("Profile data:", response.data);
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -54,40 +55,57 @@ const CompanyDashboard = () => {
                  dark:from-gray-900 dark:via-gray-950 dark:to-black p-6"
     >
       <main className="max-w-7xl mx-auto space-y-8">
-        {/* Company Header Card */}
-        <motion.div
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-8 rounded-2xl shadow-lg"
-        >
-          <div className="flex flex-wrap items-center space-x-6">
-            <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center shadow-inner">
-              <span className="text-2xl font-bold">
-                {userData?.companyName ? userData.companyName.substring(0, 2).toUpperCase() : "TC"}
-              </span>
-            </div>
-            <div>
-              <h2 className="text-3xl font-bold">
-                {userData?.companyName || userData?.institutionName || "TechCorp Solutions"}
-              </h2>
-              <p className="text-pink-100 mt-1">Technology Solutions Company</p>
-              <div className="flex flex-wrap gap-4 mt-3 text-sm">
-                <span className="flex items-center">
-                  <MapPin className="w-4 h-4 mr-1" /> San Francisco, CA
-                </span>
-                <span className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-1" /> Founded 2018
-                </span>
-                <span className="flex items-center">
-                  <Mail className="w-4 h-4 mr-1" /> {userData?.email || "contact@techcorp.com"}
+
+          <motion.div
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-8 rounded-2xl shadow-lg"
+          >
+            <div className="flex flex-wrap items-center space-x-6">
+              <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center shadow-inner">
+                <span className="text-2xl font-bold">
+            {userData?.name
+              ? userData.name
+                  .split(' ')
+                  .map(n => n[0])
+                  .slice(0, 2)
+                  .join('')
+                  .toUpperCase()
+              : 'TC'}
                 </span>
               </div>
+              <div>
+                <h2 className="text-3xl font-bold">
+            {userData?.name || 'TechCorp Solutions'}
+                </h2>
+                <p className="text-pink-100 mt-1">
+            {userData?.industry
+              ? `${userData.industry.charAt(0).toUpperCase()}${userData.industry.slice(1)} Company`
+              : 'Technology Solutions Company'}
+                </p>
+                <div className="flex flex-wrap gap-4 mt-3 text-sm">
+            <span className="flex items-center">
+              <MapPin className="w-4 h-4 mr-1" />
+              {userData?.industry || 'Industry not specified'}
+            </span>
+            <span className="flex items-center">
+              <Calendar className="w-4 h-4 mr-1" />
+              Founded {userData?.createdAt ? new Date(userData.createdAt).getFullYear() : '2018'}
+            </span>
+            <span className="flex items-center">
+              <Mail className="w-4 h-4 mr-1" />
+              {userData?.email || 'contact@techcorp.com'}
+            </span>
+                </div>
+                {userData?.website && (
+            <p className="text-xs text-pink-100 mt-2">
+              Website: <a href={userData.website} className="underline" target="_blank" rel="noreferrer">{userData.website}</a>
+            </p>
+                )}
+              </div>
             </div>
-          </div>
-        </motion.div>
-
-        {/* Stats Cards */}
+          </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { label: "Total Employees", value: companyData.totalEmployees, desc: "Active workforce", icon: <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />, bg: "bg-purple-100 dark:bg-purple-900/30" },
