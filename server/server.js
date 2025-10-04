@@ -24,6 +24,7 @@ import resumeRoutes from "./routes/resume.js";
 import resumeScoreRoutes from "./routes/resumeScore.js";
 import settingsRoutes from "./routes/settingsI.js";
 import companyDashboardRoutes from "./routes/companyDashboard.js";
+import dashboardRoutes from "./routes/dashboard.js";
 
 // Dry-Run routes for code validation
 import cDryRunRoutes from "./routes/cDryRun.js";
@@ -69,6 +70,8 @@ app.use("/api/settings", settingsRoutes);
 
 // Company Dashboard endpoint
 app.use("/api/company", companyDashboardRoutes);
+// Unified user dashboard endpoint
+app.use("/api", dashboardRoutes); // GET /api/dashboard
 
 // Dry-Run endpoints for code validation (Python, Java, C/C++)
 app.use("/api", dryRunRoutes); // Python dry-run: POST /api/dryrun
