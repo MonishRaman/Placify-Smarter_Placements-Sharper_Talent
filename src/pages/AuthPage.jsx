@@ -198,7 +198,7 @@ const AuthPage = () => {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2"
               >
-                Email address
+                Email address <sup className="text-sm text-red-500 ml-1">*</sup>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
@@ -232,7 +232,7 @@ const AuthPage = () => {
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2"
               >
-                Password
+                Password <sup className="text-sm text-red-500 ml-1">*</sup>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
