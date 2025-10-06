@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   TrendingUp,
   Calendar,
@@ -54,31 +55,43 @@ const QuickActionCard = ({
   title,
   description,
   color = "blue",
-}) => (
-  <div
-    className={`bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow cursor-pointer group`}
-  >
-    <div className="flex items-start space-x-4">
-      <div
-        className={`p-3 bg-${color}-100 dark:bg-${color}-900/20 rounded-lg group-hover:scale-110 transition-transform`}
-      >
-        <Icon className={`w-6 h-6 text-${color}-600 dark:text-${color}-400`} />
-      </div>
-      <div className="flex-1">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          {title}
-        </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {description}
-        </p>
-        <div className="mt-3 flex items-center text-blue-600 dark:text-blue-400 text-sm font-medium">
-          <span>Get Started</span>
-          <ChevronRight className="w-4 h-4 ml-1" />
+  onClick,
+  path,
+}) => {
+  // Using a button element for accessibility & keyboard navigation.
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      data-path={path}
+      className={`group w-full text-left bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-${color}-500/60 hover:shadow-md active:scale-[0.98]`}
+    >
+      <div className="flex items-start space-x-4">
+        <div
+          className={`p-3 bg-${color}-100 dark:bg-${color}-900/20 rounded-lg group-hover:scale-110 transition-transform`}
+        >
+          <Icon
+            className={`w-6 h-6 text-${color}-600 dark:text-${color}-400`}
+          />
+        </div>
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            {title}
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {description}
+          </p>
+          <div
+            className={`mt-3 flex items-center text-${color}-600 dark:text-${color}-400 text-sm font-medium`}
+          >
+            <span>Get Started</span>
+            <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-0.5" />
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-);
+    </button>
+  );
+};
 
 const RecentActivity = ({ activities }) => (
   <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
@@ -112,7 +125,13 @@ const RecentActivity = ({ activities }) => (
   </div>
 );
 
+import employeeQuickActions from "./quickActionsConfig";
+// Quick Actions are driven by `employeeQuickActions` config.
+// To add a new action: append an object with { key, icon, title, description, color, path }
+// in quickActionsConfig.js – it will render automatically here.
+
 const EmployeeDashboard = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [profile, setProfile] = useState(null); // normalized /api/dashboard response
@@ -291,24 +310,17 @@ const EmployeeDashboard = () => {
             Quick Actions
           </h2>
           <div className="space-y-4">
-            <QuickActionCard
-              icon={Target}
-              title="Update Skills"
-              description="Add new skills or update your proficiency levels"
-              color="blue"
-            />
-            <QuickActionCard
-              icon={BarChart3}
-              title="View Performance"
-              description="Check your performance metrics and feedback"
-              color="green"
-            />
-            <QuickActionCard
-              icon={Award}
-              title="Learning Resources"
-              description="Explore courses and training opportunities"
-              color="purple"
-            />
+            {employeeQuickActions.map((qa) => (
+              <QuickActionCard
+                key={qa.key}
+                icon={qa.icon}
+                title={qa.title}
+                description={qa.description}
+                color={qa.color}
+                path={qa.path}
+                onClick={() => navigate(qa.path)}
+              />
+            ))}
           </div>
         </div>
         <div>
