@@ -22,15 +22,49 @@ const AuthPage = () => {
   const [error, setError] = useState("");
   const [passerror, setPasserror] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState("");
 
+  const [requirements, setRequirements] = useState({
+    length: false,
+    upper: false,
+    lower: false,
+    number: false,
+    special: false,
+  });
+
+  const checkPasswordStrength = (pwd) => {
+    const newReqs = {
+      length: pwd.length >= 8,
+      upper: /[A-Z]/.test(pwd),
+      lower: /[a-z]/.test(pwd),
+      number: /[0-9]/.test(pwd),
+      special: /[!@#$%^&*]/.test(pwd),
+    };
+
+    setRequirements(newReqs);
+
+    const metCount = Object.values(newReqs).filter(Boolean).length;
+    if (metCount <= 2) setPasswordStrength("Weak");
+    else if (metCount === 3 || metCount === 4) setPasswordStrength("Medium");
+    else setPasswordStrength("Strong");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (password.length < 6) {
-      setPasserror("Password must be at least 6 characters long.");
+    if (
+      !requirements.length ||
+      !requirements.upper ||
+      !requirements.lower ||
+      !requirements.number ||
+      !requirements.special
+    ) {
+      setPasserror(
+        "Password must be strong (8+ chars, uppercase, lowercase, number, special character)."
+      );
       return;
     }
+
 
     setPasserror("");
 
@@ -260,7 +294,11 @@ const AuthPage = () => {
                   required
                   minLength={6}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setPassword(val);
+                    checkPasswordStrength(val);
+                  }}
                   className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-700 rounded-xl 
                              bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
                              focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent
@@ -283,6 +321,39 @@ const AuthPage = () => {
               </div>
             </motion.div>
                 {passerror && <p className="text-red-500 text-sm">{passerror}</p>}
+                {password && (
+                  <div className="mt-2">
+                    <p
+                      className={`text-sm font-medium ${
+                        passwordStrength === "Strong"
+                          ? "text-green-500"
+                          : passwordStrength === "Medium"
+                          ? "text-yellow-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      Strength: {passwordStrength}
+                    </p>
+
+                    <ul className="text-xs text-gray-600 dark:text-gray-400 mt-1 space-y-1">
+                      <li className={requirements.length ? "text-green-500" : ""}>
+                        • At least 8 characters
+                      </li>
+                      <li className={requirements.upper ? "text-green-500" : ""}>
+                        • One uppercase letter
+                      </li>
+                      <li className={requirements.lower ? "text-green-500" : ""}>
+                        • One lowercase letter
+                      </li>
+                      <li className={requirements.number ? "text-green-500" : ""}>
+                        • One number
+                      </li>
+                      <li className={requirements.special ? "text-green-500" : ""}>
+                        • One special character (!@#$%^&*)
+                      </li>
+                    </ul>
+                  </div>
+                )}
 
             {/* Forgot password */}
             <p style={{ marginTop: "20px", textAlign: "center" }}>
