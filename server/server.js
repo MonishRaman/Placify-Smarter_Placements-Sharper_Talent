@@ -9,6 +9,7 @@ import connectToDatabase from "./config/db.js";
 
 // ====== Routes ======
 import authRoutes from "./routes/auth.js";
+import passwordResetRoutes from "./routes/passwordReset.js";
 import atsRoutes from "./routes/ats.js";
 import chatRoutes from "./routes/chat.js";
 import companyRoutes from "./routes/job.js";
@@ -53,6 +54,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // ====== API Routes ======
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/auth", passwordResetRoutes); // Password reset endpoints
 app.use("/api/interviews", interviewRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/institution", institutionRoutes);
