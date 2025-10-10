@@ -213,15 +213,18 @@ export default function StudentForm() {
             <FormInput
               id="student-fullname"
               label="Full Name"
+              placeholder="Enter your Full Name"
               value={formData.fullName}
               onChange={(e) =>
                 setFormData({ ...formData, fullName: e.target.value })
               }
-              required
-            />
+              required 
+              />
+              
             <FormInput
               id="student-university"
               label="University Name"
+              placeholder="Enter your University's Name"
               value={formData.university}
               onChange={(e) =>
                 setFormData({ ...formData, university: e.target.value })
@@ -231,6 +234,7 @@ export default function StudentForm() {
             <FormInput
               id="student-major"
               label="Major/Field of Study"
+              placeholder="Enter your field of study"
               value={formData.major}
               onChange={(e) =>
                 setFormData({ ...formData, major: e.target.value })
@@ -241,6 +245,7 @@ export default function StudentForm() {
               id="student-email"
               type="email"
               label="Email"
+              placeholder="Enter your email"
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
@@ -251,6 +256,7 @@ export default function StudentForm() {
               id="student-password"
               type="password"
               label="Password"
+              placeholder="Enter password"
               value={formData.password}
               onChange={handlePasswordChange}
               onCopy={(e) => e.preventDefault()}
@@ -309,6 +315,7 @@ export default function StudentForm() {
               id="student-confirm-password"
               type="password"
               label="Confirm Password"
+              placeholder="Enter Confirm password"
               value={formData.confirmPassword}
               onChange={(e) =>
                 setFormData({ ...formData, confirmPassword: e.target.value })

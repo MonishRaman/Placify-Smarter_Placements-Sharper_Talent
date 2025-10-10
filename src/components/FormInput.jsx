@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 export default function FormInput({
   label,
+  placeholder,
   type = 'text',
   value,
   onChange,
@@ -40,6 +41,7 @@ export default function FormInput({
             type === "password" ? (showPassword ? "text" : "password") : type
           }
           value={value}
+          placeholder={placeholder}
           onChange={onChange}
           onCopy={onCopy}
           onPaste={onPaste}
