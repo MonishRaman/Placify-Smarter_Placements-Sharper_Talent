@@ -55,15 +55,34 @@ const ResetPassword = () => {
       setError("Reset token is missing or invalid.");
       return;
     }
-
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
-
     setLoading(true);
     setError("");
-
+    try {
+      const response = await apiClient.post("/auth/reset-password", {
+        token,
+        newPassword: password,
+        confirmPassword,
+      });
+      toast.success(response.data.message || "Password reset successful!");
+      setTimeout(() => {
+        navigate("/auth");
+      }, 1200);
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          "Failed to reset password. Please try again."
+      );
+      toast.error(
+        err.response?.data?.message ||
+          "Failed to reset password. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

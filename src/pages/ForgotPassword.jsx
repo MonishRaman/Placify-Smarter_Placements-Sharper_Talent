@@ -26,7 +26,26 @@ const ForgotPassword = () => {
     e.preventDefault();
     setLoading(true);
     setHardError("");
-
+    try {
+      const response = await apiClient.post("/auth/forgot-password", { email });
+      // Always show success message regardless of whether email exists
+      setSubmitted(true);
+      toast.success(
+        response.data.message ||
+          "If an account exists, a reset link will be sent."
+      );
+    } catch (err) {
+      setHardError(
+        err.response?.data?.message ||
+          "Failed to send reset link. Please try again later."
+      );
+      toast.error(
+        err.response?.data?.message ||
+          "Failed to send reset link. Please try again later."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
