@@ -197,6 +197,7 @@ export default function EmployeeForm() {
             <FormInput
               id="employee-fullname"
               label="Full Name"
+              placeholder="Enter your Full Name"
               value={formData.fullName}
               onChange={(e) =>
                 setFormData({ ...formData, fullName: e.target.value })
@@ -207,6 +208,7 @@ export default function EmployeeForm() {
             <FormInput
               id="employee-current-company"
               label="Current Company"
+              placeholder="Enter Current Company"
               value={formData.currentCompany}
               onChange={(e) =>
                 setFormData({ ...formData, currentCompany: e.target.value })
@@ -217,6 +219,7 @@ export default function EmployeeForm() {
             <FormInput
               id="employee-job-title"
               label="Job Title"
+              placeholder="Enter Job-title"
               value={formData.jobTitle}
               onChange={(e) =>
                 setFormData({ ...formData, jobTitle: e.target.value })
@@ -228,6 +231,7 @@ export default function EmployeeForm() {
               id="employee-email"
               type="email"
               label="Email"
+              placeholder="Enter your email"
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
@@ -239,6 +243,7 @@ export default function EmployeeForm() {
               id="employee-password"
               type="password"
               label="Password"
+              placeholder="Enter password"
               value={formData.password}
               onChange={handlePasswordChange}
               onCopy={(e) => e.preventDefault()}
@@ -298,6 +303,7 @@ export default function EmployeeForm() {
               id="employee-confirm-password"
               type="password"
               label="Confirm Password"
+              placeholder="Enter confirm password"
               value={formData.confirmPassword}
               onChange={(e) =>
                 setFormData({ ...formData, confirmPassword: e.target.value })

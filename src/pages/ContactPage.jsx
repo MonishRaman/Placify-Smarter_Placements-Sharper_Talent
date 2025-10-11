@@ -70,9 +70,10 @@ const ContactPage = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  return (
+  return (    
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 transition-colors duration-300">
-      
+
+
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
@@ -81,7 +82,9 @@ const ContactPage = () => {
       </div>
 
       <div className="relative min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
+        
         <div className="max-w-7xl w-full">
+
           {/* Header Section */}
           <motion.div
             className="text-center mb-12"
