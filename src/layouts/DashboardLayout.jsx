@@ -21,14 +21,11 @@ const DashboardLayout = () => {
         const token = localStorage.getItem("token");
         if (!token) return;
         console.log("Fetching profile with token:", token);
-    
+
         // Using axios directly with authorization header
         console.log("Profile Request:");
-        const response = await axios.get("http://localhost:5000/api/auth/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        // Prefer centralized apiClient (auto injects baseURL + Authorization)
+        const response = await apiClient.get("/auth/profile");
 
         console.log("Profile Response Data:", response.data);
 
@@ -78,8 +75,6 @@ const DashboardLayout = () => {
     return titleMap[path] || "";
   };
 
-
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -110,7 +105,11 @@ const DashboardLayout = () => {
               </h1>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                 {userData
-                  ? `Welcome back, ${userData.fullName || userData.institutionName || userData.email}!`
+                  ? `Welcome back, ${
+                      userData.fullName ||
+                      userData.institutionName ||
+                      userData.email
+                    }!`
                   : "Welcome back! Here's what's happening."}
               </p>
             </div>
@@ -134,7 +133,10 @@ const DashboardLayout = () => {
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700 py-2 z-50">
                     <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
-                      Signed in as {userData?.fullName || userData?.institutionName || userData?.email}
+                      Signed in as{" "}
+                      {userData?.fullName ||
+                        userData?.institutionName ||
+                        userData?.email}
                     </div>
                     <hr className="my-1 border-gray-200 dark:border-slate-600" />
                     <Link

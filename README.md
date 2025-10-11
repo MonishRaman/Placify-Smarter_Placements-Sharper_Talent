@@ -16,7 +16,6 @@
 ![Monthly Commits](https://img.shields.io/github/commit-activity/m/MonishRaman/Placify-Smarter_Placements-Sharper_Talent?color=green)
 ![Weekly Commits](https://img.shields.io/github/commit-activity/w/MonishRaman/Placify-Smarter_Placements-Sharper_Talent?color=yellow)
 
-
 Welcome to the official repository for **Placify**, a project by **Innovision Technologies Pvt Ltd**, participating in **GirlScript Summer of Code (GSSoC) 2025**. We're thrilled to have you join our mission!
 
 **Tagline:** _Unboxing New Ideas_
@@ -98,43 +97,44 @@ The traditional campus hiring process is inefficient and outdated:
 ## 📁 Project Structure (2025)
 
 Placify-Smarter_Placements-Sharper_Talent/<br>
-├── server/                      # Backend (Node.js, Express, API, DB, business logic)<br>
-│   ├── config/                  # Database and environment configs<br>
-│   ├── controllers/             # API route controllers (auth, chat, resume, etc.)<br>
-│   ├── middleware/              # Express middlewares (auth, file upload, etc.)<br>
-│   ├── models/                  # Mongoose models (User, Student, Resume, etc.)<br>
-│   ├── routes/                  # Express routes (auth.js, resume.js, etc.)<br>
-│   ├── services/                # Service logic (AI, ATS, PDF extraction)<br>
-│   ├── uploads/                 # Uploaded files (images, PDFs)<br>
-│   ├── server.js                # Main Express server entry point<br>
-│   ├── package.json             # Backend dependencies<br>
-│   └── ...<br>
-├── src/                         # Frontend (React)<br>
-│   ├── api/                     # API client logic<br>
-│   ├── components/              # Reusable React components<br>
-│   ├── context/                 # React context providers<br>
-│   ├── data/                    # Static data (questions, challenges)<br>
-│   ├── layouts/                 # Dashboard and page layouts<br>
-│   ├── lib/                     # Helper libraries (e.g., geminiHelper.js)<br>
-│   ├── pages/                   # Main app pages (Landing, Auth, Student, Company, etc.)<br>
-│   ├── utils/                   # Utility functions (email, PDF, theme)<br>
-│   ├── App.jsx                  # App root<br>
-│   ├── main.jsx                 # React entry point<br>
-│   └── index.css                # Global styles<br>
-├── ml_modules/                  # Python ML modules (AI, scoring, analysis)<br>
-│   ├── answer_accuracy/         # Fuzzy matching, keyword checking<br>
-│   ├── emotion_detector/        # Emotion detection models<br>
-│   ├── speech_analysis/         # Audio and prosody analysis<br>
-│   ├── code_quality.py          # Code quality analysis<br>
-│   ├── main_analyzer.py         # Main ML analyzer<br>
-│   ├── requirements.txt         # Python dependencies<br>
-│   └── ...<br>
-├── public/             # Static assets (images, redirects)<br>
-├── CODE_OF_CONDUCT.md  # Contributor code of conduct<br>
-├── CONTRIBUTING.md     # Contribution guidelines<br>
-├── LICENSE             # Project license<br>
-├── README.md           # Project documentation<br>
-└── ...                 # Other config and meta files<br>
+├── server/ # Backend (Node.js, Express, API, DB, business logic)<br>
+│ ├── config/ # Database and environment configs<br>
+│ ├── controllers/ # API route controllers (auth, chat, resume, etc.)<br>
+│ ├── middleware/ # Express middlewares (auth, file upload, etc.)<br>
+│ ├── models/ # Mongoose models (User, Student, Resume, etc.)<br>
+│ ├── routes/ # Express routes (auth.js, resume.js, etc.)<br>
+│ ├── services/ # Service logic (AI, ATS, PDF extraction)<br>
+│ ├── uploads/ # Uploaded files (images, PDFs)<br>
+│ ├── server.js # Main Express server entry point<br>
+│ ├── package.json # Backend dependencies<br>
+│ └── ...<br>
+├── src/ # Frontend (React)<br>
+│ ├── api/ # API client logic<br>
+│ ├── components/ # Reusable React components<br>
+│ ├── context/ # React context providers<br>
+│ ├── data/ # Static data (questions, challenges)<br>
+│ ├── layouts/ # Dashboard and page layouts<br>
+│ ├── lib/ # Helper libraries (e.g., geminiHelper.js)<br>
+│ ├── pages/ # Main app pages (Landing, Auth, Student, Company, etc.)<br>
+│ ├── utils/ # Utility functions (email, PDF, theme)<br>
+│ ├── App.jsx # App root<br>
+│ ├── main.jsx # React entry point<br>
+│ └── index.css # Global styles<br>
+├── ml_modules/ # Python ML modules (AI, scoring, analysis)<br>
+│ ├── answer_accuracy/ # Fuzzy matching, keyword checking<br>
+│ ├── emotion_detector/ # Emotion detection models<br>
+│ ├── speech_analysis/ # Audio and prosody analysis<br>
+│ ├── code_quality.py # Code quality analysis<br>
+│ ├── main_analyzer.py # Main ML analyzer<br>
+│ ├── requirements.txt # Python dependencies<br>
+│ └── ...<br>
+├── public/ # Static assets (images, redirects)<br>
+├── CODE_OF_CONDUCT.md # Contributor code of conduct<br>
+├── CONTRIBUTING.md # Contribution guidelines<br>
+├── LICENSE # Project license<br>
+├── README.md # Project documentation<br>
+└── ... # Other config and meta files<br>
+
 ### Key Points
 
 - All backend logic, APIs, and database models are now in the `server/` folder.
@@ -291,3 +291,19 @@ This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for m
 ---
 
 > _"If we can transform recruitment for 500 students in hours instead of weeks, imagine what we can do for a nation.."_
+
+---
+
+## 🔐 Password Policy (Important)
+
+As of Oct 2025 we updated password strength enforcement to improve user experience for legacy accounts:
+
+- Strong password rules (min 8 chars, upper, lower, number, special) are enforced ONLY for:
+  - New registrations
+  - Password reset / change flows
+- Login no longer blocks users with older (weaker) passwords that were valid when created.
+- During login, a non-blocking advisory appears (and an additional toast after successful sign in) if the entered password is weak, encouraging an update for better security.
+
+Why this change? Some early users were locked out after we introduced stricter rules. This adjustment preserves security for new/updated credentials while maintaining backward compatibility.
+
+Planned enhancement: A settings page flow to proactively prompt weak-password users to upgrade their credentials.

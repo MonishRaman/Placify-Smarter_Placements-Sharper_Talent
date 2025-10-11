@@ -51,21 +51,22 @@ const AuthPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (
-      !requirements.length ||
-      !requirements.upper ||
-      !requirements.lower ||
-      !requirements.number ||
-      !requirements.special
-    ) {
-      setPasserror(
-        "Password must be strong (8+ chars, uppercase, lowercase, number, special character)."
-      );
-      return;
+    // Only enforce strong password rules on SIGN UP flows (isLogin === false)
+    if (!isLogin) {
+      if (
+        !requirements.length ||
+        !requirements.upper ||
+        !requirements.lower ||
+        !requirements.number ||
+        !requirements.special
+      ) {
+        setPasserror(
+          "Password must be strong (8+ chars, uppercase, lowercase, number, special character)."
+        );
+        return;
+      }
     }
-
-
+    // For login we clear blocking error even if password is weak
     setPasserror("");
 
     setLoading(true);
@@ -93,6 +94,14 @@ const AuthPage = () => {
       setIsAuthenticated(true);
 
       toast.success("Login successful! Redirecting...");
+      if (isLogin && passwordStrength === "Weak") {
+        setTimeout(() => {
+          toast.warning(
+            "Your password is weak. Please update it in Account Settings for improved security.",
+            { autoClose: 4000 }
+          );
+        }, 300);
+      }
 
       // Redirect based on role with delay for toast
       setTimeout(() => {
@@ -252,7 +261,9 @@ const AuthPage = () => {
                     setEmail(val);
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     if (val && !emailRegex.test(val)) {
-                      setEmailError("Please enter a valid email (e.g., user@example.com).");
+                      setEmailError(
+                        "Please enter a valid email (e.g., user@example.com)."
+                      );
                     } else {
                       setEmailError("");
                     }
@@ -320,44 +331,59 @@ const AuthPage = () => {
                 </motion.button>
               </div>
             </motion.div>
-                {passerror && <p className="text-red-500 text-sm">{passerror}</p>}
-                {password && (
-                  <div className="mt-2">
-                    <p
-                      className={`text-sm font-medium ${
-                        passwordStrength === "Strong"
-                          ? "text-green-500"
-                          : passwordStrength === "Medium"
-                          ? "text-yellow-500"
-                          : "text-red-500"
-                      }`}
-                    >
-                      Strength: {passwordStrength}
-                    </p>
+            {passerror && <p className="text-red-500 text-sm">{passerror}</p>}
+            {password && (
+              <div className="mt-2">
+                <p
+                  className={`text-sm font-medium ${
+                    passwordStrength === "Strong"
+                      ? "text-green-500"
+                      : passwordStrength === "Medium"
+                      ? "text-yellow-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  Strength: {passwordStrength}
+                </p>
 
-                    <ul className="text-xs text-gray-600 dark:text-gray-400 mt-1 space-y-1">
-                      <li className={requirements.length ? "text-green-500" : ""}>
-                        • At least 8 characters
-                      </li>
-                      <li className={requirements.upper ? "text-green-500" : ""}>
-                        • One uppercase letter
-                      </li>
-                      <li className={requirements.lower ? "text-green-500" : ""}>
-                        • One lowercase letter
-                      </li>
-                      <li className={requirements.number ? "text-green-500" : ""}>
-                        • One number
-                      </li>
-                      <li className={requirements.special ? "text-green-500" : ""}>
-                        • One special character (!@#$%^&*)
-                      </li>
-                    </ul>
-                  </div>
+                {/* Show checklist only during sign up for guidance */}
+                {!isLogin && (
+                  <ul className="text-xs text-gray-600 dark:text-gray-400 mt-1 space-y-1">
+                    <li className={requirements.length ? "text-green-500" : ""}>
+                      • At least 8 characters
+                    </li>
+                    <li className={requirements.upper ? "text-green-500" : ""}>
+                      • One uppercase letter
+                    </li>
+                    <li className={requirements.lower ? "text-green-500" : ""}>
+                      • One lowercase letter
+                    </li>
+                    <li className={requirements.number ? "text-green-500" : ""}>
+                      • One number
+                    </li>
+                    <li
+                      className={requirements.special ? "text-green-500" : ""}
+                    >
+                      • One special character (!@#$%^&*)
+                    </li>
+                  </ul>
                 )}
+                {/* Non-blocking advisory when logging in with weak password */}
+                {isLogin && passwordStrength === "Weak" && (
+                  <p className="text-xs mt-2 text-yellow-500">
+                    Your password is considered weak. After signing in, please
+                    update it in account settings for better security.
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Forgot password */}
             <p style={{ marginTop: "20px", textAlign: "center" }}>
-              <Link to="/forgot-password" style={{ color: "#9333EA", textDecoration: "none" }}>
+              <Link
+                to="/forgot-password"
+                style={{ color: "#9333EA", textDecoration: "none" }}
+              >
                 Forgot Password?
               </Link>
             </p>
@@ -370,7 +396,7 @@ const AuthPage = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              disabled={loading  || emailError}
+              disabled={loading || emailError}
               className="w-full bg-purple-600 text-white py-3 px-4 rounded-xl font-semibold
                          hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
                          transition-all duration-200 disabled:opacity-50"
@@ -399,7 +425,12 @@ const AuthPage = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={
-                  isLogin ? () => navigate("/register", { state: { scrollToCards: true } }) : () => setIsLogin(true)
+                  isLogin
+                    ? () =>
+                        navigate("/register", {
+                          state: { scrollToCards: true },
+                        })
+                    : () => setIsLogin(true)
                 }
                 className="ml-2 text-purple-600 font-semibold"
               >

@@ -192,20 +192,35 @@ export const loginUser = async (req, res) => {
 // ---------------- PROFILE ----------------
 export const getProfile = async (req, res) => {
   try {
-    console.log("Incoming profile request for user:", req.user?.userId);
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Invalid token payload" });
+    }
 
-    const baseUser = await User.findById(req.user.userId).select("role");
-    console.log("Base user found:", baseUser);
+    // Validate ObjectId format early
+    if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
+      return res.status(400).json({ message: "Malformed user id in token" });
+    }
 
-    if (!baseUser) return res.status(404).json({ message: "User not found" });
+    console.log("[getProfile] lookup user:", userId);
+    const baseUser = await User.findById(userId).select("role");
+    if (!baseUser) {
+      // User was deleted after token issuance -> force client logout
+      return res
+        .status(401)
+        .json({ message: "Account no longer exists. Please login again." });
+    }
 
     const UserModel = getModelByRole(baseUser.role);
-    console.log("User model resolved:", UserModel?.modelName);
+    if (!UserModel) {
+      return res.status(500).json({ message: "Unsupported user role" });
+    }
 
-    const user = await UserModel.findById(req.user.userId).select("-password");
-    console.log("Full user:", user);
-
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const user = await UserModel.findById(userId).select("-password");
+    if (!user) {
+      // Should be rare: discriminator document missing while base exists
+      return res.status(404).json({ message: "Profile document not found" });
+    }
 
     return res.json(user);
   } catch (error) {
