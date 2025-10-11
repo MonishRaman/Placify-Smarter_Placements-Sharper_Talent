@@ -80,7 +80,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PaymentGateway from "./components/payment/PaymentGateway";
 import CursorTrail from "./components/CursorTrail";
-import ForgotPass from "./pages/ForgotPass";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 const AppWrapper = () => {
   useLenis();
@@ -98,7 +99,8 @@ const AppWrapper = () => {
             {/* Public */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/auth" element={<AuthPage />} />
-            <Route path="/forgot-password" element={<ForgotPass />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/register" element={<RoleSelectionPage />} />
             <Route path="/resume" element={<Resume />} />
             <Route path="/register/student" element={<StudentForm />} />
@@ -121,8 +123,14 @@ const AppWrapper = () => {
             >
               <Route index element={<InstitutionDashboard />} />
               <Route path="profile" element={<InstitutionProfile />} />
-              <Route path="student-performance" element={<StudentPerformance />} />
-              <Route path="department-performance" element={<DepartmentPerformance />} />
+              <Route
+                path="student-performance"
+                element={<StudentPerformance />}
+              />
+              <Route
+                path="department-performance"
+                element={<DepartmentPerformance />}
+              />
               <Route path="reports" element={<Reports />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="settings" element={<InstitutionSettings />} />
@@ -168,7 +176,10 @@ const AppWrapper = () => {
               <Route path="career" element={<CareerProgression />} />
               <Route path="feedback" element={<CompanyFeedback />} />
               <Route path="learning" element={<LearningResources />} />
-              <Route path="interview-practice" element={<InterviewPracticeZone />} />
+              <Route
+                path="interview-practice"
+                element={<InterviewPracticeZone />}
+              />
               <Route path="job-insights" element={<JobSwitchInsights />} />
               <Route path="settings" element={<EmployeeSettings />} />
             </Route>
@@ -200,12 +211,21 @@ const AppWrapper = () => {
               <Route path="user-jobs" element={<UserJobs />} />
               <Route path="coding" element={<Coding />} />
               <Route path="coding/:id" element={<CodingEditor />} />
-              <Route path="interview-practice" element={<InterviewInterface />} />
+              <Route
+                path="interview-practice"
+                element={<InterviewInterface />}
+              />
               <Route path="aptitude" element={<Aptitude />} />
-              <Route path="interview-experience" element={<InterviewExperience />} />
+              <Route
+                path="interview-experience"
+                element={<InterviewExperience />}
+              />
               <Route path="settings" element={<Settings />} />
               <Route path="progress" element={<StudentProgressDashboard />} />
-              <Route path="progress/:studentId" element={<StudentProgressDetail />} />
+              <Route
+                path="progress/:studentId"
+                element={<StudentProgressDetail />}
+              />
             </Route>
 
             {/* Fallback */}
