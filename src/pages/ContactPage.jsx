@@ -40,6 +40,18 @@ const ContactPage = () => {
       email: "michael.chen@placify.com",
       image: "https://randomuser.me/api/portraits/men/78.jpg",
     },
+    {
+      name: "Jane Warner",
+      title: "UI/UX Designer",
+      email: "jane.smith@placify.com",
+      image: "https://randomuser.me/api/portraits/men/79.jpg",
+    },
+    {
+      name: "John Doen",
+      title: "Full Stack Developer",
+      email: "john.doe@placify.com",
+      image: "https://randomuser.me/api/portraits/men/81.jpg",
+    },
   ];
 
   const faqs = [
@@ -207,20 +219,27 @@ const ContactPage = () => {
 
           {/* Meet the Team Section */}
           <motion.div
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-12"
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-12 overflow-hidden"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2 }}
           >
-            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">Meet the Team</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {teamMembers.map((member, index) => (
-                <motion.div
-                  key={index}
-                  className="flex flex-col items-center text-center p-4 rounded-xl transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 1.4 + index * 0.1 }}
+            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
+              Meet the Team
+            </h2>
+
+            {/* Horizontal scroll wrapper */}
+            <div className="overflow-hidden w-full">
+              <motion.div
+                className="flex gap-6"
+                animate={{ x: ["0%", "-50%"] }}
+                transition={{ repeat: Infinity, repeatType: "loop", duration: 20, ease: "linear" }}
+              >
+                {/* Duplicate team members for seamless scroll */}
+                {[...teamMembers, ...teamMembers].map((member, index) => (
+                <div
+                key={index}
+                className="flex flex-col items-center text-center p-4 rounded-xl transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-700 min-w-[200px]"
                 >
                   <img
                     src={member.image}
@@ -229,11 +248,15 @@ const ContactPage = () => {
                   />
                   <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{member.name}</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400">{member.title}</p>
-                  <a href={`mailto:${member.email}`} className="text-sm text-blue-500 hover:underline mt-1">
-                    {member.email}
-                  </a>
-                </motion.div>
-              ))}
+                    <a
+                      href={`mailto:${member.email}`}
+                      className="text-sm text-blue-500 hover:underline mt-1"
+                    >
+                      {member.email}
+                    </a>
+                </div>
+                ))}
+              </motion.div>
             </div>
           </motion.div>
           
