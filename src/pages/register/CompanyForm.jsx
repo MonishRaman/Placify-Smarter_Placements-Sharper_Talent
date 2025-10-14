@@ -206,7 +206,6 @@ export default function CompanyForm() {
             <FormInput
               id="company-name"
               label="Company Name"
-              placeholder="Enter Company's Name"
               value={formData.companyName}
               onChange={(e) =>
                 setFormData({ ...formData, companyName: e.target.value })
@@ -218,7 +217,6 @@ export default function CompanyForm() {
             <FormInput
               id="company-industry"
               label="Industry"
-              placeholder="Enter Industry"
               value={formData.industry}
               onChange={(e) =>
                 setFormData({ ...formData, industry: e.target.value })
@@ -230,7 +228,6 @@ export default function CompanyForm() {
             <FormInput
               id="company-website"
               label="Website"
-              placeholder="Enter Website" 
               value={formData.website}
               onChange={(e) =>
                 setFormData({ ...formData, website: e.target.value })
@@ -243,7 +240,6 @@ export default function CompanyForm() {
               id="company-hr-email"
               type="email"
               label="HR Contact Email"
-              placeholder="Enter email address"
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
@@ -256,7 +252,6 @@ export default function CompanyForm() {
               id="company-password"
               type="password"
               label="Password"
-              placeholder="Enter password"
               value={formData.password}
               onChange={handlePasswordChange}
               onCopy={(e) => e.preventDefault()}
@@ -316,7 +311,6 @@ export default function CompanyForm() {
               id="company-confirm-password"
               type="password"
               label="Confirm Password"
-              placeholder="Enter confirm password"
               value={formData.confirmPassword}
               onChange={(e) =>
                 setFormData({ ...formData, confirmPassword: e.target.value })
