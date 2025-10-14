@@ -432,7 +432,6 @@ export default function InstitutionForm() {
             <FormInput
               id="institution-name"
               label="Institution Name"
-              placeholder="Enter Institution's Name"
               value={formData.institutionName}
               onChange={(e) =>
                 handleFormDataChange("institutionName", e.target.value)
@@ -444,7 +443,6 @@ export default function InstitutionForm() {
             <FormInput
               id="institution-website"
               label="Website"
-              placeholder="Enter Institution's Website"
               type="url"
               value={formData.website}
               onChange={(e) => handleFormDataChange("website", e.target.value)}
@@ -455,7 +453,6 @@ export default function InstitutionForm() {
             <FormInput
               id="institution-contact-person"
               label="Contact Person"
-              placeholder="Enter contact person"
               value={formData.contactPerson}
               onChange={(e) =>
                 handleFormDataChange("contactPerson", e.target.value)
@@ -468,7 +465,6 @@ export default function InstitutionForm() {
               id="institution-email"
               type="email"
               label="Email"
-              placeholder="Enter email address"
               value={formData.email}
               onChange={(e) => handleFormDataChange("email", e.target.value)}
               required
@@ -479,7 +475,6 @@ export default function InstitutionForm() {
               id="institution-password"
               type="password"
               label="Password"
-              placeholder="Enter password"
               value={formData.password}
               onChange={handlePasswordChange}
               onCopy={(e) => e.preventDefault()}
@@ -539,7 +534,6 @@ export default function InstitutionForm() {
               id="institution-confirm-password"
               type="password"
               label="Confirm Password"
-              placeholder="Enter confirm password"
               value={formData.confirmPassword}
               onChange={(e) =>
                 handleFormDataChange("confirmPassword", e.target.value)
