@@ -1,20 +1,34 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
-import Navbar from "../components/Navbar";
 import {
-  ArrowRight,
-  Brain,
+  Mail,
+  Phone,
+  MapPin,
   Facebook,
   Linkedin,
-  Mail,
-  MapPin,
-  Phone
+  MessageCircle,
+  Users,
+  HelpCircle,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import Footer from '../components/Footer';
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import RegistrationHeader from "../components/RegistrationHeader";
 
-const ContactPage = () => {
-  const navigate = useNavigate();
+export default function ContactPage() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
+  // Floating particles for background
+  const particleCount = 20;
+  const particles = Array.from({ length: particleCount }, (_, i) => ({
+    size: Math.random() * 15 + 10,
+    left: Math.random() * 100,
+    delay: Math.random() * 5,
+    duration: Math.random() * 10 + 5,
+  }));
+
+  // Meet the Team data
   const teamMembers = [
     {
       name: "Jane Doe",
@@ -44,16 +58,17 @@ const ContactPage = () => {
       name: "Jane Warner",
       title: "UI/UX Designer",
       email: "jane.smith@placify.com",
-      image: "https://randomuser.me/api/portraits/men/79.jpg",
+      image: "https://randomuser.me/api/portraits/women/25.jpg",
     },
     {
       name: "John Doen",
       title: "Full Stack Developer",
       email: "john.doe@placify.com",
-      image: "https://randomuser.me/api/portraits/men/81.jpg",
+      image: "https://randomuser.me/api/portraits/men/45.jpg",
     },
   ];
 
+  // FAQ data
   const faqs = [
     {
       question: "How do I sign up as a student?",
@@ -77,232 +92,219 @@ const ContactPage = () => {
     },
   ];
 
-  const handleLogoClick = () => {
-    navigate("/");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  return (
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Animated background particles */}
+      {particles.map((p, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-white/20 dark:bg-white/10"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: `${p.left}%`,
+            bottom: `-${p.size}px`,
+          }}
+          animate={{ y: ["0%", "-120vh"] }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: "linear",
+          }}
+        />
+      ))}
 
-  return (    
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 transition-colors duration-300">
+      {/* Header */}
+      <Header />
 
-
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
-        <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
-        <div className="absolute bottom-20 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-4000"></div>
+      {/* Hero Section */}
+      <div className="pt-16">
+        <RegistrationHeader
+          title="Get in Touch"
+          subtitle="We’d love to hear from you. Find the best way to contact our team below."
+          tagline="Quick responses. Real support."
+          icon={<MessageCircle className="w-10 h-10 text-white" />}
+          color="purple"
+          userType="contact"
+        />
       </div>
 
-      <div className="relative min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
-        
-        <div className="max-w-7xl w-full">
-
-          {/* Header Section */}
-          <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: -30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-
-            {/* Logo/Brand */}
-            <motion.div
-              className="flex items-center justify-center space-x-3 mb-6 cursor-pointer"
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              onClick={handleLogoClick}
-            >
-              <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg">
-                <Brain className="w-8 h-8 text-white" />
-              </div>
-              <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                Placify
-              </span>
-            </motion.div>
-
-            <motion.h1
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              Get in Touch
-            </motion.h1>
-
-            <motion.p
-              className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-            >
-              We'd love to hear from you. Find the best way to contact our team below.
-            </motion.p>
-          </motion.div>
-          
-          {/* Main content grid with Contact Info and Google Form */}
-          <motion.div
-            className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-          >
-            {/* Contact Information and Social Links */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 space-y-6">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">General Inquiries</h2>
+      {/* Contact Info + Form */}
+      <div className="py-12 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="relative max-w-4xl mx-auto p-10 rounded-2xl shadow-xl
+                     bg-white dark:bg-slate-800 border border-transparent 
+                     transition-all
+                     before:absolute before:inset-0 before:rounded-2xl before:p-[2px]
+                     before:bg-gradient-to-r before:from-indigo-600 before:via-purple-600 before:to-indigo-700
+                     before:animate-gradient-move before:-z-10"
+        >
+          <div className="grid md:grid-cols-2 gap-10">
+            {/* Contact Info */}
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                General Inquiries
+              </h2>
               <p className="text-gray-600 dark:text-gray-300">
                 For general questions, support, or feedback, please reach out to us via email or phone.
               </p>
+
               <div className="space-y-4">
-                <a href="mailto:support@placify.com" className="flex items-center space-x-4 text-gray-700 dark:text-gray-200 group">
-                  <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-full group-hover:bg-blue-200 dark:group-hover:bg-blue-800 transition-colors duration-200">
-                    <Mail className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-full">
+                    <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <span className="font-medium">support@placify.com</span>
-                </a>
-                <a href="tel:+1234567890" className="flex items-center space-x-4 text-gray-700 dark:text-gray-200 group">
-                  <div className="p-3 bg-purple-100 dark:bg-purple-900/50 rounded-full group-hover:bg-purple-200 dark:group-hover:bg-purple-800 transition-colors duration-200">
-                    <Phone className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                  <a
+                    href="mailto:support@placify.com"
+                    className="text-gray-700 dark:text-gray-200 hover:underline"
+                  >
+                    support@placify.com
+                  </a>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-purple-100 dark:bg-purple-900/50 rounded-full">
+                    <Phone className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   </div>
-                  <span className="font-medium">+1 (234) 567-890</span>
-                </a>
-                <div className="flex items-center space-x-4 text-gray-700 dark:text-gray-200">
+                  <a
+                    href="tel:+1234567890"
+                    className="text-gray-700 dark:text-gray-200 hover:underline"
+                  >
+                    +1 (234) 567-890
+                  </a>
+                </div>
+
+                <div className="flex items-center gap-4">
                   <div className="p-3 bg-emerald-100 dark:bg-emerald-900/50 rounded-full">
-                    <MapPin className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                    <MapPin className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
-                  <span className="font-medium">123 Main Street, Suite 456, Cityville, State 12345</span>
+                  <p className="text-gray-700 dark:text-gray-200">
+                    123 Main Street, Suite 456, Cityville, State 12345
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-4 pt-4">
-                <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors duration-200">
+
+              <div className="flex items-center gap-5 pt-4">
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-blue-600 transition-colors"
+                >
                   <Facebook className="w-6 h-6" />
                 </a>
-                <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors duration-200">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    fill="currentColor"
-                    className="bi bi-twitter-x"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z" />
-                  </svg>
-                </a>
-                <a href="#" className="text-gray-400 hover:text-blue-700 transition-colors duration-200">
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-blue-700 transition-colors"
+                >
                   <Linkedin className="w-6 h-6" />
                 </a>
               </div>
             </div>
 
-            {/* Google Form Section */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Send Us a Message</h2>
-              <p className="text-gray-600 dark:text-gray-300 mb-8">
-                Fill out this form to quickly send a message to our team.
+            {/* Contact Form */}
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                Send Us a Message
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 mb-6">
+                Fill out the form below and our team will get back to you as soon as possible.
               </p>
-              <div className="w-full">
-                <iframe
-                  src="https://forms.gle/i7TwXXvJTQvZWfvY9"
-                  width="100%"
-                  height="600"
-                  frameBorder="0"
-                  marginHeight="0"
-                  marginWidth="0"
-                  className="rounded-lg shadow-md"
-                >
-                  Loading...
-                </iframe>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Meet the Team Section */}
-          <motion.div
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-12 overflow-hidden"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-          >
-            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
-              Meet the Team
-            </h2>
-
-            {/* Horizontal scroll wrapper */}
-            <div className="overflow-hidden w-full">
-              <motion.div
-                className="flex gap-6"
-                animate={{ x: ["0%", "-50%"] }}
-                transition={{ repeat: Infinity, repeatType: "loop", duration: 20, ease: "linear" }}
+              <iframe
+                src="https://forms.gle/i7TwXXvJTQvZWfvY9"
+                width="100%"
+                height="500"
+                frameBorder="0"
+                marginHeight="0"
+                marginWidth="0"
+                className="rounded-xl shadow-md"
               >
-                {/* Duplicate team members for seamless scroll */}
-                {[...teamMembers, ...teamMembers].map((member, index) => (
-                <div
-                key={index}
-                className="flex flex-col items-center text-center p-4 rounded-xl transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-700 min-w-[200px]"
-                >
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-24 h-24 rounded-full mb-3 object-cover border-4 border-white dark:border-gray-800 shadow-md"
-                  />
-                  <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{member.name}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{member.title}</p>
-                    <a
-                      href={`mailto:${member.email}`}
-                      className="text-sm text-blue-500 hover:underline mt-1"
-                    >
-                      {member.email}
-                    </a>
-                </div>
-                ))}
-              </motion.div>
+                Loading…
+              </iframe>
             </div>
-          </motion.div>
-          
-          {/* FAQ Section */}
-          <motion.div
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-12"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.6 }}
-          >
-            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
-              Frequently Asked Questions
-            </h2>
-            <div className="space-y-6">
-              {faqs.map((faq, index) => (
-                <div key={index} className="border-b border-gray-200 dark:border-gray-700 pb-4">
-                  <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2">{faq.question}</h3>
-                  <p className="text-gray-600 dark:text-gray-300">{faq.answer}</p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
+          </div>
+        </motion.div>
+      </div>
 
-          {/* Bottom CTA */}
+      {/* Meet the Team Section */}
+      <section className="py-16 bg-gradient-to-b from-indigo-50 to-purple-50 dark:from-slate-800 dark:to-slate-900 overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <div className="flex justify-center mb-6">
+            <Users className="w-10 h-10 text-purple-600 dark:text-purple-400" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Meet the Team
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-10">
+            The passionate individuals behind Placify who work hard to make your experience seamless.
+          </p>
+
+          {/* Rotating team carousel */}
           <motion.div
-            className="text-center mt-12"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.9 }}
+            animate={{ x: ["0%", "-100%"] }}
+            transition={{
+              repeat: Infinity,
+              duration: 30,
+              ease: "linear",
+            }}
+            className="flex gap-10 w-[200%]"
           >
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-4">
-              Still have questions? We're here to help.
-            </p>
-            <a
-              href="mailto:support@placify.com"
-              className="inline-flex items-center space-x-2 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors duration-300"
-            >
-              <span>Email us directly</span>
-              <ArrowRight className="w-4 h-4" />
-            </a>
+            {[...teamMembers, ...teamMembers].map((member, index) => (
+              <div
+                key={index}
+                className="flex-shrink-0 w-64 p-6 rounded-xl shadow-md bg-white dark:bg-slate-800 hover:shadow-lg transition"
+              >
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  className="w-28 h-28 rounded-full mx-auto mb-4 object-cover shadow"
+                />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {member.name}
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400">{member.title}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                  {member.email}
+                </p>
+              </div>
+            ))}
           </motion.div>
         </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-16 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-gray-700">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="flex justify-center mb-6">
+            <HelpCircle className="w-10 h-10 text-indigo-600 dark:text-indigo-400" />
+          </div>
+          <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
+            Frequently Asked Questions
+          </h2>
+
+          <div className="space-y-6">
+            {faqs.map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.15, duration: 0.6 }}
+                className="p-6 rounded-lg shadow-md bg-gradient-to-r from-indigo-100 to-purple-100 
+                           dark:from-slate-800 dark:to-slate-700"
+              >
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {faq.question}
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300">{faq.answer}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
-        <Footer />
+      </section>
+
+      <Footer />
     </div>
   );
-};
-
-export default ContactPage;
+}
