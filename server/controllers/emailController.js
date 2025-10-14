@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import validator from "validator";
 
 dotenv.config();
 
@@ -56,10 +57,13 @@ const sendEmail = async (mailOptions) => {
 };
 
 // Validate feedback data
-const validateFeedback = ({ rating }) => {
+const validateFeedback = ({ email,rating }) => {
   if (!rating) throw new Error("Rating is required");
   if (rating < 1 || rating > 5)
     throw new Error("Rating must be between 1 and 5");
+  if (email && !validator.isEmail(email)) {
+    throw new Error("Invalid email format");
+  }
 };
 
 // Send feedback email
@@ -92,7 +96,7 @@ export const sendFeedback = async (req, res) => {
     console.error("❌ Error sending feedback email:", error.message);
 
     const isValidationError =
-      error.message.includes("required") || error.message.includes("must be");
+      error.message.includes("required") || error.message.includes("must be") || error.message.includes("Invalid email");
 
     return res.status(isValidationError ? 400 : 500).json({
       success: false,
