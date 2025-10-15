@@ -1,11 +1,9 @@
-import { Building2, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { Building2, Loader2, CheckCircle, XCircle } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { CheckCircle, XCircle } from "lucide-react";
 import FormInput from "../../components/FormInput";
 import RegistrationHeader from "../../components/RegistrationHeader";
 import Header from "../../components/Header";
@@ -14,6 +12,7 @@ import apiClient from "../../api/apiClient";
 
 export default function CompanyForm() {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     companyName: "",
     industry: "",
@@ -23,11 +22,14 @@ export default function CompanyForm() {
     confirmPassword: "",
     role: "company",
   });
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
 
-  // Track password validation
-  const [passwordRules, setPasswordRules] = useState({
+  // Password validation & strength tracking
+  const [passwordStrength, setPasswordStrength] = useState("");
+  const [requirements, setRequirements] = useState({
     length: false,
     upper: false,
     lower: false,
@@ -35,40 +37,40 @@ export default function CompanyForm() {
     special: false,
   });
 
-    useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
-
-  const validatePassword = (password) => {
-    const rules = {
-      length: password.length >= 8,
-      upper: /[A-Z]/.test(password),
-      lower: /[a-z]/.test(password),
-      number: /[0-9]/.test(password),
-      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  const checkPasswordStrength = (pwd) => {
+    const newReqs = {
+      length: pwd.length >= 8,
+      upper: /[A-Z]/.test(pwd),
+      lower: /[a-z]/.test(pwd),
+      number: /[0-9]/.test(pwd),
+      special: /[!@#$%^&*]/.test(pwd),
     };
-    setPasswordRules(rules);
-    return rules;
+    setRequirements(newReqs);
+
+    const metCount = Object.values(newReqs).filter(Boolean).length;
+    if (metCount <= 2) setPasswordStrength("Weak");
+    else if (metCount === 3 || metCount === 4) setPasswordStrength("Medium");
+    else setPasswordStrength("Strong");
   };
 
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
     setFormData({ ...formData, password: newPassword });
-    validatePassword(newPassword);
+    checkPasswordStrength(newPassword);
   };
 
-  // Check if all password rules are satisfied
-  const allPasswordRulesSatisfied = Object.values(passwordRules).every(
-    (rule) => rule
-  );
+  const allRequirementsMet = Object.values(requirements).every(Boolean);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    // Validation
+    // Field validation
     if (
       !formData.companyName ||
       !formData.industry ||
@@ -84,13 +86,12 @@ export default function CompanyForm() {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      setError("Please enter a valid email address for the HR contact");
+      setError("Please enter a valid email address");
       setLoading(false);
       return;
     }
 
-    // Check if all password rules are satisfied
-    if (!allPasswordRulesSatisfied) {
+    if (!allRequirementsMet) {
       setError("Password must meet all security requirements");
       setLoading(false);
       return;
@@ -102,28 +103,24 @@ export default function CompanyForm() {
       return;
     }
 
+    // API call
     try {
       await apiClient.post("/auth/register/company", formData);
       toast.success("Company registration successful! Please login.");
       setTimeout(() => navigate("/auth"), 2000);
     } catch (err) {
       if (err.response) {
-        // Backend responded with an error
-        let errorMsg =
-          err.response?.data?.message || `Server error: ${err.response.status}`;
-        let errorTitle = "Server Error";
-        if (errorMsg.includes("email") && errorMsg.includes("required")) {
-          errorTitle = "Missing Email";
-        } else if (errorMsg.includes("role") && errorMsg.includes("enum")) {
-          errorTitle = "Invalid Role";
-        } else if (errorMsg.includes("validation failed")) {
-          errorTitle = "Validation Error";
-        }
-        setError(`${errorTitle}: ${errorMsg}`);
-        toast.error(`${errorTitle}: ${errorMsg}`);
+        setError(
+          err.response?.data?.message ||
+            `Server error: ${err.response.status}`
+        );
+        toast.error(
+          err.response?.data?.message ||
+            `Server error: ${err.response.status}`
+        );
       } else if (err.request) {
-        setError("Backend not connected. Please check your connection.");
-        toast.error("Backend not connected. Please check your connection.");
+        setError("No response from server. Please check your connection.");
+        toast.error("No response from server. Please check your connection.");
       } else {
         setError(`Error: ${err.message}`);
         toast.error(`Error: ${err.message}`);
@@ -133,15 +130,7 @@ export default function CompanyForm() {
     }
   };
 
-  const passwordValidationRules = [
-    { label: "At least 8 characters", key: "length" },
-    { label: "One uppercase letter", key: "upper" },
-    { label: "One lowercase letter", key: "lower" },
-    { label: "One number", key: "number" },
-    { label: "One special character", key: "special" },
-  ];
-
-
+  // Animated floating particles
   const particleCount = 20;
   const particles = Array.from({ length: particleCount }, (_, i) => ({
     size: Math.random() * 15 + 10,
@@ -151,18 +140,17 @@ export default function CompanyForm() {
   }));
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-radial from-gray-900 via-gray-800 to-black dark:bg-gray-900 transition-colors duration-200">
-      {/* Particles */}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Floating Particles */}
       {particles.map((p, i) => (
         <motion.div
           key={i}
-          className="absolute rounded-full bg-white/20 dark:bg-white/10 blur-3xl pointer-events-none"
+          className="absolute rounded-full bg-white/20 dark:bg-white/10"
           style={{
             width: p.size,
             height: p.size,
             left: `${p.left}%`,
             bottom: `-${p.size}px`,
-            zIndex: 0, // ensures particles are behind the content
           }}
           animate={{ y: ["0%", "-120vh"] }}
           transition={{
@@ -174,6 +162,7 @@ export default function CompanyForm() {
         />
       ))}
 
+      {/* Header & Toasts */}
       <Header />
       <ToastContainer
         position="top-center"
@@ -186,71 +175,106 @@ export default function CompanyForm() {
         <RegistrationHeader
           title="Company Registration"
           subtitle="Scale your hiring process with enterprise-grade AI assessment platform. Join 500+ companies transforming recruitment with intelligent automation."
-          tagline="Enterprise setup in minutes"
+          tagline="Enterprise setup in minutes."
           icon={<Building2 className="w-10 h-10 text-white" />}
           color="orange"
           userType="company"
         />
       </div>
 
+      {/* Main Form Card */}
       <div className="py-12 px-4">
-        <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 transition-colors duration-200">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="relative max-w-lg mx-auto p-8 rounded-2xl shadow-xl
+                     bg-white dark:bg-slate-800 border border-transparent 
+                     transition-all
+                     before:absolute before:inset-0 before:rounded-2xl before:p-[2px]
+                     before:bg-gradient-to-r before:from-orange-500 before:via-yellow-500 before:to-orange-600
+                     before:animate-gradient-move before:-z-10"
+        >
+          {/* Error Alert */}
           {error && (
-            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md border border-red-200 dark:border-red-800">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-center p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg border border-red-300 dark:bg-red-900/50 dark:text-red-300 dark:border-red-500/50"
+            >
               {error}
-            </div>
+            </motion.div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <FormInput
               id="company-name"
               label="Company Name"
-              placeholder="Enter Company's Name"
+              placeholder="Enter company's name"
               value={formData.companyName}
               onChange={(e) =>
                 setFormData({ ...formData, companyName: e.target.value })
               }
               required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
             <FormInput
               id="company-industry"
               label="Industry"
-              placeholder="Enter Industry"
+              placeholder="Enter industry"
               value={formData.industry}
               onChange={(e) =>
                 setFormData({ ...formData, industry: e.target.value })
               }
               required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
             <FormInput
               id="company-website"
               label="Website"
-              placeholder="Enter Website" 
+              placeholder="Enter company website"
               value={formData.website}
               onChange={(e) =>
                 setFormData({ ...formData, website: e.target.value })
               }
               required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
             <FormInput
-              id="company-hr-email"
+              id="company-email"
               type="email"
               label="HR Contact Email"
-              placeholder="Enter email address"
+              placeholder="Enter HR email"
               value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
+              onChange={(e) => {
+                const val = e.target.value;
+                setFormData({ ...formData, email: val });
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (val && !emailRegex.test(val)) {
+                  setEmailError("Please enter a valid email — e.g. hr@company.com");
+                } else {
+                  setEmailError("");
+                }
+              }}
               required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+              onCopy={(e) => e.preventDefault()}
+              onPaste={(e) => e.preventDefault()}
             />
+
+            {/* Email validation error (animated) */}
+            {emailError && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-red-500 mt-1"
+              >
+                {emailError}
+              </motion.div>
+            )}
 
             <FormInput
               id="company-password"
@@ -262,71 +286,45 @@ export default function CompanyForm() {
               onCopy={(e) => e.preventDefault()}
               onPaste={(e) => e.preventDefault()}
               required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
-            {/* Dynamic Password Validation - Only show if password field has content */}
+            {/* Password strength indicator */}
             {formData.password && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mt-2 space-y-2"
-              >
-                {passwordValidationRules.map((rule) => {
-                  const isValid = passwordRules[rule.key];
-                  return (
-                    <motion.div
-                      key={rule.key}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex items-center gap-2 text-sm"
-                    >
-                      <motion.div
-                        initial={false}
-                        animate={{
-                          scale: isValid ? 1.1 : 1,
-                          rotate: isValid ? 360 : 0,
-                        }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        {isValid ? (
-                          <CheckCircle className="text-green-500 w-4 h-4" />
-                        ) : (
-                          <XCircle className="text-red-500 w-4 h-4" />
-                        )}
-                      </motion.div>
-                      <span
-                        className={`transition-colors duration-200 ${
-                          isValid
-                            ? "text-green-600 dark:text-green-400"
-                            : "text-red-500 dark:text-red-400"
-                        }`}
-                      >
-                        {rule.label}
-                      </span>
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
+              <div className="mt-2">
+                <p
+                  className={`text-sm font-medium ${
+                    passwordStrength === "Strong"
+                      ? "text-green-500"
+                      : passwordStrength === "Medium"
+                      ? "text-yellow-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  Strength: {passwordStrength}
+                </p>
+
+                {passwordStrength === "Weak" && (
+                  <p className="text-xs mt-2 text-red-500">
+                    Your password is weak. Please use a stronger one for better security.
+                  </p>
+                )}
+              </div>
             )}
 
             <FormInput
               id="company-confirm-password"
               type="password"
               label="Confirm Password"
-              placeholder="Enter confirm password"
+              placeholder="Re-enter password"
               value={formData.confirmPassword}
               onChange={(e) =>
                 setFormData({ ...formData, confirmPassword: e.target.value })
               }
               onPaste={(e) => e.preventDefault()}
               required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
-            {/* Password Mismatch Indicator */}
+            {/* Password match / mismatch indicators */}
             {formData.confirmPassword &&
               formData.password !== formData.confirmPassword && (
                 <motion.div
@@ -339,7 +337,6 @@ export default function CompanyForm() {
                 </motion.div>
               )}
 
-            {/* Password Match Indicator */}
             {formData.confirmPassword &&
               formData.password === formData.confirmPassword &&
               formData.password.length > 0 && (
@@ -353,19 +350,19 @@ export default function CompanyForm() {
                 </motion.div>
               )}
 
-            {/* Submit */}
+            {/* Submit Button */}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               type="submit"
               disabled={
                 loading ||
-                !allPasswordRulesSatisfied ||
+                !allRequirementsMet ||
                 formData.password !== formData.confirmPassword
               }
-              className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded-md shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all duration-200 ${
+              className={`w-full flex justify-center items-center gap-2 py-3 px-4 text-lg font-medium rounded-md shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all duration-200 ${
                 loading ||
-                !allPasswordRulesSatisfied ||
+                !allRequirementsMet ||
                 formData.password !== formData.confirmPassword
                   ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70"
                   : "bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white"
@@ -375,8 +372,9 @@ export default function CompanyForm() {
               {loading ? "Registering..." : "Register Company"}
             </motion.button>
           </form>
-        </div>
+        </motion.div>
       </div>
+
       <Footer />
     </div>
   );
