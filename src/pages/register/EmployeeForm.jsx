@@ -1,6 +1,5 @@
-import { Briefcase, Loader2 } from "lucide-react";
-import { useState } from "react";
-import { useEffect } from "react";
+import { Briefcase, Loader2, CheckCircle, XCircle } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ToastContainer, toast } from "react-toastify";
@@ -10,10 +9,10 @@ import RegistrationHeader from "../../components/RegistrationHeader";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import apiClient from "../../api/apiClient";
-import { CheckCircle, XCircle } from "lucide-react";
 
 export default function EmployeeForm() {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     fullName: "",
     currentCompany: "",
@@ -23,11 +22,14 @@ export default function EmployeeForm() {
     confirmPassword: "",
     role: "employee",
   });
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
 
-  // Track password validation
-  const [passwordRules, setPasswordRules] = useState({
+  // Password strength tracking
+  const [passwordStrength, setPasswordStrength] = useState("");
+  const [requirements, setRequirements] = useState({
     length: false,
     upper: false,
     lower: false,
@@ -35,40 +37,36 @@ export default function EmployeeForm() {
     special: false,
   });
 
-    useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
-
-
-  const validatePassword = (password) => {
-    const rules = {
-      length: password.length >= 8,
-      upper: /[A-Z]/.test(password),
-      lower: /[a-z]/.test(password),
-      number: /[0-9]/.test(password),
-      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  const checkPasswordStrength = (pwd) => {
+    const newReqs = {
+      length: pwd.length >= 8,
+      upper: /[A-Z]/.test(pwd),
+      lower: /[a-z]/.test(pwd),
+      number: /[0-9]/.test(pwd),
+      special: /[!@#$%^&*]/.test(pwd),
     };
-    setPasswordRules(rules);
-    return rules;
+
+    setRequirements(newReqs);
+
+    const metCount = Object.values(newReqs).filter(Boolean).length;
+    if (metCount <= 2) setPasswordStrength("Weak");
+    else if (metCount === 3 || metCount === 4) setPasswordStrength("Medium");
+    else setPasswordStrength("Strong");
   };
 
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
     setFormData({ ...formData, password: newPassword });
-    validatePassword(newPassword);
+    checkPasswordStrength(newPassword);
   };
 
-  // Check if all password rules are satisfied
-  const allPasswordRulesSatisfied = Object.values(passwordRules).every(
-    (rule) => rule
-  );
+  const allRequirementsMet = Object.values(requirements).every(Boolean);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    // Validation
     if (
       !formData.fullName ||
       !formData.currentCompany ||
@@ -89,7 +87,7 @@ export default function EmployeeForm() {
       return;
     }
 
-    if (!allPasswordRulesSatisfied) {
+    if (!allRequirementsMet) {
       setError("Password must meet all security requirements");
       setLoading(false);
       return;
@@ -102,14 +100,10 @@ export default function EmployeeForm() {
     }
 
     try {
-      console.log("Sending registration data:", formData);
       await apiClient.post("/auth/register/employee", formData);
-
-      toast.success("Employee registration successful! Please login.");
+      toast.success("Registration successful! Please login.");
       setTimeout(() => navigate("/auth"), 2000);
     } catch (err) {
-      console.error("Registration error:", err);
-
       if (err.response) {
         setError(
           err.response?.data?.message || `Server error: ${err.response.status}`
@@ -129,15 +123,10 @@ export default function EmployeeForm() {
     }
   };
 
-  const passwordValidationRules = [
-    { label: "At least 8 characters", key: "length" },
-    { label: "One uppercase letter", key: "upper" },
-    { label: "One lowercase letter", key: "lower" },
-    { label: "One number", key: "number" },
-    { label: "One special character", key: "special" },
-  ];
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
-  // 🌟 Bubble particles setup
   const particleCount = 20;
   const particles = Array.from({ length: particleCount }, (_, i) => ({
     size: Math.random() * 15 + 10,
@@ -147,8 +136,8 @@ export default function EmployeeForm() {
   }));
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gray-50 dark:bg-slate-900">
-      {/* Floating Bubbles */}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Floating particles */}
       {particles.map((p, i) => (
         <motion.div
           key={i}
@@ -176,6 +165,7 @@ export default function EmployeeForm() {
         theme="colored"
         toastClassName="dark:bg-gray-800 dark:text-white"
       />
+
       <div className="pt-16">
         <RegistrationHeader
           title="HR Professional Registration"
@@ -186,14 +176,34 @@ export default function EmployeeForm() {
           userType="employee"
         />
       </div>
+
       <div className="py-12 px-4">
-        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg dark:bg-slate-800 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="relative max-w-lg mx-auto p-8 rounded-2xl shadow-xl
+                     bg-white dark:bg-slate-800 border border-transparent 
+                     transition-all
+                     before:absolute before:inset-0 before:rounded-2xl before:p-[2px]
+                     before:bg-gradient-to-r before:from-green-600 before:via-emerald-600 before:to-green-700
+                     before:animate-gradient-move before:-z-10"
+        >
+          {/* Error Alert */}
           {error && (
-            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md border border-red-200 dark:bg-red-900/50 dark:text-red-300 dark:border-red-500/50">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-center p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg border border-red-300 dark:bg-red-900/50 dark:text-red-300 dark:border-red-500/50"
+              role="alert"
+            >
               {error}
-            </div>
+            </motion.div>
           )}
-          <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
             <FormInput
               id="employee-fullname"
               label="Full Name"
@@ -203,42 +213,63 @@ export default function EmployeeForm() {
                 setFormData({ ...formData, fullName: e.target.value })
               }
               required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
+
             <FormInput
-              id="employee-current-company"
+              id="employee-company"
               label="Current Company"
-              placeholder="Enter Current Company"
+              placeholder="Enter your company's name"
               value={formData.currentCompany}
               onChange={(e) =>
                 setFormData({ ...formData, currentCompany: e.target.value })
               }
               required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
+
             <FormInput
-              id="employee-job-title"
+              id="employee-job"
               label="Job Title"
-              placeholder="Enter Job-title"
+              placeholder="Enter your job title"
               value={formData.jobTitle}
               onChange={(e) =>
                 setFormData({ ...formData, jobTitle: e.target.value })
               }
               required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
+
             <FormInput
               id="employee-email"
               type="email"
               label="Email"
               placeholder="Enter your email"
               value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
+              onChange={(e) => {
+                const val = e.target.value;
+                setFormData({ ...formData, email: val });
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (val && !emailRegex.test(val)) {
+                  setEmailError("Please enter a valid email — e.g. hr@company.com");
+                } else {
+                  setEmailError("");
+                }
+              }}
               required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+              onCopy={(e) => e.preventDefault()}
+              onPaste={(e) => e.preventDefault()}
             />
+
+            {emailError && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-red-500 mt-1"
+              >
+                {emailError}
+              </motion.div>
+            )}
+
             <FormInput
               id="employee-password"
               type="password"
@@ -249,71 +280,44 @@ export default function EmployeeForm() {
               onCopy={(e) => e.preventDefault()}
               onPaste={(e) => e.preventDefault()}
               required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
-            {/* Dynamic Password Validation */}
             {formData.password && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mt-2 space-y-2"
-              >
-                {passwordValidationRules.map((rule) => {
-                  const isValid = passwordRules[rule.key];
-                  return (
-                    <motion.div
-                      key={rule.key}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex items-center gap-2 text-sm"
-                    >
-                      <motion.div
-                        initial={false}
-                        animate={{
-                          scale: isValid ? 1.1 : 1,
-                          rotate: isValid ? 360 : 0,
-                        }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        {isValid ? (
-                          <CheckCircle className="text-green-500 w-4 h-4" />
-                        ) : (
-                          <XCircle className="text-red-500 w-4 h-4" />
-                        )}
-                      </motion.div>
-                      <span
-                        className={`transition-colors duration-200 ${
-                          isValid
-                            ? "text-green-600 dark:text-green-400"
-                            : "text-red-500 dark:text-red-400"
-                        }`}
-                      >
-                        {rule.label}
-                      </span>
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
+              <div className="mt-2">
+                <p
+                  className={`text-sm font-medium ${
+                    passwordStrength === "Strong"
+                      ? "text-green-500"
+                      : passwordStrength === "Medium"
+                      ? "text-yellow-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  Strength: {passwordStrength}
+                </p>
+
+                {passwordStrength === "Weak" && (
+                  <p className="text-xs mt-2 text-red-500">
+                    Your password is considered weak. Please update it in
+                    account settings for better security.
+                  </p>
+                )}
+              </div>
             )}
 
             <FormInput
               id="employee-confirm-password"
               type="password"
               label="Confirm Password"
-              placeholder="Enter confirm password"
+              placeholder="Enter Confirm password"
               value={formData.confirmPassword}
               onChange={(e) =>
                 setFormData({ ...formData, confirmPassword: e.target.value })
               }
               onPaste={(e) => e.preventDefault()}
               required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
 
-            {/* Password Match Indicators */}
             {formData.confirmPassword &&
               formData.password !== formData.confirmPassword && (
                 <motion.div
@@ -345,23 +349,24 @@ export default function EmployeeForm() {
               type="submit"
               disabled={
                 loading ||
-                !allPasswordRulesSatisfied ||
+                !allRequirementsMet ||
                 formData.password !== formData.confirmPassword
               }
-              className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded-md transition duration-200 ${
+              className={`w-full flex justify-center items-center gap-2 py-3 px-4 text-lg font-medium rounded-md shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-200 ${
                 loading ||
-                !allPasswordRulesSatisfied ||
+                !allRequirementsMet ||
                 formData.password !== formData.confirmPassword
                   ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70"
-                  : "bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-500 text-white"
+                  : "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
               }`}
             >
               {loading && <Loader2 className="animate-spin w-5 h-5" />}
               {loading ? "Registering..." : "Register as Employee"}
             </motion.button>
           </form>
-        </div>
+        </motion.div>
       </div>
+
       <Footer />
     </div>
   );
