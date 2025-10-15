@@ -25,7 +25,11 @@ export default function StudentForm() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [passwordRules, setPasswordRules] = useState({
+  const [emailError, setEmailError] = useState("");
+  
+  // Logic remains the same to calculate strength
+  const [passwordStrength, setPasswordStrength] = useState("");
+  const [requirements, setRequirements] = useState({
     length: false,
     upper: false,
     lower: false,
@@ -33,27 +37,30 @@ export default function StudentForm() {
     special: false,
   });
 
-  const validatePassword = (password) => {
-    const rules = {
-      length: password.length >= 8,
-      upper: /[A-Z]/.test(password),
-      lower: /[a-z]/.test(password),
-      number: /[0-9]/.test(password),
-      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  const checkPasswordStrength = (pwd) => {
+    const newReqs = {
+      length: pwd.length >= 8,
+      upper: /[A-Z]/.test(pwd),
+      lower: /[a-z]/.test(pwd),
+      number: /[0-9]/.test(pwd),
+      special: /[!@#$%^&*]/.test(pwd),
     };
-    setPasswordRules(rules);
-    return rules;
+
+    setRequirements(newReqs);
+
+    const metCount = Object.values(newReqs).filter(Boolean).length;
+    if (metCount <= 2) setPasswordStrength("Weak");
+    else if (metCount === 3 || metCount === 4) setPasswordStrength("Medium");
+    else setPasswordStrength("Strong");
   };
 
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
     setFormData({ ...formData, password: newPassword });
-    validatePassword(newPassword);
+    checkPasswordStrength(newPassword);
   };
 
-  const allPasswordRulesSatisfied = Object.values(passwordRules).every(
-    (rule) => rule
-  );
+  const allRequirementsMet = Object.values(requirements).every(Boolean);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -80,7 +87,7 @@ export default function StudentForm() {
       return;
     }
 
-    if (!allPasswordRulesSatisfied) {
+    if (!allRequirementsMet) {
       setError("Password must meet all security requirements");
       setLoading(false);
       return;
@@ -120,15 +127,6 @@ export default function StudentForm() {
     window.scrollTo(0, 0);
   }, []);
 
-  const passwordValidationRules = [
-    { label: "At least 8 characters", key: "length" },
-    { label: "One uppercase letter", key: "upper" },
-    { label: "One lowercase letter", key: "lower" },
-    { label: "One number", key: "number" },
-    { label: "One special character", key: "special" },
-  ];
-
-  // Generate particles
   const particleCount = 20;
   const particles = Array.from({ length: particleCount }, (_, i) => ({
     size: Math.random() * 15 + 10,
@@ -218,9 +216,9 @@ export default function StudentForm() {
               onChange={(e) =>
                 setFormData({ ...formData, fullName: e.target.value })
               }
-              required 
-              />
-              
+              required
+            />
+
             <FormInput
               id="student-university"
               label="University Name"
@@ -241,17 +239,40 @@ export default function StudentForm() {
               }
               required
             />
+            
             <FormInput
               id="student-email"
               type="email"
               label="Email"
               placeholder="Enter your email"
               value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
+              onChange={(e) => {
+                const val = e.target.value;
+                setFormData({ ...formData, email: val });
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (val && !emailRegex.test(val)) {
+                  setEmailError("Please enter a valid email — e.g. user@example.com");
+                } else {
+                  setEmailError("");
+                }
+              }}
               required
+              onCopy={(e) => e.preventDefault()}
+              onPaste={(e) => e.preventDefault()}
             />
+            
+            {emailError && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-red-500 mt-1"
+              >
+                {emailError}
+              </motion.div>
+            )}
+            
             <FormInput
               id="student-password"
               type="password"
@@ -264,52 +285,30 @@ export default function StudentForm() {
               required
             />
 
-            {/* Dynamic Password Validation - Only show if password field has content */}
+            {/* --- START: UPDATED PASSWORD FEEDBACK UI --- */}
             {formData.password && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mt-2 space-y-2"
-              >
-                {passwordValidationRules.map((rule) => {
-                  const isValid = passwordRules[rule.key];
-                  return (
-                    <motion.div
-                      key={rule.key}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex items-center gap-2 text-sm"
-                    >
-                      <motion.div
-                        initial={false}
-                        animate={{
-                          scale: isValid ? 1.1 : 1,
-                          rotate: isValid ? 360 : 0,
-                        }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        {isValid ? (
-                          <CheckCircle className="text-green-500 w-4 h-4" />
-                        ) : (
-                          <XCircle className="text-red-500 w-4 h-4" />
-                        )}
-                      </motion.div>
-                      <span
-                        className={`transition-colors duration-200 ${
-                          isValid
-                            ? "text-green-600 dark:text-green-400"
-                            : "text-red-500 dark:text-red-400"
-                        }`}
-                      >
-                        {rule.label}
-                      </span>
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
+              <div className="mt-2">
+                <p
+                  className={`text-sm font-medium ${
+                    passwordStrength === "Strong"
+                      ? "text-green-500"
+                      : passwordStrength === "Medium"
+                      ? "text-yellow-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  Strength: {passwordStrength}
+                </p>
+
+                {passwordStrength === "Weak" && (
+                  <p className="text-xs mt-2 text-red-500">
+                    Your password is considered weak. Please update it in
+                    account settings for better security.
+                  </p>
+                )}
+              </div>
             )}
+            {/* --- END: UPDATED PASSWORD FEEDBACK UI --- */}
 
             <FormInput
               id="student-confirm-password"
@@ -358,12 +357,12 @@ export default function StudentForm() {
               type="submit"
               disabled={
                 loading ||
-                !allPasswordRulesSatisfied ||
+                !allRequirementsMet ||
                 formData.password !== formData.confirmPassword
               }
               className={`w-full flex justify-center items-center gap-2 py-3 px-4 text-lg font-medium rounded-md shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-200 ${
                 loading ||
-                !allPasswordRulesSatisfied ||
+                !allRequirementsMet ||
                 formData.password !== formData.confirmPassword
                   ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70"
                   : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
