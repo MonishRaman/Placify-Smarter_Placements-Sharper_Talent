@@ -116,7 +116,7 @@ const Footer = () => {
 
   return (
     <>
-      <footer className="bg-gradient-to-t from-purple-300 to-purple-100 dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-200 border-t border-gray-200 dark:border-gray-700">
+      <footer className="bg-gradient-to-t from-purple-400 to-purple-100 dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-200 border-t border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Main Footer Content */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8">
@@ -129,38 +129,42 @@ const Footer = () => {
                 </span>
               </div>
               <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm leading-relaxed max-w-md">
-                Empowering careers through AI-powered interview preparation. We
-                help students, professionals, and organizations achieve
+                Empowering careers through <span className="w-7 h-7 text-purple-600"><strong>AI-powered </strong></span>interview preparation. We
+                help <strong>students, professionals, and organizations</strong> achieve
                 placement success with personalized feedback and realistic
                 interview experiences.
-              </p>
+              </p><br></br>
               <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-gray-500 dark:text-gray-400">
                 <div className="flex items-center space-x-1">
                   <Target className="w-4 h-4" />
-                  <span>Smarter Placements</span>
+                  <span><strong>Smarter Placements</strong></span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Users className="w-4 h-4" />
-                  <span>Sharper Talent</span>
+                  <span><strong>Sharper Talent</strong></span>
                 </div>
               </div>
             </div>
 
             {/* Quick Navigation */}
             <div>
-              <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
-                Quick Links
-              </h3>
+             <h3 className="inline-block px-3 py-1 mb-3 text-base font-semibold text-white bg-purple-600 rounded-lg">
+             Quick Links
+            </h3>
+
               <ul className="space-y-2">
                 {navigationLinks.map((link) => (
                   <li key={link.name}>
-                    <Link
-                      to={link.href}
-                      className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200 text-sm flex items-center group"
-                    >
-                      <span>{link.name}</span>
-                      <ExternalLink className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </Link>
+                <Link
+                to={link.href}
+                className="relative text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200 text-sm flex items-center group"
+                >
+                <span className="relative block pb-1">
+                  {link.name}
+                  <span className="absolute left-0 bottom-0 w-[20px] h-[1.1px] bg-purple-600 dark:bg-purple-400 rounded-full transition-all duration-300 group-hover:opacity-0"></span>
+                </span>
+                <ExternalLink className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>            
                   </li>
                 ))}
               </ul>
@@ -168,19 +172,23 @@ const Footer = () => {
 
             {/* User Roles */}
             <div>
-              <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+              <h3 className="inline-block px-3 py-1 mb-3 text-base font-semibold text-white bg-purple-600 rounded-lg">
                 Join As
               </h3>
               <ul className="space-y-2">
                 {userRoles.map((role) => (
                   <li key={role.name}>
                     <Link
-                      to={role.href}
-                      className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200 text-sm flex items-center group"
-                    >
-                      <span>{role.name}</span>
-                      <ExternalLink className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </Link>
+                    to={role.href}
+                    className="relative text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200 text-sm flex items-center group"
+                  >
+                    <span className="relative block pb-1">
+                      {role.name}
+                      <span className="absolute left-0 bottom-0 w-[20px] h-[1.1px] bg-purple-600 dark:bg-purple-400 rounded-full transition-all duration-300 group-hover:opacity-0"></span>
+                    </span>
+                    <ExternalLink className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </Link>
+
                   </li>
                 ))}
               </ul>
@@ -188,11 +196,11 @@ const Footer = () => {
 
             {/* Newsletter Section */}
             <div className="sm:col-span-2 lg:col-span-1">
-              <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+               <h3 className="inline-block px-3 py-1 mb-3 text-base font-semibold text-white bg-purple-600 rounded-lg">
                 Stay Updated
               </h3>
               <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
-                Subscribe to our newsletter for the latest updates and tips on
+                Subscribe to our <strong>newsletter</strong> for the latest updates and tips on
                 interview preparation.
               </p>
               <form onSubmit={handleSubmit} className="space-y-3">
@@ -202,7 +210,7 @@ const Footer = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                    className="w-full px-4 py-2 rounded-lg border border-gray-400 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
                     disabled={isSubmitting}
                   />
                   <button
@@ -226,7 +234,7 @@ const Footer = () => {
             <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-sm">
               <a
                 href="mailto:support@placify.com"
-                className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                className="flex items-center space-x-2 text-purple-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
               >
                 <Mail className="w-4 h-4" />
                 <span className="text-center sm:text-left">support@placify.com</span>
@@ -259,7 +267,7 @@ const Footer = () => {
 
           {/* Bottom Section */}
           <div className="mt-6 pt-4 border-t border-purple-400 dark:border-gray-700 text-center">
-            <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0 text-sm text-gray-700 dark:text-gray-400">
               <p>© {new Date().getFullYear()} Placify. All rights reserved.</p>
               <div className="flex items-center space-x-1">
                 <span>Made with</span>
