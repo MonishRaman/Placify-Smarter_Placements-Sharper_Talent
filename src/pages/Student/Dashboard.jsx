@@ -288,6 +288,58 @@ const StudentDashboard = () => {
     ? "dark bg-gray-900 text-white"
     : "bg-gray-50 text-gray-900";
 
+  // Goals state and modal
+  const [goals, setGoals] = useState(() => {
+    try {
+      const raw = localStorage.getItem("student_goals");
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      console.error("Failed to parse goals from localStorage", e);
+      return [];
+    }
+  });
+  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [newGoal, setNewGoal] = useState({
+    title: "",
+    description: "",
+    targetDate: "",
+    weeklyTarget: "",
+  });
+
+  // Persist goals when they change
+  useEffect(() => {
+    try {
+      localStorage.setItem("student_goals", JSON.stringify(goals));
+    } catch (e) {
+      console.error("Failed to save goals to localStorage", e);
+    }
+  }, [goals]);
+
+  const openAddGoal = () => {
+    setNewGoal({
+      title: "",
+      description: "",
+      targetDate: "",
+      weeklyTarget: "",
+    });
+    setIsGoalModalOpen(true);
+  };
+
+  const saveGoal = () => {
+    if (!newGoal.title.trim()) return alert("Please provide a goal title");
+    const goal = {
+      id: Date.now(),
+      ...newGoal,
+      createdAt: new Date().toISOString(),
+    };
+    setGoals((prev) => [goal, ...prev]);
+    setIsGoalModalOpen(false);
+  };
+
+  const removeGoal = (id) => {
+    setGoals((prev) => prev.filter((g) => g.id !== id));
+  };
+
   return (
     <div
       className={`min-h-screen transition-colors duration-300 ${themeClasses} overflow-x-hidden`}
@@ -827,7 +879,10 @@ const StudentDashboard = () => {
                 <h2 className="text-xl sm:text-2xl font-bold">
                   Goals & Progress
                 </h2>
-                <button className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-sm">
+                <button
+                  onClick={openAddGoal}
+                  className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-sm"
+                >
                   <Plus className="w-4 h-4" />
                   Add New Goal
                 </button>
@@ -907,6 +962,52 @@ const StudentDashboard = () => {
                   Achievement Milestones
                 </h3>
                 <div className="space-y-3 sm:space-y-4">
+                  {/* Render user-defined goals above milestones */}
+                  {goals.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-sm sm:text-base mb-2">
+                        Your Goals
+                      </h4>
+                      <div className="space-y-2">
+                        {goals.map((goal) => (
+                          <div
+                            key={goal.id}
+                            className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-start justify-between"
+                          >
+                            <div>
+                              <p className="font-medium text-sm">
+                                {goal.title}
+                              </p>
+                              <p className="text-xs text-gray-600 dark:text-gray-400">
+                                {goal.description}
+                              </p>
+                              {goal.targetDate && (
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Target:{" "}
+                                  {new Date(
+                                    goal.targetDate
+                                  ).toLocaleDateString()}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex flex-col items-end gap-2">
+                              <button
+                                onClick={() => removeGoal(goal.id)}
+                                className="text-xs text-red-500 hover:underline"
+                              >
+                                Remove
+                              </button>
+                              <span className="text-xs text-gray-500">
+                                {goal.weeklyTarget
+                                  ? `${goal.weeklyTarget} / week`
+                                  : ""}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   {[
                     {
                       title: "First 100 Questions Completed",
@@ -1177,6 +1278,93 @@ const StudentDashboard = () => {
           )}
         </div>
       </div>
+      {/* Goal Modal (top-level to ensure visibility) */}
+      {isGoalModalOpen && (
+        <div className="fixed inset-0 z-70 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Add New Goal</h3>
+              <button
+                onClick={() => setIsGoalModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                Close
+              </button>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium mb-1">Title</label>
+                <input
+                  value={newGoal.title}
+                  onChange={(e) =>
+                    setNewGoal({ ...newGoal, title: e.target.value })
+                  }
+                  className="w-full p-2 border rounded-md dark:bg-gray-700"
+                  placeholder="e.g. Complete 50 aptitude questions"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={newGoal.description}
+                  onChange={(e) =>
+                    setNewGoal({ ...newGoal, description: e.target.value })
+                  }
+                  className="w-full p-2 border rounded-md dark:bg-gray-700"
+                  rows={3}
+                  placeholder="Add details about the goal"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Target Date
+                  </label>
+                  <input
+                    type="date"
+                    value={newGoal.targetDate}
+                    onChange={(e) =>
+                      setNewGoal({ ...newGoal, targetDate: e.target.value })
+                    }
+                    className="w-full p-2 border rounded-md dark:bg-gray-700"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Weekly Target
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={newGoal.weeklyTarget}
+                    onChange={(e) =>
+                      setNewGoal({ ...newGoal, weeklyTarget: e.target.value })
+                    }
+                    className="w-full p-2 border rounded-md dark:bg-gray-700"
+                    placeholder="e.g. 10 questions/week"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-2 mt-4">
+                <button
+                  onClick={() => setIsGoalModalOpen(false)}
+                  className="px-3 py-2 rounded-md bg-gray-200 dark:bg-gray-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveGoal}
+                  className="px-3 py-2 rounded-md bg-blue-600 text-white"
+                >
+                  Save Goal
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
