@@ -1,9 +1,23 @@
 import { useState, useEffect } from "react";
 import { Switch } from "@headlessui/react";
-import { Bell, BellOff, Trash2, LogOut, Camera, Save, Edit, X } from "lucide-react";
+import {
+  Bell,
+  BellOff,
+  Trash2,
+  LogOut,
+  Camera,
+  Save,
+  Edit,
+  X,
+} from "lucide-react";
 import ThemeToggle from "../../components/ThemeToggle";
 import { useAuth } from "../../context/AuthContext";
 import apiClient from "../../api/apiClient";
+import authApi, {
+  getProfile as fetchProfileApi,
+  updateProfile as updateProfileApi,
+  profileImageUrl,
+} from "../../api/auth";
 
 const Settings = () => {
   const [notifications, setNotifications] = useState(true);
@@ -23,13 +37,19 @@ const Settings = () => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const response = await apiClient.get('/auth/profile');
-        setProfile(response.data);
-        setEditedProfile(response.data);
+        const data = await fetchProfileApi();
+        // Ensure we store the raw profile object and initialize editedProfile as a plain object
+        setProfile(data || {});
+        setEditedProfile(data || {});
+
+        // If the backend returned a profileImage path, set preview to full URL
+        if (data?.profileImage) {
+          setImagePreview(profileImageUrl(data.profileImage));
+        }
         setError("");
       } catch (error) {
-        console.error('Error fetching profile:', error);
-        setError('Failed to load profile data');
+        console.error("Error fetching profile:", error);
+        setError("Failed to load profile data");
       } finally {
         setLoading(false);
       }
@@ -42,9 +62,9 @@ const Settings = () => {
 
   // Handle profile field changes
   const handleProfileChange = (field, value) => {
-    setEditedProfile(prev => ({
+    setEditedProfile((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -67,34 +87,47 @@ const Settings = () => {
       setSaving(true);
       setError("");
 
-      const formData = new FormData();
-      
-      // Add profile fields to form data
-      Object.keys(editedProfile).forEach(key => {
-        if (editedProfile[key] !== undefined && editedProfile[key] !== null) {
-          formData.append(key, editedProfile[key]);
-        }
-      });
-
-      // Add image if selected
+      // If an image is selected, send multipart/form-data so the backend can handle the file.
+      // Otherwise send a JSON payload which is simpler.
+      let response;
       if (selectedImage) {
-        formData.append('profileImage', selectedImage);
+        const formData = new FormData();
+        Object.keys(editedProfile).forEach((key) => {
+          if (editedProfile[key] !== undefined && editedProfile[key] !== null) {
+            formData.append(key, editedProfile[key]);
+          }
+        });
+        formData.append("profileImage", selectedImage);
+
+        const data = await updateProfileApi(formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        setProfile(data);
+        setEditedProfile(data);
+        if (data?.profileImage)
+          setImagePreview(profileImageUrl(data.profileImage));
+      } else {
+        // Send only the fields that are present to avoid overwriting with undefined
+        const payload = {};
+        Object.keys(editedProfile).forEach((key) => {
+          if (editedProfile[key] !== undefined && editedProfile[key] !== null) {
+            payload[key] = editedProfile[key];
+          }
+        });
+
+        const data = await updateProfileApi(payload);
+        setProfile(data);
+        setEditedProfile(data);
+        if (data?.profileImage)
+          setImagePreview(profileImageUrl(data.profileImage));
       }
-
-      const response = await apiClient.put('/auth/profile', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      setProfile(response.data);
-      setEditedProfile(response.data);
       setIsEditing(false);
       setSelectedImage(null);
       setImagePreview(null);
     } catch (error) {
-      console.error('Error updating profile:', error);
-      setError('Failed to update profile');
+      console.error("Error updating profile:", error);
+      setError("Failed to update profile");
     } finally {
       setSaving(false);
     }
@@ -111,10 +144,10 @@ const Settings = () => {
 
   // Handle logout
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setIsAuthenticated(false);
-    window.location.href = '/auth';
+    window.location.href = "/auth";
   };
 
   if (loading) {
@@ -160,7 +193,7 @@ const Settings = () => {
                     className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition disabled:opacity-50"
                   >
                     <Save size={16} />
-                    {saving ? 'Saving...' : 'Save'}
+                    {saving ? "Saving..." : "Save"}
                   </button>
                 </>
               ) : (
@@ -182,13 +215,15 @@ const Settings = () => {
                 <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
                   {imagePreview || profile.profileImage ? (
                     <img
-                      src={imagePreview || `${import.meta.env.VITE_API_URL}${profile.profileImage}`}
+                      src={
+                        imagePreview || profileImageUrl(profile.profileImage)
+                      }
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="text-4xl font-bold text-gray-400">
-                      {profile.name?.charAt(0)?.toUpperCase() || 'U'}
+                      {profile.name?.charAt(0)?.toUpperCase() || "U"}
                     </div>
                   )}
                 </div>
@@ -209,7 +244,8 @@ const Settings = () => {
                 )}
               </div>
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
-                {profile.role?.charAt(0)?.toUpperCase() + profile.role?.slice(1) || 'User'}
+                {profile.role?.charAt(0)?.toUpperCase() +
+                  profile.role?.slice(1) || "User"}
               </p>
             </div>
 
@@ -221,95 +257,123 @@ const Settings = () => {
                   {isEditing ? (
                     <input
                       type="text"
-                      value={editedProfile.name || ''}
-                      onChange={(e) => handleProfileChange('name', e.target.value)}
+                      value={editedProfile.name || ""}
+                      onChange={(e) =>
+                        handleProfileChange("name", e.target.value)
+                      }
                       className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600"
                       placeholder="Enter your name"
                     />
                   ) : (
                     <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                      {profile.name || 'Not provided'}
+                      {profile.name || "Not provided"}
                     </div>
                   )}
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium mb-1">Email</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Email
+                  </label>
                   <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-600 dark:text-gray-400">
-                    {profile.email || 'Not provided'}
+                    {profile.email || "Not provided"}
                   </div>
                 </div>
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Phone</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Phone
+                  </label>
                   {isEditing ? (
                     <input
                       type="tel"
-                      value={editedProfile.phone || ''}
-                      onChange={(e) => handleProfileChange('phone', e.target.value)}
+                      value={editedProfile.phone || ""}
+                      onChange={(e) =>
+                        handleProfileChange("phone", e.target.value)
+                      }
                       className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600"
                       placeholder="Enter your phone number"
                     />
                   ) : (
                     <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                      {profile.phone || 'Not provided'}
+                      {profile.phone || "Not provided"}
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Date of Birth</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Date of Birth
+                  </label>
                   {isEditing ? (
                     <input
                       type="date"
-                      value={editedProfile.dob ? new Date(editedProfile.dob).toISOString().split('T')[0] : ''}
-                      onChange={(e) => handleProfileChange('dob', e.target.value)}
+                      value={
+                        editedProfile.dob
+                          ? new Date(editedProfile.dob)
+                              .toISOString()
+                              .split("T")[0]
+                          : ""
+                      }
+                      onChange={(e) =>
+                        handleProfileChange("dob", e.target.value)
+                      }
                       className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600"
                     />
                   ) : (
                     <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                      {profile.dob ? new Date(profile.dob).toLocaleDateString() : 'Not provided'}
+                      {profile.dob
+                        ? new Date(profile.dob).toLocaleDateString()
+                        : "Not provided"}
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Student-specific fields */}
-              {profile.role === 'student' && (
+              {profile.role === "student" && (
                 <>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-1">University</label>
+                      <label className="block text-sm font-medium mb-1">
+                        University
+                      </label>
                       {isEditing ? (
                         <input
                           type="text"
-                          value={editedProfile.university || ''}
-                          onChange={(e) => handleProfileChange('university', e.target.value)}
+                          value={editedProfile.university || ""}
+                          onChange={(e) =>
+                            handleProfileChange("university", e.target.value)
+                          }
                           className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600"
                           placeholder="Enter your university"
                         />
                       ) : (
                         <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                          {profile.university || 'Not provided'}
+                          {profile.university || "Not provided"}
                         </div>
                       )}
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-1">Major</label>
+                      <label className="block text-sm font-medium mb-1">
+                        Major
+                      </label>
                       {isEditing ? (
                         <input
                           type="text"
-                          value={editedProfile.major || ''}
-                          onChange={(e) => handleProfileChange('major', e.target.value)}
+                          value={editedProfile.major || ""}
+                          onChange={(e) =>
+                            handleProfileChange("major", e.target.value)
+                          }
                           className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600"
                           placeholder="Enter your major"
                         />
                       ) : (
                         <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                          {profile.major || 'Not provided'}
+                          {profile.major || "Not provided"}
                         </div>
                       )}
                     </div>
@@ -317,28 +381,36 @@ const Settings = () => {
 
                   <div className="grid md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-1">Department</label>
+                      <label className="block text-sm font-medium mb-1">
+                        Department
+                      </label>
                       {isEditing ? (
                         <input
                           type="text"
-                          value={editedProfile.department || ''}
-                          onChange={(e) => handleProfileChange('department', e.target.value)}
+                          value={editedProfile.department || ""}
+                          onChange={(e) =>
+                            handleProfileChange("department", e.target.value)
+                          }
                           className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600"
                           placeholder="Enter your department"
                         />
                       ) : (
                         <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                          {profile.department || 'Not provided'}
+                          {profile.department || "Not provided"}
                         </div>
                       )}
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-1">Year</label>
+                      <label className="block text-sm font-medium mb-1">
+                        Year
+                      </label>
                       {isEditing ? (
                         <select
-                          value={editedProfile.year || ''}
-                          onChange={(e) => handleProfileChange('year', e.target.value)}
+                          value={editedProfile.year || ""}
+                          onChange={(e) =>
+                            handleProfileChange("year", e.target.value)
+                          }
                           className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600"
                         >
                           <option value="">Select Year</option>
@@ -350,17 +422,21 @@ const Settings = () => {
                         </select>
                       ) : (
                         <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                          {profile.year || 'Not provided'}
+                          {profile.year || "Not provided"}
                         </div>
                       )}
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-1">Semester</label>
+                      <label className="block text-sm font-medium mb-1">
+                        Semester
+                      </label>
                       {isEditing ? (
                         <select
-                          value={editedProfile.semester || ''}
-                          onChange={(e) => handleProfileChange('semester', e.target.value)}
+                          value={editedProfile.semester || ""}
+                          onChange={(e) =>
+                            handleProfileChange("semester", e.target.value)
+                          }
                           className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600"
                         >
                           <option value="">Select Semester</option>
@@ -377,7 +453,7 @@ const Settings = () => {
                         </select>
                       ) : (
                         <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                          {profile.semester || 'Not provided'}
+                          {profile.semester || "Not provided"}
                         </div>
                       )}
                     </div>
@@ -385,20 +461,26 @@ const Settings = () => {
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-1">Placement Status</label>
+                      <label className="block text-sm font-medium mb-1">
+                        Placement Status
+                      </label>
                       <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          profile.placementStatus === 'Placed' 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                        }`}>
-                          {profile.placementStatus || 'Not Placed'}
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            profile.placementStatus === "Placed"
+                              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                              : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                          }`}
+                        >
+                          {profile.placementStatus || "Not Placed"}
                         </span>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-1">Interview Attendance</label>
+                      <label className="block text-sm font-medium mb-1">
+                        Interview Attendance
+                      </label>
                       <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
                         {profile.interviewAttendance || 0} interviews attended
                       </div>
@@ -408,18 +490,22 @@ const Settings = () => {
               )}
 
               <div>
-                <label className="block text-sm font-medium mb-1">Address</label>
+                <label className="block text-sm font-medium mb-1">
+                  Address
+                </label>
                 {isEditing ? (
                   <textarea
-                    value={editedProfile.address || ''}
-                    onChange={(e) => handleProfileChange('address', e.target.value)}
+                    value={editedProfile.address || ""}
+                    onChange={(e) =>
+                      handleProfileChange("address", e.target.value)
+                    }
                     className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600"
                     placeholder="Enter your address"
                     rows="2"
                   />
                 ) : (
                   <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                    {profile.address || 'Not provided'}
+                    {profile.address || "Not provided"}
                   </div>
                 )}
               </div>
@@ -428,8 +514,10 @@ const Settings = () => {
                 <label className="block text-sm font-medium mb-1">Gender</label>
                 {isEditing ? (
                   <select
-                    value={editedProfile.gender || ''}
-                    onChange={(e) => handleProfileChange('gender', e.target.value)}
+                    value={editedProfile.gender || ""}
+                    onChange={(e) =>
+                      handleProfileChange("gender", e.target.value)
+                    }
                     className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600"
                   >
                     <option value="">Select Gender</option>
@@ -439,7 +527,10 @@ const Settings = () => {
                   </select>
                 ) : (
                   <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                    {profile.gender ? profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1) : 'Not provided'}
+                    {profile.gender
+                      ? profile.gender.charAt(0).toUpperCase() +
+                        profile.gender.slice(1)
+                      : "Not provided"}
                   </div>
                 )}
               </div>
@@ -481,13 +572,15 @@ const Settings = () => {
 
         {/* Danger Zone */}
         <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-4 text-red-500">Danger Zone</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-red-500">
+            Danger Zone
+          </h2>
           <div className="flex flex-col sm:flex-row gap-4">
             <button className="flex items-center justify-center gap-2 px-5 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition w-full sm:w-auto">
               <Trash2 size={18} />
               Delete Account
             </button>
-            <button 
+            <button
               onClick={handleLogout}
               className="flex items-center justify-center gap-2 px-5 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition w-full sm:w-auto"
             >
