@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
   MapPin,
@@ -7,7 +8,23 @@ import {
 } from "lucide-react";
 
 const JobCard = ({ job, getImageUrl, formatDate }) => {
+  const navigate = useNavigate();
+
   if (!job) return null;
+
+  const handleApplyClick = () => {
+    // Only pass serializable data - no functions
+    navigate(`/job-details/${job._id || job.id}`, { 
+      state: { 
+        job: {
+          ...job,
+          // Pre-process any data that needs the utility functions
+          companyLogoUrl: getImageUrl ? getImageUrl(job.company?.profileImage) : null,
+          formattedDate: formatDate ? formatDate(job.createdAt) : null
+        }
+      } 
+    });
+  };
 
   return (
     <div className="group bg-white/90 dark:bg-slate-800/80 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-200 dark:border-slate-700 overflow-hidden transform hover:-translate-y-2">
@@ -89,7 +106,10 @@ const JobCard = ({ job, getImageUrl, formatDate }) => {
 
         {/* Apply Button */}
         <div className="flex">
-          <button className="w-full py-3 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 transition-transform transform hover:scale-[1.02] active:scale-[0.98] shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 dark:focus:ring-offset-gray-900">
+          <button 
+            onClick={handleApplyClick}
+            className="w-full py-3 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 transition-transform transform hover:scale-[1.02] active:scale-[0.98] shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 dark:focus:ring-offset-gray-900"
+          >
             <span className="inline-flex items-center gap-2">
               Apply Now
               <svg
