@@ -1,6 +1,9 @@
 import ResumeScore from "../models/ResumeScore.js";
 import User from "../models/User.js";
 import mongoose from "mongoose";
+import { spawn } from "child_process";
+import Job from "../models/Jobs.js";
+import Resume from "../models/Resume.js";
 
 // ==================== UTILITY FUNCTIONS ====================
 const validateObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
@@ -27,7 +30,6 @@ export const saveResumeScore = async (req, res) => {
     const userId = req.user.userId;
     const startTime = Date.now();
 
-    // Validate required fields
     const { score, scoreBreakdown } = req.body;
     if (score === undefined || score === null || scoreBreakdown === undefined) {
       return res.status(400).json({
@@ -36,7 +38,6 @@ export const saveResumeScore = async (req, res) => {
       });
     }
 
-    // Validate score range
     if (score < 0 || score > 100) {
       return res.status(400).json({
         success: false,
@@ -44,32 +45,25 @@ export const saveResumeScore = async (req, res) => {
       });
     }
 
-    // Check if user exists
     const userExists = await User.exists({ _id: userId });
     if (!userExists) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
-    // Calculate processing time
     const processingTime = Date.now() - startTime;
 
-    // Create new score entry
-    const scoreData = {
+    const newScoreEntry = new ResumeScore({
       userId,
       score,
       scoreBreakdown,
       processingTime,
       resumeId: null,
       ...req.body,
-    };
+    });
 
-    const newScoreEntry = new ResumeScore(scoreData);
     await newScoreEntry.save();
-
-    // Populate user data for response
     await newScoreEntry.populate("userId", "name email role");
 
     res.status(201).json({
@@ -86,14 +80,11 @@ export const saveResumeScore = async (req, res) => {
 export const getUserScoreHistory = async (req, res) => {
   try {
     const userId = req.user.userId;
-
-    // Parse query parameters with validation
     const limit = Math.min(parseInt(req.query.limit) || 20, 100);
     const page = Math.max(parseInt(req.query.page) || 1, 1);
     const sort = buildSortObject(req.query.sortBy, req.query.sortOrder);
     const skip = (page - 1) * limit;
 
-    // Execute queries in parallel
     const [scores, totalCount] = await Promise.all([
       ResumeScore.find({ userId, isActive: true })
         .populate("userId", "name email")
@@ -103,10 +94,7 @@ export const getUserScoreHistory = async (req, res) => {
       ResumeScore.countDocuments({ userId, isActive: true }),
     ]);
 
-    // Calculate pagination info
     const totalPages = Math.ceil(totalCount / limit);
-    const hasNextPage = page < totalPages;
-    const hasPrevPage = page > 1;
 
     res.status(200).json({
       success: true,
@@ -117,8 +105,8 @@ export const getUserScoreHistory = async (req, res) => {
         totalPages,
         totalCount,
         limit,
-        hasNextPage,
-        hasPrevPage,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
       },
     });
   } catch (error) {
@@ -131,18 +119,14 @@ export const getLatestScore = async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    const latestScore = await ResumeScore.findOne({
-      userId,
-      isActive: true,
-    })
+    const latestScore = await ResumeScore.findOne({ userId, isActive: true })
       .populate("userId", "name email")
       .sort({ createdAt: -1 });
 
     if (!latestScore) {
-      return res.status(404).json({
-        success: false,
-        message: "No scores found for this user",
-      });
+      return res
+        .status(404)
+        .json({ success: false, message: "No scores found for this user" });
     }
 
     res.status(200).json({
@@ -161,7 +145,6 @@ export const getUserScoreAnalytics = async (req, res) => {
     const userId = req.user.userId;
     const userIdObject = new mongoose.Types.ObjectId(userId);
 
-    // Execute all analytics queries in parallel
     const [stats, recentProgress, categoryAnalytics, jobInsights] =
       await Promise.all([
         ResumeScore.getUserStats(userId),
@@ -205,19 +188,19 @@ export const getUserScoreAnalytics = async (req, res) => {
         ]),
       ]);
 
-    // Calculate improvement trends
     let improvementTrend = null;
     if (recentProgress.length >= 2) {
-      const recent = recentProgress[0].score;
-      const previous = recentProgress[1].score;
+      const [recent, previous] = [
+        recentProgress[0].score,
+        recentProgress[1].score,
+      ];
       improvementTrend = {
         current: recent,
-        previous: previous,
+        previous,
         difference: recent - previous,
-        percentageChange:
-          previous !== 0
-            ? (((recent - previous) / previous) * 100).toFixed(1)
-            : 0,
+        percentageChange: previous
+          ? (((recent - previous) / previous) * 100).toFixed(1)
+          : 0,
         isImprovement: recent > previous,
       };
     }
@@ -244,15 +227,12 @@ export const deleteScoreEntry = async (req, res) => {
     const { scoreId } = req.params;
     const userId = req.user.userId;
 
-    // Validate scoreId
     if (!validateObjectId(scoreId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid score ID",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid score ID" });
     }
 
-    // Soft delete score entry
     const deletedScore = await ResumeScore.findOneAndUpdate(
       { _id: scoreId, userId, isActive: true },
       { isActive: false },
@@ -260,17 +240,21 @@ export const deleteScoreEntry = async (req, res) => {
     );
 
     if (!deletedScore) {
-      return res.status(404).json({
-        success: false,
-        message: "Score entry not found or access denied",
-      });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "Score entry not found or access denied",
+        });
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Score entry deleted successfully",
-      data: { id: scoreId },
-    });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Score entry deleted successfully",
+        data: { id: scoreId },
+      });
   } catch (error) {
     handleErrorResponse(res, error, "delete score entry");
   }
@@ -279,19 +263,18 @@ export const deleteScoreEntry = async (req, res) => {
 // ==================== ADMIN: GET ALL SCORES ANALYTICS ====================
 export const getAdminScoreAnalytics = async (req, res) => {
   try {
-    // Check if user is admin (this should be handled by middleware)
     if (req.user.role !== "admin") {
-      return res.status(403).json({
-        success: false,
-        message: "Access denied. Admin privileges required.",
-      });
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "Access denied. Admin privileges required.",
+        });
     }
 
-    // Calculate date for trends query
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    // Execute all analytics queries in parallel
     const [platformStats, scoreDistribution, topUsers, trends] =
       await Promise.all([
         ResumeScore.aggregate([
@@ -319,9 +302,7 @@ export const getAdminScoreAnalytics = async (req, res) => {
               groupBy: "$score",
               boundaries: [0, 20, 40, 60, 80, 100],
               default: "100+",
-              output: {
-                count: { $sum: 1 },
-              },
+              output: { count: { $sum: 1 } },
             },
           },
         ]),
@@ -357,12 +338,7 @@ export const getAdminScoreAnalytics = async (req, res) => {
           },
         ]),
         ResumeScore.aggregate([
-          {
-            $match: {
-              isActive: true,
-              createdAt: { $gte: thirtyDaysAgo },
-            },
-          },
+          { $match: { isActive: true, createdAt: { $gte: thirtyDaysAgo } } },
           {
             $group: {
               _id: {
@@ -394,35 +370,45 @@ export const getAdminScoreAnalytics = async (req, res) => {
 };
 
 // ==================== AI-DRIVEN RESUME-JOB MATCHING ====================
-import { spawn } from "child_process";
-import Job from "../models/Jobs.js";
-import Resume from "../models/Resume.js";
-
 export const getResumeJobMatch = async (req, res) => {
   try {
     const { resumeId, jobId } = req.body;
-    if (!resumeId || !jobId) {
-      return res.status(400).json({ success: false, message: "resumeId and jobId are required" });
-    }
-    const resume = await Resume.findById(resumeId).lean();
-    const job = await Job.findById(jobId).lean();
-    if (!resume || !job) {
-      return res.status(404).json({ success: false, message: "Resume or Job not found" });
-    }
-    // Call Python ML module
+    if (!resumeId || !jobId)
+      return res
+        .status(400)
+        .json({ success: false, message: "resumeId and jobId are required" });
+
+    const [resume, job] = await Promise.all([
+      Resume.findById(resumeId).lean(),
+      Job.findById(jobId).lean(),
+    ]);
+
+    if (!resume || !job)
+      return res
+        .status(404)
+        .json({ success: false, message: "Resume or Job not found" });
+
     const py = spawn("python", ["./ml_modules/call_match.py"]);
     const input = JSON.stringify({ resume, job });
     let output = "";
+
     py.stdin.write(input);
     py.stdin.end();
-    py.stdout.on("data", (data) => { output += data.toString(); });
-    py.stderr.on("data", (data) => { console.error("ML Error:", data.toString()); });
-    py.on("close", (code) => {
+
+    py.stdout.on("data", (data) => (output += data.toString()));
+    py.stderr.on("data", (data) => console.error("ML Error:", data.toString()));
+
+    py.on("close", () => {
       try {
-        const result = JSON.parse(output);
-        res.status(200).json({ success: true, data: result });
-      } catch (e) {
-        res.status(500).json({ success: false, message: "ML analysis failed", error: output });
+        res.status(200).json({ success: true, data: JSON.parse(output) });
+      } catch {
+        res
+          .status(500)
+          .json({
+            success: false,
+            message: "ML analysis failed",
+            error: output,
+          });
       }
     });
   } catch (error) {
