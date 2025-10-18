@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Helper: create reusable transporter
+// Create reusable transporter
 const createTransporter = () =>
   nodemailer.createTransport({
     service: "gmail",
@@ -13,7 +13,7 @@ const createTransporter = () =>
     },
   });
 
-// Send feedback email
+// Send Feedback Email
 export const sendFeedback = async (req, res) => {
   try {
     const {
@@ -25,6 +25,7 @@ export const sendFeedback = async (req, res) => {
       additionalFeedback,
     } = req.body;
 
+    // Basic validation
     if (!rating) {
       return res.status(400).json({
         success: false,
@@ -34,6 +35,7 @@ export const sendFeedback = async (req, res) => {
 
     console.log("📧 Sending feedback email...");
 
+    // Format email content
     const emailContent = `
 🎯 NEW FEEDBACK RECEIVED - PLACIFY PLATFORM
 ═══════════════════════════════════════════
@@ -62,6 +64,7 @@ ${additionalFeedback || "No additional feedback provided"}
 🕒 Timestamp: ${new Date().toLocaleString()}
     `;
 
+    // Send email
     const transporter = createTransporter();
 
     await transporter.sendMail({
@@ -82,6 +85,7 @@ ${additionalFeedback || "No additional feedback provided"}
     });
   } catch (error) {
     console.error("❌ Error sending feedback email:", error.message);
+
     return res.status(500).json({
       success: false,
       message: "Failed to send feedback. Please try again later.",
@@ -90,7 +94,7 @@ ${additionalFeedback || "No additional feedback provided"}
   }
 };
 
-// Test email configuration
+// Test Email Configuration
 export const testEmailConfig = async (_req, res) => {
   try {
     console.log("🧪 Testing email configuration...");
@@ -113,6 +117,7 @@ export const testEmailConfig = async (_req, res) => {
     });
   } catch (error) {
     console.error("❌ Email test failed:", error.message);
+
     return res.status(500).json({
       success: false,
       message: "Email test failed",
