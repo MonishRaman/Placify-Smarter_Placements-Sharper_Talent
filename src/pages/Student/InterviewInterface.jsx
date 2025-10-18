@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
+import Header from '../../components/Header'; 
+import Footer from "../../components/Footer";
 import {
   Upload,
   Mic,
@@ -146,9 +148,9 @@ const SpeechRecognitionComponent = ({
   };
 
   return (
-    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 p-6 rounded-lg mb-6">
+    <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 p-6 rounded-lg mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold flex items-center text-gray-800 dark:text-gray-200">
+          <h3 className="text-lg font-semibold flex items-center text-gray-800 dark:text-gray-200">
           <Mic className="w-5 h-5 mr-2" />
           Speech-to-Text Converter
         </h3>
@@ -159,11 +161,11 @@ const SpeechRecognitionComponent = ({
           </div>
         )}
       </div>
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border-2 border-dashed border-blue-300 dark:border-blue-600 mb-4 min-h-24">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border-2 border-dashed border-purple-300 dark:border-purple-600 mb-4 min-h-24">
         <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
           Speech will appear here:
         </div>
-        <div className="text-sm text-blue-700 dark:text-blue-300">
+        <div className="text-sm text-purple-700 dark:text-purple-300">
           {transcript || textToCopy || "Your speech will appear here..."}
         </div>
       </div>
@@ -197,9 +199,9 @@ const SpeechRecognitionComponent = ({
   );
 };
 
-// ===== Header Component =====
-const Header = () => (
-  <header className="text-center mb-8">
+// ===== Section Header Component =====
+const InterviewHeader = () => (
+  <header className="mt-20 text-center mb-8">
     <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2">
       AI Interview Assistant
     </h1>
@@ -208,6 +210,7 @@ const Header = () => (
     </p>
   </header>
 );
+
 
 // ===== Progress Bar Component =====
 const ProgressBar = ({ currentStep }) => {
@@ -218,32 +221,37 @@ const ProgressBar = ({ currentStep }) => {
     { number: 4, label: "Feedback" },
     { number: 5, label: "Schedule" },
   ];
+return (
+  <div className="flex flex-col items-center mb-8">
+    <Header />
+    <InterviewHeader />
 
-  return (
-    <div className="flex justify-center mb-8">
-      <div className="flex items-center space-x-4 overflow-x-auto">
-        {steps.map((step, index) => (
-          <div key={step.number} className="flex items-center">
-            <div className="flex flex-col items-center">
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold transition-colors ${
-                  currentStep >= step.number ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"
+    {/* Steps block stays horizontal */}
+    <div className="flex items-center space-x-4 overflow-x-auto mt-4">
+      {steps.map((step, index) => (
+        <div key={step.number} className="flex items-center">
+          <div className="flex flex-col items-center">
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors
+                ${currentStep >= step.number
+                  ? "bg-purple-600 text-white"
+                  : "bg-gray-300 dark:bg-gray-600 border-1 border-purple-500 text-gray-800 dark:text-gray-200"
                 }`}
-              >
-                {step.number}
-              </div>
-              <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 hidden sm:block">
-                {step.label}
-              </span>
+            >
+              {step.number}
             </div>
-            {index < steps.length - 1 && (
-              <ChevronRight className="w-5 h-5 text-gray-400 dark:text-gray-500 mx-2" />
-            )}
+            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 hidden sm:block">
+              {step.label}
+            </span>
           </div>
-        ))}
-      </div>
+          {index < steps.length - 1 && (
+            <ChevronRight className="w-5 h-5 text-gray-400 dark:text-gray-500 mx-2" />
+          )}
+        </div>
+      ))}
     </div>
-  );
+  </div>
+);
 };
 
 // ===== Resume Upload Component =====
@@ -287,7 +295,8 @@ const ResumeUpload = ({
 
   return (
     <div className="text-center">
-      <Upload className="w-16 h-16 text-blue-600 dark:text-blue-400 mx-auto mb-4" />
+     
+      <Upload className="w-16 h-16 text-purple-600 dark:text-pueple-400 mx-auto mb-4" />
       <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100">Upload Your Resume</h2>
       <p className="text-gray-600 dark:text-gray-300 mb-6">
         Upload your resume to get personalized interview questions tailored to
@@ -302,7 +311,7 @@ const ResumeUpload = ({
       />
       <button
         onClick={() => fileInputRef.current?.click()}
-        className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center mx-auto disabled:bg-gray-400"
+        className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center mx-auto disabled:bg-gray-400"
         disabled={loading}
       >
         {loading ? (
@@ -320,7 +329,10 @@ const ResumeUpload = ({
       <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
         Supported formats: PDF, DOC, DOCX, TXT
       </p>
+      
+      
     </div>
+
   );
 };
 
@@ -328,20 +340,20 @@ const ResumeUpload = ({
 const ResumeAnalysis = ({ resumeAnalysis, generateQuestions, loading }) => (
   <div>
     <div className="flex items-center mb-6">
-      <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400 mr-3" />
+      <FileText className="w-8 h-8 text-purple-600 dark:text-purple-400 mr-3" />
       <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Resume Analysis Complete</h2>
     </div>
 
     {/* --- New: Match Score --- */}
     {resumeAnalysis.matchScore !== undefined && (
-      <div className="bg-blue-100 dark:bg-blue-900/20 p-6 rounded-lg border dark:border-blue-700 mb-6 flex items-center justify-between">
+      <div className="bg-purple-100 dark:bg-purple-900/20 p-6 rounded-lg border dark:border-purple-700 mb-6 flex items-center justify-between">
         <div>
-          <h3 className="font-bold text-lg mb-2 text-blue-800 dark:text-blue-300">Resume Match Score</h3>
-          <p className="text-gray-700 dark:text-gray-300">Your resume matches <span className="font-bold text-blue-700 dark:text-blue-200">{resumeAnalysis.matchScore}%</span> with the job description.</p>
+          <h3 className="font-bold text-lg mb-2 text-purple-800 dark:text-purple-300">Resume Match Score</h3>
+          <p className="text-gray-700 dark:text-gray-300">Your resume matches <span className="font-bold text-purple-700 dark:text-purple-200">{resumeAnalysis.matchScore}%</span> with the job description.</p>
         </div>
         <div className="flex items-center">
-          <Brain className="w-8 h-8 text-blue-600 dark:text-blue-400 mr-2" />
-          <span className="text-2xl font-bold text-blue-700 dark:text-blue-200">{resumeAnalysis.matchScore}%</span>
+          <Brain className="w-8 h-8 text-purple-600 dark:text-purple-400 mr-2" />
+          <span className="text-2xl font-bold text-purple-700 dark:text-purple-200">{resumeAnalysis.matchScore}%</span>
         </div>
       </div>
     )}
@@ -377,8 +389,8 @@ const ResumeAnalysis = ({ resumeAnalysis, generateQuestions, loading }) => (
         <p className="text-gray-700 dark:text-gray-300">{resumeAnalysis.summary}</p>
       </div>
 
-      <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border dark:border-blue-700">
-        <h3 className="font-bold text-lg mb-3 text-blue-800 dark:text-blue-300">
+      <div className="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-lg border dark:border-purple-700">
+        <h3 className="font-bold text-lg mb-3 text-purple-800 dark:text-purple-300">
           Experience Level
         </h3>
         <p className="text-gray-700 dark:text-gray-300">{resumeAnalysis.experience}</p>
@@ -427,7 +439,7 @@ const ResumeAnalysis = ({ resumeAnalysis, generateQuestions, loading }) => (
     <div className="text-center">
       <button
         onClick={generateQuestions}
-        className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center mx-auto disabled:bg-gray-400"
+        className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center mx-auto disabled:bg-gray-400"
         disabled={loading}
       >
         {loading ? (
@@ -460,7 +472,7 @@ const InterviewSession = ({
     <div>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
-          <Bot className="w-8 h-8 text-blue-600 dark:text-blue-400 mr-3" />
+          <Bot className="w-8 h-8 text-purple-600 dark:text-purple-400 mr-3" />
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Mock Interview Session</h2>
         </div>
         <div className="text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
@@ -469,11 +481,11 @@ const InterviewSession = ({
       </div>
 
       {/* Current Question Display */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 p-6 rounded-lg mb-6 border-l-4 border-blue-600 dark:border-blue-400">
+      <div className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30 p-6 rounded-lg mb-6 border-l-4 border-purple-600 dark:border-purple-400">
         <div className="flex items-start">
-          <Bot className="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3 mt-1" />
+          <Bot className="w-6 h-6 text-purple-600 dark:text-purple-400 mr-3 mt-1" />
           <div>
-            <h3 className="text-lg font-semibold mb-2 text-blue-800 dark:text-blue-300">
+            <h3 className="text-lg font-semibold mb-2 text-purple-800 dark:text-purple-300">
               Interview Question {currentQuestionIndex + 1}:
             </h3>
             <p className="text-gray-700 dark:text-gray-200 text-lg leading-relaxed">
@@ -500,7 +512,7 @@ const InterviewSession = ({
           value={currentAnswer}
           onChange={(e) => setCurrentAnswer(e.target.value)}
           placeholder="Your answer will appear here as you speak, or you can type it manually..."
-          className="w-full p-4 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-32 resize-vertical bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+          className="w-full p-4 border-2 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 min-h-32 resize-vertical bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
           rows={6}
         />
       </div>
@@ -539,10 +551,12 @@ const InterviewSession = ({
 // ===== Feedback Component =====
 const Feedback = ({ feedback, loading, resetInterview, scheduleNext }) => {
   return (
+ 
     <div>
+      
       {loading ? (
         <div className="text-center py-12">
-          <Loader className="w-12 h-12 text-blue-600 dark:text-blue-400 mx-auto mb-4 animate-spin" />
+          <Loader className="w-12 h-12 text-purple-600 dark:text-purple-400 mx-auto mb-4 animate-spin" />
           <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-gray-100">
             Analyzing Your Performance
           </h2>
@@ -559,7 +573,7 @@ const Feedback = ({ feedback, loading, resetInterview, scheduleNext }) => {
             </div>
 
             {/* Overall Score */}
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 p-6 rounded-lg mb-6 border dark:border-gray-600">
+            <div className="bg-gradient-to-r from-green-50 to-purple-50 dark:from-green-900/30 dark:to-purple-900/30 p-6 rounded-lg mb-6 border dark:border-gray-600">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
@@ -621,7 +635,7 @@ const Feedback = ({ feedback, loading, resetInterview, scheduleNext }) => {
                     </h4>
                     <div className="grid md:grid-cols-3 gap-4 text-sm">
                       <div>
-                        <span className="font-medium text-blue-600 dark:text-blue-400">
+                        <span className="font-medium text-purple-600 dark:text-purple-400">
                           Content:{" "}
                         </span>
                         <span className="font-bold text-gray-800 dark:text-gray-200">{qf.contentScore}/10</span>
@@ -650,7 +664,7 @@ const Feedback = ({ feedback, loading, resetInterview, scheduleNext }) => {
             <div className="flex justify-center space-x-4">
               <button
                 onClick={resetInterview}
-                className="flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex items-center bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
               >
                 <RotateCcw className="w-5 h-5 mr-2" />
                 Practice Again
@@ -776,13 +790,13 @@ END:VCALENDAR`;
   return (
     <div>
       <div className="flex items-center mb-6">
-        <Calendar className="w-8 h-8 text-blue-600 dark:text-blue-400 mr-3" />
+        <Calendar className="w-8 h-8 text-purple-600 dark:text-purple-400 mr-3" />
         <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Schedule Practice Sessions</h2>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Schedule New Session */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border dark:border-blue-700">
+        <div className="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-lg border dark:border-purple-700">
           <h3 className="font-bold text-lg mb-4 flex items-center text-gray-800 dark:text-gray-200">
             <Plus className="w-5 h-5 mr-2" />
             Schedule New Session
@@ -796,7 +810,7 @@ END:VCALENDAR`;
                 type="text"
                 value={sessionTitle}
                 onChange={(e) => setSessionTitle(e.target.value)}
-                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                 placeholder="AI Interview Practice Session"
               />
             </div>
@@ -809,7 +823,7 @@ END:VCALENDAR`;
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                 min={new Date().toISOString().split("T")[0]}
               />
             </div>
@@ -822,14 +836,14 @@ END:VCALENDAR`;
                 type="time"
                 value={selectedTime}
                 onChange={(e) => setSelectedTime(e.target.value)}
-                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
               />
             </div>
 
             <button
               onClick={scheduleInterview}
               disabled={!selectedDate || !selectedTime}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+              className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
             >
               <Calendar className="w-5 h-5 mr-2" />
               Schedule Session
@@ -869,7 +883,7 @@ END:VCALENDAR`;
                       <div className="flex items-center space-x-2 mt-2">
                         <button
                           onClick={() => exportToICS(event)}
-                          className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition-colors"
+                          className="text-xs bg-purple-500 text-white px-2 py-1 rounded hover:bg-purple-600 transition-colors"
                           title="Download .ics file"
                         >
                           📥 Export
@@ -1051,10 +1065,10 @@ const AIInterviewAssistant = () => {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 transition-colors duration-300">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 transition-colors duration-300">
         <ThemeToggle />
         <div className="max-w-6xl mx-auto">
-          <Header />
+      
           <ProgressBar currentStep={currentStep} />
           <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg dark:shadow-2xl p-8 border dark:border-gray-700 transition-colors duration-300">
             {currentStep === 1 && (
@@ -1103,6 +1117,7 @@ const AIInterviewAssistant = () => {
           </div>
         </div>
       </div>
+       <Footer />
     </ThemeProvider>
   );
 };

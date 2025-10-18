@@ -19,9 +19,11 @@ export const getInstitutionDashboard = async (req, res) => {
     const students = await Student.find({ institution: institutionId }).lean();
     const totalStudents = students.length;
 
-    const placedStudents = students.filter(
-      (s) => s.placementStatus === "placed"
-    ).length;
+    const placedStudents = students.reduce(
+      (count, student) =>
+        count + (student.placementStatus === "placed" ? 1 : 0),
+      0
+    );
 
     const placementRate =
       totalStudents > 0

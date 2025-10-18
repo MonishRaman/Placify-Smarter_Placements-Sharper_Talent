@@ -69,7 +69,6 @@ export const createInterviewExperience = async (req, res) => {
       });
     }
 
-    // Create and save interview experience
     const newExperience = new InterviewExperience({
       name,
       email,

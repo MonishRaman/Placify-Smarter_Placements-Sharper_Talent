@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 const validateObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 const handleErrorResponse = (res, error, context) => {
-  console.error(`Error in ${context}:`, error);
+  console.error(`❌ Error in ${context}:`, error.message);
   res.status(500).json({
     success: false,
     message: `Failed to ${context}`,
@@ -18,42 +18,34 @@ const handleErrorResponse = (res, error, context) => {
 export const createResume = async (req, res) => {
   try {
     const userId = req.user.userId;
-
-    // Validate required fields
     const { fullName, email, phone } = req.body;
+
     if (!fullName || !email || !phone) {
-      return res.status(400).json({
-        success: false,
-        message: "Full name, email, and phone are required",
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Full name, email, and phone are required",
+        });
     }
 
-    // Check if user exists
     const userExists = await User.exists({ _id: userId });
-    if (!userExists) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
+    if (!userExists)
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
 
-    // Create new resume
-    const resumeData = {
-      userId,
-      ...req.body,
-    };
-
-    const newResume = new Resume(resumeData);
+    const newResume = new Resume({ userId, ...req.body });
     await newResume.save();
-
-    // Populate user data for response
     await newResume.populate("userId", "name email role");
 
-    res.status(201).json({
-      success: true,
-      message: "Resume created successfully",
-      data: newResume,
-    });
+    res
+      .status(201)
+      .json({
+        success: true,
+        message: "Resume created successfully",
+        data: newResume,
+      });
   } catch (error) {
     handleErrorResponse(res, error, "create resume");
   }
@@ -63,29 +55,23 @@ export const createResume = async (req, res) => {
 export const getResumesByUserId = async (req, res) => {
   try {
     const userId = req.user.userId;
+    if (!validateObjectId(userId))
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid user ID" });
 
-    // Validate userId
-    if (!validateObjectId(userId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid user ID",
-      });
-    }
-
-    // Find all resumes for the user
-    const resumes = await Resume.find({
-      userId,
-      isActive: true,
-    })
+    const resumes = await Resume.find({ userId, isActive: true })
       .populate("userId", "name email role")
-      .sort({ updatedAt: -1 }); // Most recently updated first
+      .sort({ updatedAt: -1 });
 
-    res.status(200).json({
-      success: true,
-      message: "Resumes fetched successfully",
-      data: resumes,
-      count: resumes.length,
-    });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Resumes fetched successfully",
+        data: resumes,
+        count: resumes.length,
+      });
   } catch (error) {
     handleErrorResponse(res, error, "fetch resumes");
   }
@@ -97,33 +83,29 @@ export const getResumeById = async (req, res) => {
     const { resumeId } = req.params;
     const userId = req.user.userId;
 
-    // Validate resumeId
-    if (!validateObjectId(resumeId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid resume ID",
-      });
-    }
+    if (!validateObjectId(resumeId))
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid resume ID" });
 
-    // Find resume by ID and ensure it belongs to the user
     const resume = await Resume.findOne({
       _id: resumeId,
       userId,
       isActive: true,
     }).populate("userId", "name email role");
 
-    if (!resume) {
-      return res.status(404).json({
-        success: false,
-        message: "Resume not found or access denied",
-      });
-    }
+    if (!resume)
+      return res
+        .status(404)
+        .json({ success: false, message: "Resume not found or access denied" });
 
-    res.status(200).json({
-      success: true,
-      message: "Resume fetched successfully",
-      data: resume,
-    });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Resume fetched successfully",
+        data: resume,
+      });
   } catch (error) {
     handleErrorResponse(res, error, "fetch resume");
   }
@@ -134,53 +116,43 @@ export const updateResume = async (req, res) => {
   try {
     const { resumeId } = req.params;
     const userId = req.user.userId;
-
-    // Validate resumeId
-    if (!validateObjectId(resumeId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid resume ID",
-      });
-    }
-
-    // Validate required fields if provided
     const { fullName, email, phone } = req.body;
+
+    if (!validateObjectId(resumeId))
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid resume ID" });
     if (
       (fullName !== undefined && !fullName) ||
       (email !== undefined && !email) ||
       (phone !== undefined && !phone)
     ) {
-      return res.status(400).json({
-        success: false,
-        message: "Full name, email, and phone cannot be empty",
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Full name, email, and phone cannot be empty",
+        });
     }
 
-    // Prepare update data
-    const updateData = { ...req.body };
-
-    // Find and update resume
     const updatedResume = await Resume.findOneAndUpdate(
       { _id: resumeId, userId, isActive: true },
-      updateData,
-      {
-        new: true, // Return updated document
-        runValidators: true, // Run schema validations
-      }
+      { ...req.body },
+      { new: true, runValidators: true }
     ).populate("userId", "name email role");
 
-    if (!updatedResume) {
-      return res.status(404).json({
-        success: false,
-        message: "Resume not found or access denied",
-      });
-    }
+    if (!updatedResume)
+      return res
+        .status(404)
+        .json({ success: false, message: "Resume not found or access denied" });
 
-    res.status(200).json({
-      success: true,
-      message: "Resume updated successfully",
-      data: updatedResume,
-    });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Resume updated successfully",
+        data: updatedResume,
+      });
   } catch (error) {
     handleErrorResponse(res, error, "update resume");
   }
@@ -192,33 +164,29 @@ export const deleteResume = async (req, res) => {
     const { resumeId } = req.params;
     const userId = req.user.userId;
 
-    // Validate resumeId
-    if (!validateObjectId(resumeId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid resume ID",
-      });
-    }
+    if (!validateObjectId(resumeId))
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid resume ID" });
 
-    // Soft delete resume
     const deletedResume = await Resume.findOneAndUpdate(
       { _id: resumeId, userId, isActive: true },
       { isActive: false },
       { new: true }
     );
 
-    if (!deletedResume) {
-      return res.status(404).json({
-        success: false,
-        message: "Resume not found or access denied",
-      });
-    }
+    if (!deletedResume)
+      return res
+        .status(404)
+        .json({ success: false, message: "Resume not found or access denied" });
 
-    res.status(200).json({
-      success: true,
-      message: "Resume deleted successfully",
-      data: { id: resumeId },
-    });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Resume deleted successfully",
+        data: { id: resumeId },
+      });
   } catch (error) {
     handleErrorResponse(res, error, "delete resume");
   }
@@ -227,11 +195,10 @@ export const deleteResume = async (req, res) => {
 // ==================== GET RESUME ANALYTICS ====================
 export const getResumeAnalytics = async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const userIdObject = new mongoose.Types.ObjectId(userId);
+    const userId = new mongoose.Types.ObjectId(req.user.userId);
 
     const analytics = await Resume.aggregate([
-      { $match: { userId: userIdObject, isActive: true } },
+      { $match: { userId, isActive: true } },
       {
         $group: {
           _id: null,
@@ -245,23 +212,22 @@ export const getResumeAnalytics = async (req, res) => {
       },
     ]);
 
-    const result =
-      analytics.length > 0
-        ? analytics[0]
-        : {
-            totalResumes: 0,
-            averageSkills: 0,
-            averageEducation: 0,
-            averageExperience: 0,
-            averageProjects: 0,
-            lastUpdated: null,
-          };
+    const result = analytics[0] || {
+      totalResumes: 0,
+      averageSkills: 0,
+      averageEducation: 0,
+      averageExperience: 0,
+      averageProjects: 0,
+      lastUpdated: null,
+    };
 
-    res.status(200).json({
-      success: true,
-      message: "Resume analytics fetched successfully",
-      data: result,
-    });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Resume analytics fetched successfully",
+        data: result,
+      });
   } catch (error) {
     handleErrorResponse(res, error, "fetch resume analytics");
   }

@@ -2,36 +2,6 @@ import Settings from "../models/Settings.js";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 
-/* -------------------- Helper Functions -------------------- */
-
-// Get or create settings for a user
-const getOrCreateSettings = async (userId) => {
-  let settings = await Settings.findOne({ userId });
-
-  if (!settings) {
-    settings = await Settings.create({
-      userId,
-      notifications: { ...defaultNotifications },
-      integrations: { ...defaultIntegrations },
-    });
-  }
-
-  return settings;
-};
-
-// Encrypt sensitive fields
-const encryptSensitiveData = async (data, fieldsToEncrypt) => {
-  const encryptedData = { ...data };
-
-  for (const field of fieldsToEncrypt) {
-    if (encryptedData[field]) {
-      encryptedData[field] = await bcrypt.hash(encryptedData[field], 10);
-    }
-  }
-
-  return encryptedData;
-};
-
 /* -------------------- Default Settings -------------------- */
 
 const defaultNotifications = {
@@ -54,6 +24,44 @@ const defaultIntegrations = {
   thirdPartyApiKey: "",
   smsGateway: "twilio",
   emailProvider: "smtp",
+};
+
+/* -------------------- Helper Functions -------------------- */
+
+// Get or create settings for a user
+const getOrCreateSettings = async (userId) => {
+  let settings = await Settings.findOne({ userId });
+
+  if (!settings) {
+    settings = await Settings.create({
+      userId,
+      notifications: { ...defaultNotifications },
+      integrations: { ...defaultIntegrations },
+    });
+  }
+
+  return settings;
+};
+
+// Encrypt sensitive fields
+const encryptSensitiveData = async (data, fieldsToEncrypt) => {
+  const encryptedData = { ...data };
+
+  for (const field of fieldsToEncrypt) {
+    const keys = field.split(".");
+    let obj = encryptedData;
+
+    // Traverse nested objects
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (!obj[keys[i]]) obj[keys[i]] = {};
+      obj = obj[keys[i]];
+    }
+
+    const lastKey = keys[keys.length - 1];
+    if (obj[lastKey]) obj[lastKey] = await bcrypt.hash(obj[lastKey], 10);
+  }
+
+  return encryptedData;
 };
 
 /* -------------------- Controller Functions -------------------- */
@@ -85,16 +93,15 @@ export const updateNotifications = async (req, res) => {
       ? ["emailConfig.emailPassword"]
       : [];
 
-    const encryptedNotificationData = await encryptSensitiveData(
+    const encryptedData = await encryptSensitiveData(
       notificationData,
       fieldsToEncrypt
     );
 
     const settings = await getOrCreateSettings(userId);
-
     settings.notifications = {
       ...settings.notifications.toObject(),
-      ...encryptedNotificationData,
+      ...encryptedData,
     };
 
     await settings.save();
@@ -116,16 +123,15 @@ export const updateIntegrations = async (req, res) => {
     const integrationData = req.body;
 
     const fieldsToEncrypt = ["resumeParserApi", "thirdPartyApiKey"];
-    const encryptedIntegrationData = await encryptSensitiveData(
+    const encryptedData = await encryptSensitiveData(
       integrationData,
       fieldsToEncrypt
     );
 
     const settings = await getOrCreateSettings(userId);
-
     settings.integrations = {
       ...settings.integrations.toObject(),
-      ...encryptedIntegrationData,
+      ...encryptedData,
     };
 
     await settings.save();

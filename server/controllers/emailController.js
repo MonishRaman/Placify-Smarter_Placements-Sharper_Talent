@@ -46,24 +46,23 @@ ${
 ${additionalFeedback || "No additional feedback provided"}
 
 ═══════════════════════════════════════════
-📧 This feedback was submitted through the Placify feedback form.
+📧 Submitted through the Placify feedback form.
 🕒 Timestamp: ${new Date().toLocaleString()}
 `;
 
-// Send email helper function
+// Send email helper
 const sendEmail = async (mailOptions) => {
   const transporter = createTransporter();
   return transporter.sendMail(mailOptions);
 };
 
 // Validate feedback data
-const validateFeedback = ({ email,rating }) => {
+const validateFeedback = ({ email, rating }) => {
   if (!rating) throw new Error("Rating is required");
   if (rating < 1 || rating > 5)
     throw new Error("Rating must be between 1 and 5");
-  if (email && !validator.isEmail(email)) {
+  if (email && !validator.isEmail(email))
     throw new Error("Invalid email format");
-  }
 };
 
 // Send feedback email
@@ -75,13 +74,14 @@ export const sendFeedback = async (req, res) => {
     console.log("📧 Sending feedback email...");
 
     const emailContent = formatFeedbackContent(feedbackData);
+    const subject = `🎯 New Feedback - ${feedbackData.rating}⭐ Rating from ${
+      feedbackData.name || "Anonymous User"
+    }`;
 
     await sendEmail({
       from: process.env.EMAIL_USER,
       to: process.env.FEEDBACK_EMAIL,
-      subject: `🎯 New Feedback - ${feedbackData.rating}⭐ Rating from ${
-        feedbackData.name || "Anonymous User"
-      }`,
+      subject,
       text: emailContent,
       html: emailContent.replace(/\n/g, "<br>"),
     });
@@ -95,8 +95,9 @@ export const sendFeedback = async (req, res) => {
   } catch (error) {
     console.error("❌ Error sending feedback email:", error.message);
 
-    const isValidationError =
-      error.message.includes("required") || error.message.includes("must be") || error.message.includes("Invalid email");
+    const isValidationError = ["required", "must be", "Invalid email"].some(
+      (msg) => error.message.includes(msg)
+    );
 
     return res.status(isValidationError ? 400 : 500).json({
       success: false,

@@ -33,6 +33,7 @@ import Dashboard from "./pages/Student/Dashboard";
 import InterviewExperience from "./pages/Student/InterviewExperience";
 import InterviewInterface from "./pages/Student/InterviewInterface";
 import Jobs from "./pages/Student/Jobs";
+import JobDetailsPage from "./components/JobDetailsPage";
 import ResumeATS from "./pages/Student/ResumeATS";
 import ResumeBuilder from "./pages/Student/ResumeBuilder";
 import Settings from "./pages/Student/Settings";
@@ -111,6 +112,7 @@ const AppWrapper = () => {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/payment" element={<PaymentGateway />} />
             <Route path="/interview" element={<InterviewInterface />} />
+            <Route path="/job-details/:jobId" element={<JobDetailsPage />} />
 
             {/* Institution Dashboard */}
             <Route
@@ -209,6 +211,7 @@ const AppWrapper = () => {
               <Route path="resume-ats" element={<ResumeATS />} />
               <Route path="jobs" element={<Jobs />} />
               <Route path="user-jobs" element={<UserJobs />} />
+
               <Route path="coding" element={<Coding />} />
               <Route path="coding/:id" element={<CodingEditor />} />
               <Route
