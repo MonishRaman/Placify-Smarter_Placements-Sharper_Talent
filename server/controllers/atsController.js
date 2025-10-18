@@ -16,34 +16,23 @@ const handleErrorResponse = (res, error, context) => {
 const cleanupFile = async (filePath) => {
   try {
     await fs.unlink(filePath);
-  } catch (error) {
+  } catch {
     console.warn("Could not delete temporary file:", filePath);
   }
 };
 
-const validateInput = (req) => {
-  if (!req.file || !req.body.jobDescription) {
-    return {
-      valid: false,
-      error: "Resume file and job description required",
-    };
-  }
-  return { valid: true };
-};
+const validateInput = ({ file, body }) =>
+  file && body.jobDescription
+    ? { valid: true }
+    : { valid: false, error: "Resume file and job description required" };
 
-const extractResumeText = async (file) => {
-  const { path: filePath, mimetype } = file;
-
+const extractResumeText = async ({ path, mimetype }) => {
   try {
-    if (mimetype === "application/pdf") {
-      return await extractPdfText(filePath);
-    } else if (mimetype === "text/plain") {
-      return await fs.readFile(filePath, "utf8");
-    } else {
-      throw new Error("Unsupported file format");
-    }
+    if (mimetype === "application/pdf") return await extractPdfText(path);
+    if (mimetype === "text/plain") return await fs.readFile(path, "utf8");
+    throw new Error("Unsupported file format");
   } finally {
-    await cleanupFile(filePath);
+    await cleanupFile(path);
   }
 };
 
@@ -83,9 +72,8 @@ export async function analyzeUpload(req, res) {
   try {
     // Validate input
     const validation = validateInput(req);
-    if (!validation.valid) {
+    if (!validation.valid)
       return res.status(400).json({ error: validation.error });
-    }
 
     const { jobDescription, jobTitle, companyName } = req.body;
     const resumeFileName = req.file.originalname;
@@ -99,7 +87,6 @@ export async function analyzeUpload(req, res) {
       return res.status(500).json({ error: "Failed to process resume file" });
     }
 
-    // Validate extracted text
     if (!resumeText.trim()) {
       return res.status(422).json({
         error:
@@ -107,16 +94,15 @@ export async function analyzeUpload(req, res) {
       });
     }
 
-    // Execute analysis in parallel where possible
+    // Parallel analysis
     const [multi, geminiAnalysis] = await Promise.allSettled([
       scoreResumeMultiFactor(resumeText, jobDescription),
-      analyzeWithGemini(resumeText, jobDescription).catch((error) => {
-        console.warn("Gemini analysis failed:", error.message);
+      analyzeWithGemini(resumeText, jobDescription).catch((err) => {
+        console.warn("Gemini analysis failed:", err.message);
         return null;
       }),
     ]);
 
-    // Handle analysis results
     if (multi.status === "rejected") {
       console.error("Multi-factor scoring failed:", multi.reason);
       return res
@@ -128,10 +114,8 @@ export async function analyzeUpload(req, res) {
     const geminiResult =
       geminiAnalysis.status === "fulfilled" ? geminiAnalysis.value : null;
 
-    // Calculate overall score
     const overallScore = getValidOverallScore(multiResult.overallScore);
 
-    // Prepare response data
     const responseData = {
       message: "Resume analyzed successfully",
       resumeChars: resumeText.length,
@@ -143,11 +127,10 @@ export async function analyzeUpload(req, res) {
       scoreSaved: false,
     };
 
-    // Save score to database if user is authenticated (non-blocking)
+    // Save score asynchronously if authenticated
     if (req.user?.userId) {
       try {
         const scoreBreakdown = prepareScoreBreakdown(multiResult);
-
         const scoreData = {
           userId: req.user.userId,
           score: overallScore,
@@ -167,20 +150,19 @@ export async function analyzeUpload(req, res) {
           },
         };
 
-        // Save score asynchronously without blocking response
         ResumeScore.create(scoreData)
-          .then(() => {
+          .then(() =>
             console.log(
               `✅ Score saved for user ${req.user.userId}: ${overallScore}%`
-            );
-          })
-          .catch((saveError) => {
-            console.error("Failed to save score to database:", saveError);
-          });
+            )
+          )
+          .catch((err) =>
+            console.error("Failed to save score to database:", err)
+          );
 
         responseData.scoreSaved = true;
-      } catch (saveError) {
-        console.error("Error preparing score data:", saveError);
+      } catch (err) {
+        console.error("Error preparing score data:", err);
       }
     }
 
