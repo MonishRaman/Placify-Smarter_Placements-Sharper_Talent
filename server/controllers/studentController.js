@@ -60,7 +60,7 @@ const mockStudents = [
   },
 ];
 
-// Mock data for a single student's detailed view
+// Mock data for detailed view of specific students
 const mockStudentDetails = {
   1: {
     name: "Rohan Sharma",
@@ -129,11 +129,11 @@ export const getStudentById = async (req, res) => {
 
     const student = mockStudentDetails[id];
 
-    if (student) {
-      res.status(200).json(student);
-    } else {
-      res.status(404).json({ message: "Student not found" });
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
     }
+
+    res.status(200).json(student);
   } catch (error) {
     console.error("Error fetching student by ID:", error);
     res.status(500).json({ message: "Server error" });
