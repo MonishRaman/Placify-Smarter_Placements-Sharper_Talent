@@ -11,7 +11,7 @@ const MOCK_KEY = "employee_settings_dev";
 const defaultMock = {
   name: "Jane Doe",
   email: "jane.doe@example.com",
-  phone: "+1 555-123-4567",
+  phone: "+91 5512345671",
   currentCompany: "Acme Corp",
   jobTitle: "Frontend Engineer",
   experience: "3 years",
