@@ -30,7 +30,7 @@ export const createJob = async (req, res) => {
 
     const newJob = new Job({
       title,
-      company: req.user.userId, // auto-assign logged-in company
+      company: req.user.userId,
       type,
       domain,
       location,
@@ -52,19 +52,18 @@ export const createJob = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server Error: Could not create job.",
+      error: error.message,
     });
   }
 };
 
-// Get open jobs with pagination
-// Get open jobs with pagination and filters
+// Get jobs with filters & pagination
 export const getJobs = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    // Extract filter parameters
     const {
       search,
       type,
@@ -73,61 +72,40 @@ export const getJobs = async (req, res) => {
       status,
       fromDate,
       toDate,
-      sortBy = 'createdAt',
-      sortOrder = 'desc'
+      sortBy = "createdAt",
+      sortOrder = "desc",
     } = req.query;
 
-    // Build filter query
-    const filterQuery = { status: "Open" }; // Default to open jobs
+    const filterQuery = { status: "Open" };
 
-    // Status filter (allow filtering by other statuses if needed)
-    if (status && status !== "All") {
-      filterQuery.status = status;
-    }
+    if (status && status !== "All") filterQuery.status = status;
 
-    // Search filter (title, description, company name)
     if (search && search.trim()) {
       const searchRegex = new RegExp(escapeRegex(search.trim()), "i");
       filterQuery.$or = [
         { title: searchRegex },
         { description: searchRegex },
-        { domain: searchRegex }
+        { domain: searchRegex },
       ];
     }
 
-    // Type filter
-    if (type && type !== "All") {
-      filterQuery.type = type;
-    }
-
-    // Domain filter
-    if (domain && domain !== "All") {
-      filterQuery.domain = domain;
-    }
-
-    // Location filter
-    if (location && location !== "All") {
+    if (type && type !== "All") filterQuery.type = type;
+    if (domain && domain !== "All") filterQuery.domain = domain;
+    if (location && location !== "All")
       filterQuery.location = new RegExp(escapeRegex(location), "i");
-    }
 
-    // Date range filter
     if (fromDate || toDate) {
       filterQuery.createdAt = {};
-      if (fromDate) {
-        filterQuery.createdAt.$gte = new Date(fromDate);
-      }
+      if (fromDate) filterQuery.createdAt.$gte = new Date(fromDate);
       if (toDate) {
-        const endDate = new Date(toDate);
-        endDate.setHours(23, 59, 59, 999);
-        filterQuery.createdAt.$lte = endDate;
+        const end = new Date(toDate);
+        end.setHours(23, 59, 59, 999);
+        filterQuery.createdAt.$lte = end;
       }
     }
 
-    // Build sort object
-    const sortObj = {};
-    sortObj[sortBy] = sortOrder === 'desc' ? -1 : 1;
+    const sortObj = { [sortBy]: sortOrder === "desc" ? -1 : 1 };
 
-    // Execute queries
     const [totalJobs, jobs] = await Promise.all([
       Job.countDocuments(filterQuery),
       Job.find(filterQuery)
@@ -137,19 +115,20 @@ export const getJobs = async (req, res) => {
         })
         .sort(sortObj)
         .skip(skip)
-        .limit(limit)
+        .limit(limit),
     ]);
 
-    // Get unique filter options for frontend dropdowns
     const [allTypes, allDomains, allLocations] = await Promise.all([
       Job.distinct("type", { status: "Open" }),
       Job.distinct("domain", { status: "Open" }),
-      Job.distinct("location", { status: "Open" })
+      Job.distinct("location", { status: "Open" }),
     ]);
 
     res.status(200).json({
       success: true,
-      message: jobs.length ? "Jobs fetched successfully" : "No jobs found matching the criteria",
+      message: jobs.length
+        ? "Jobs fetched successfully"
+        : "No jobs found matching the criteria",
       count: jobs.length,
       totalJobs,
       currentPage: page,
@@ -164,13 +143,13 @@ export const getJobs = async (req, res) => {
           fromDate: fromDate || null,
           toDate: toDate || null,
           sortBy,
-          sortOrder
+          sortOrder,
         },
         available: {
           types: allTypes,
           domains: allDomains,
-          locations: allLocations
-        }
+          locations: allLocations,
+        },
       },
       jobs,
     });
@@ -183,33 +162,12 @@ export const getJobs = async (req, res) => {
     });
   }
 };
-// Update job (except company field)
+
+// Update job
 export const updateJob = async (req, res) => {
   try {
     const { id: jobId } = req.params;
-    const {
-      title,
-      type,
-      domain,
-      location,
-      salary,
-      description,
-      requirements,
-      responsibilities,
-      status,
-    } = req.body;
-
-    const updateData = {
-      title,
-      type,
-      domain,
-      location,
-      salary,
-      description,
-      requirements,
-      responsibilities,
-      status,
-    };
+    const updateData = { ...req.body };
     Object.keys(updateData).forEach(
       (key) => updateData[key] === undefined && delete updateData[key]
     );
@@ -222,12 +180,8 @@ export const updateJob = async (req, res) => {
       select: "name email industry website employeeCount profileImage",
     });
 
-    if (!updatedJob) {
-      return res.status(404).json({
-        success: false,
-        message: "Job not found",
-      });
-    }
+    if (!updatedJob)
+      return res.status(404).json({ success: false, message: "Job not found" });
 
     res.status(200).json({
       success: true,
@@ -251,18 +205,16 @@ export const deleteJob = async (req, res) => {
     const { userId, role } = req.user;
 
     const job = await Job.findById(jobId);
-    if (!job) {
-      return res.status(404).json({
-        success: false,
-        message: "Job not found",
-      });
-    }
+    if (!job)
+      return res.status(404).json({ success: false, message: "Job not found" });
 
     if (job.company.toString() !== userId.toString() && role !== "admin") {
-      return res.status(403).json({
-        success: false,
-        message: "Unauthorized. Only creator or admin can delete.",
-      });
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "Unauthorized. Only creator or admin can delete.",
+        });
     }
 
     await job.deleteOne();
@@ -281,37 +233,32 @@ export const deleteJob = async (req, res) => {
   }
 };
 
-// Apply for a job (student only)
+// Apply for job
 export const applyForJob = async (req, res) => {
   try {
     const { id: jobId } = req.params;
     const { userId, role } = req.user;
     const { resume } = req.body;
 
-    if (role !== "student") {
-      return res.status(403).json({
-        success: false,
-        message: "Only students can apply for jobs.",
-      });
-    }
+    if (role !== "student")
+      return res
+        .status(403)
+        .json({ success: false, message: "Only students can apply for jobs." });
 
     const job = await Job.findById(jobId);
-    if (!job) {
-      return res.status(404).json({
-        success: false,
-        message: "Job not found",
-      });
-    }
+    if (!job)
+      return res.status(404).json({ success: false, message: "Job not found" });
 
     const alreadyApplied = job.applicants.some(
       (app) => app.user.toString() === userId.toString()
     );
-    if (alreadyApplied) {
-      return res.status(400).json({
-        success: false,
-        message: "You have already applied for this job.",
-      });
-    }
+    if (alreadyApplied)
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "You have already applied for this job.",
+        });
 
     job.applicants.push({ user: userId, resume, appliedAt: new Date() });
     await job.save();
@@ -331,7 +278,7 @@ export const applyForJob = async (req, res) => {
   }
 };
 
-// Get applied jobs (student only)
+// Get applied jobs
 export const getAppliedJobs = async (req, res) => {
   try {
     const { userId } = req.user;
@@ -345,12 +292,10 @@ export const getAppliedJobs = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-    if (!jobs.length) {
-      return res.status(404).json({
-        success: false,
-        message: "No applied jobs found.",
-      });
-    }
+    if (!jobs.length)
+      return res
+        .status(404)
+        .json({ success: false, message: "No applied jobs found." });
 
     const formattedJobs = jobs.map((job) => {
       const applicant = job.applicants.find(
@@ -381,37 +326,39 @@ export const getAppliedJobs = async (req, res) => {
   }
 };
 
-// Withdraw application (student only)
+// Withdraw application
 export const withdrawApplication = async (req, res) => {
   try {
     const { id: jobId } = req.params;
     const { userId } = req.user;
 
     const job = await Job.findById(jobId);
-    if (!job) {
+    if (!job)
       return res.status(404).json({ success: false, message: "Job not found" });
-    }
 
     const alreadyApplied = job.applicants.some(
       (app) => app.user.toString() === userId.toString()
     );
-    if (!alreadyApplied) {
-      return res.status(400).json({
-        success: false,
-        message: "You have not applied for this job.",
-      });
-    }
+    if (!alreadyApplied)
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "You have not applied for this job.",
+        });
 
     job.applicants = job.applicants.filter(
       (app) => app.user.toString() !== userId.toString()
     );
     await job.save();
 
-    res.status(200).json({
-      success: true,
-      message: "Application withdrawn successfully.",
-      jobId: job._id,
-    });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Application withdrawn successfully.",
+        jobId: job._id,
+      });
   } catch (error) {
     console.error("Error withdrawing application:", error);
     res.status(500).json({
@@ -422,7 +369,7 @@ export const withdrawApplication = async (req, res) => {
   }
 };
 
-// Get company jobs (with filters & pagination)
+// Get company jobs
 export const getCompanyJobs = async (req, res) => {
   try {
     const companyId = req.user.userId;

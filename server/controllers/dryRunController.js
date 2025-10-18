@@ -1,6 +1,6 @@
 // dryRunController.js
 // Controller for Python dry-run validation using Gemini AI via @google/generative-ai
-// Accepts user code and test cases, compares AI output, returns result
+// Accepts user code and test cases, compares AI output, and returns structured results.
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -12,51 +12,54 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
 /**
  * POST /api/dryrun
- * Body: {
+ * Body:
+ * {
  *   code: string (Python code),
- *   testCases: [
- *     { input: string, expectedOutput: string }
- *   ]
+ *   testCases: [{ input: string, expectedOutput: string }]
  * }
- * Returns: {
+ * Response:
+ * {
  *   success: boolean,
- *   results: [ { input, expectedOutput, aiOutput, passed } ],
+ *   results: [{ input, expectedOutput, aiOutput, passed }],
  *   message: string
  * }
  */
 export const dryRunPython = async (req, res) => {
   try {
     const { code, testCases } = req.body;
+
     if (!code || !Array.isArray(testCases)) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid input." });
     }
 
-    // Run all test cases in parallel
+    // Process test cases concurrently
     const results = await Promise.all(
-      testCases.map(async (tc) => {
-        let aiOutput = "";
+      testCases.map(async ({ input, expectedOutput }) => {
+        let aiOutput = "[Gemini API error]";
         let passed = false;
 
         try {
-          const prompt = `Given the following Python code:\n${code}\n\nRun it with input:\n${tc.input}\n\nWhat is the output? Respond with only the output.`;
+          const prompt = `
+Given the following Python code:
+${code}
 
-          const result = await model.generateContent(prompt);
-          aiOutput = result.response.text().trim();
+Run it with input:
+${input}
 
-          passed = aiOutput === tc.expectedOutput.trim();
+What is the output? Respond with only the output.
+          `.trim();
+
+          const response = await model.generateContent(prompt);
+          aiOutput = response?.response?.text()?.trim() || "";
+
+          passed = aiOutput === expectedOutput.trim();
         } catch (err) {
           console.error("Gemini API error:", err.message);
-          aiOutput = "[Gemini API error]";
         }
 
-        return {
-          input: tc.input,
-          expectedOutput: tc.expectedOutput,
-          aiOutput,
-          passed,
-        };
+        return { input, expectedOutput, aiOutput, passed };
       })
     );
 
@@ -65,14 +68,10 @@ export const dryRunPython = async (req, res) => {
     return res.json({
       success: allPassed,
       results,
-      message: allPassed
-        ? "All test cases passed."
-        : "Some test cases failed.",
+      message: allPassed ? "All test cases passed." : "Some test cases failed.",
     });
   } catch (error) {
     console.error("Dry-run error:", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal server error." });
+    res.status(500).json({ success: false, message: "Internal server error." });
   }
 };

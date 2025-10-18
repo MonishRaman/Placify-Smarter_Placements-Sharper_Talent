@@ -19,6 +19,7 @@ export const dryRunC = async (req, res) => {
 
     const prompt = buildGeminiPromptC(code, language, testCases);
     const geminiResponse = await callGeminiAPIC(prompt);
+
     if (!geminiResponse) {
       return res
         .status(500)
@@ -42,11 +43,10 @@ export const dryRunC = async (req, res) => {
 };
 
 // ----------------- Helpers -----------------
-
 function buildGeminiPromptC(code, language, testCases) {
   const langName = language === "cpp" ? "C++" : "C";
   const cases = testCases
-    .map((tc, idx) => `Test Case ${idx + 1}: Input: ${tc.input}`)
+    .map((tc, i) => `Test Case ${i + 1}: Input: ${tc.input}`)
     .join("\n");
   return `You are a ${langName} code simulator. Given the following ${langName} code and test cases, simulate the output for each input.
 ${langName} Code:
@@ -78,8 +78,8 @@ function parseGeminiOutputC(geminiResponse, testCases) {
     if (match) outputs = JSON.parse(match[0]);
   }
 
-  return testCases.map((tc, idx) => {
-    const actual = outputs[idx]?.output?.trim() ?? "";
+  return testCases.map((tc, i) => {
+    const actual = outputs[i]?.output?.trim() ?? "";
     const expected = tc.expectedOutput.trim();
     return {
       input: tc.input,

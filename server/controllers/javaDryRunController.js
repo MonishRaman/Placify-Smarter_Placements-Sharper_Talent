@@ -5,6 +5,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 export const dryRunJava = async (req, res) => {
   try {
     const { code, testCases } = req.body;
+
     if (!code || !Array.isArray(testCases)) {
       return res.status(400).json({
         success: false,
@@ -14,6 +15,7 @@ export const dryRunJava = async (req, res) => {
 
     const prompt = buildGeminiPrompt(code, testCases);
     const geminiResponse = await callGeminiAPI(prompt);
+
     if (!geminiResponse) {
       return res
         .status(500)
@@ -42,6 +44,7 @@ function buildGeminiPrompt(code, testCases) {
   const cases = testCases
     .map((tc, idx) => `Test Case ${idx + 1}: Input: ${tc.input}`)
     .join("\n");
+
   return `You are a Java code simulator. Given the following Java code and test cases, simulate the output for each input.
 Java Code:
 ${code}
@@ -65,6 +68,7 @@ async function callGeminiAPI(prompt) {
 
 function parseGeminiOutput(geminiResponse, testCases) {
   let outputs = [];
+
   try {
     outputs = JSON.parse(geminiResponse);
   } catch {
