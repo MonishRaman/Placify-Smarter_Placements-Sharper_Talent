@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+networkx
+sentence-transformers
+scikit-learn
+google-generativeai
+pydantic
+python-dotenv
