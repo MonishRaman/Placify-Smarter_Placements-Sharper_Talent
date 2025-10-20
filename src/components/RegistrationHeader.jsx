@@ -64,7 +64,7 @@ const RegistrationHeader = ({
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
         onClick={handleBackNavigation}
-        className="absolute left-4 top-6 flex items-center space-x-2 text-white/90 hover:text-white transition-all duration-200 group bg-white/20 dark:bg-black/20 backdrop-blur-sm px-5 py-3 rounded-full hover:bg-white/30 dark:hover:bg-black/30 shadow-lg hover:shadow-xl border border-white/20 dark:border-white/10"
+        className="absolute left-3 top-3 flex items-center space-x-2 text-white/90 hover:text-white transition-all duration-200 group bg-white/20 dark:bg-black/20 backdrop-blur-sm px-5 py-3 rounded-full hover:bg-white/30 dark:hover:bg-black/30 shadow-lg hover:shadow-xl border border-white/20 dark:border-white/10"
         aria-label="Go back to previous page"
       >
         <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200" />
@@ -82,7 +82,7 @@ const RegistrationHeader = ({
             type: "spring",
             stiffness: 200,
           }}
-          className="flex items-center justify-center space-x-3 mb-6"
+          className="flex items-center justify-center space-x-3 mb-6 mt-2"
         >
           <div className="p-2 bg-white/20 dark:bg-black/20 backdrop-blur-sm rounded-xl border border-white/30 dark:border-white/10">
             <Brain className="w-8 h-8 text-white drop-shadow-sm" />
