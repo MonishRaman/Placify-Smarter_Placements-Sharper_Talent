@@ -260,7 +260,7 @@ const AuthPage = () => {
                     const val = e.target.value;
                     setEmail(val);
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    if (val && !emailRegex.test(val)) {
+                    if (!isLogin && val && !emailRegex.test(val)) {
                       setEmailError(
                         "Please enter a valid email (e.g., user@example.com)."
                       );
@@ -308,7 +308,9 @@ const AuthPage = () => {
                   onChange={(e) => {
                     const val = e.target.value;
                     setPassword(val);
-                    checkPasswordStrength(val);
+                    if(!isLogin){
+                      checkPasswordStrength(val);
+                    }
                   }}
                   className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-700 rounded-xl 
                              bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
@@ -332,7 +334,7 @@ const AuthPage = () => {
               </div>
             </motion.div>
             {passerror && <p className="text-red-500 text-sm">{passerror}</p>}
-            {password && (
+            {!isLogin && password && (
               <div className="mt-2">
                 <p
                   className={`text-sm font-medium ${
