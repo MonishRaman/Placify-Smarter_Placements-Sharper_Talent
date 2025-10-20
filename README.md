@@ -30,6 +30,25 @@ Welcome to the official repository for **Placify**, a project by **Innovision Te
 
 ---
 
+![GSSoC Logo](https://github.com/dimpal-yadav/Foodie/blob/main/images/GSSoC.png)
+
+🌟 **Exciting News...**
+
+🚀 This project is now an official part of GirlScript Summer of Code – GSSoC'25! 💻 We're thrilled to welcome contributors from all over India and beyond to collaborate, build, and grow *Placify-Smarter_Placements-Sharper_Talent!* Let’s make learning and career development smarter – together! 🌟
+
+GSSoC is one of India’s **largest 3-month-long open-source programs** that encourages developers of all levels to contribute to real-world projects while learning, collaborating, and growing together.
+
+🌈 With **mentorship, community support**, and **collaborative coding**, it's the perfect platform for developers to:
+
+- ✨ Improve their skills
+- 🤝 Contribute to impactful projects
+- 🏆 Get recognized for their work
+- 📜 Receive certificates and swag!
+
+🎉 **I can’t wait to welcome new contributors** from GSSoC 2025 to this Placify-Smarter_Placements-Sharper_Talent project family! Let's build, learn, and grow together — one commit at a time. 
+
+---
+
 ## 📖 Table of Contents
 
 - [😫 The Problem](#-the-problem)
