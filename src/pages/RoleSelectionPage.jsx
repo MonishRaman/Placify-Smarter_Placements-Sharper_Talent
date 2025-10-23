@@ -280,24 +280,24 @@ const RoleSelectionPage = () => {
               >
                 {/* Sign In Button - Only show if not authenticated */}
                 {!loading && !isAuthenticated && (
-                  <motion.button
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className={`relative px-6 py-2.5 font-medium rounded-xl transition-all duration-500 ease-in-out hover-lift will-change-transform backdrop-blur-sm
-                             ${
-                               isScrolled
-                                 ? "text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 before:absolute before:inset-0 before:rounded-xl before:bg-gray-100/70 dark:before:bg-gray-800/70 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:backdrop-blur-md"
-                                 : "text-white/90 dark:text-gray-100/90 hover:text-white dark:hover:text-white before:absolute before:inset-0 before:rounded-xl before:bg-white/15 dark:before:bg-white/25 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:backdrop-blur-md"
-                             }`}
-                    onClick={() => navigate("/auth")}
-                  >
-                    <span className="relative z-10 flex items-center space-x-2">
-                      <User className="w-4 h-4" />
-                      <span>Sign In</span>
-                    </span>
-                  </motion.button>
-                )}
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className={`relative px-6 py-2.5 font-medium rounded-xl border transition-all duration-500 ease-in-out hover-lift will-change-transform backdrop-blur-sm
+                    ${
+                      isScrolled
+                        ? "text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 border-gray-300 dark:border-gray-600 before:absolute before:inset-0 before:rounded-xl before:bg-gray-100/80 dark:before:bg-gray-800/60 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:backdrop-blur-md"
+                        : "text-gray-900 dark:text-gray-100 hover:text-purple-700 dark:hover:text-purple-300 border-gray-400/50 dark:border-gray-500/60 before:absolute before:inset-0 before:rounded-xl before:bg-purple-100/25 dark:before:bg-white/15 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:backdrop-blur-md"
+                    }`}
+                  onClick={() => navigate("/auth")}
+                >
+                  <span className="relative z-10 flex items-center space-x-2">
+                    <User className="w-4 h-4" />
+                    <span>Sign In</span>
+                  </span>
+                </motion.button>
+              )}
 
                 {/* Get Started Button */}
                 <motion.button
