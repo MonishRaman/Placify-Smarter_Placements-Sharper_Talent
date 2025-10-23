@@ -1,4 +1,12 @@
-import { School, Loader2 } from "lucide-react";
+import {
+  School,
+  Loader2,
+  CheckCircle,
+  XCircle,
+  Brain,
+  Clock,
+  Users2,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -9,7 +17,6 @@ import RegistrationHeader from "../../components/RegistrationHeader";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import apiClient from "../../api/apiClient";
-import { CheckCircle, XCircle } from "lucide-react";
 
 // =================== PERFORMANCE MONITORING ===================
 const componentStartTime = performance.now();
@@ -38,6 +45,7 @@ export default function InstitutionForm() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showMobileHero, setShowMobileHero] = useState(false);
 
   // Track password validation
   const [passwordRules, setPasswordRules] = useState({
@@ -378,29 +386,12 @@ export default function InstitutionForm() {
   }));
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Particles */}
-      {particles.map((p, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full bg-white/20 dark:bg-white/10"
-          style={{
-            width: p.size,
-            height: p.size,
-            left: `${p.left}%`,
-            bottom: `-${p.size}px`,
-          }}
-          animate={{ y: ["0%", "-120vh"] }}
-          transition={{
-            duration: p.duration,
-            repeat: Infinity,
-            delay: p.delay,
-            ease: "linear",
-          }}
-        />
-      ))}
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Header for mobile only */}
+      <div className="lg:hidden">
+        <Header />
+      </div>
 
-      <Header />
       <ToastContainer
         position="top-center"
         autoClose={2000}
@@ -408,199 +399,330 @@ export default function InstitutionForm() {
         toastClassName="dark:bg-gray-800 dark:text-white"
       />
 
-      <div className="pt-16">
-        <RegistrationHeader
-          title="Institution Registration"
-          subtitle="Transform your campus placements with our AI-powered recruitment platform."
-          tagline="Complete setup in under 5 minutes"
-          icon={<School className="w-10 h-10 text-white" />}
-          color="blue"
-          userType="institution"
-        />
+      {/* Left Panel - Hero Section */}
+      <div className="w-full lg:w-1/2">
+        {/* Mobile Condensed Hero with Toggle */}
+        <div className="lg:hidden">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-800 dark:to-cyan-950 text-white p-6 relative overflow-hidden"
+          >
+            {/* Background decoration */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-white/20 backdrop-blur-sm rounded-xl">
+                    <School className="w-6 h-6" />
+                  </div>
+                  <h2 className="text-2xl font-bold">
+                    Institution Registration
+                  </h2>
+                </div>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowMobileHero(!showMobileHero)}
+                  className="p-2 bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-colors"
+                  aria-label="Toggle details"
+                >
+                  <motion.div
+                    animate={{ rotate: showMobileHero ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </motion.div>
+                </motion.button>
+              </div>
+
+              <p className="text-white/90 text-sm mb-3">
+                Transform campus placements with AI-powered platform
+              </p>
+
+              {/* Expandable content */}
+              <motion.div
+                initial={false}
+                animate={{
+                  height: showMobileHero ? "auto" : 0,
+                  opacity: showMobileHero ? 1 : 0,
+                }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <div className="pt-3 border-t border-white/20 space-y-3">
+                  <p className="text-white/80 text-sm">
+                    Complete setup in under 5 minutes and revolutionize your
+                    placement process.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <div className="flex items-center space-x-2 bg-white/15 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs">
+                      <Brain className="w-4 h-4" />
+                      <span>AI Platform</span>
+                    </div>
+                    <div className="flex items-center space-x-2 bg-white/15 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs">
+                      <Clock className="w-4 h-4" />
+                      <span>5 Min Setup</span>
+                    </div>
+                    <div className="flex items-center space-x-2 bg-white/15 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs">
+                      <Users2 className="w-4 h-4" />
+                      <span>Smart Placement</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Desktop Full Hero */}
+        <div className="hidden lg:block">
+          <RegistrationHeader
+            title="Institution Registration"
+            subtitle="Transform your campus placements with our AI-powered recruitment platform."
+            tagline="Complete setup in under 5 minutes"
+            icon={<School className="w-10 h-10 text-white" />}
+            color="blue"
+            userType="institution"
+          />
+        </div>
       </div>
 
-      <div className="py-12 px-4">
-        <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 transition-colors duration-200">
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md border border-red-200 dark:border-red-800">
-              {error}
-            </div>
-          )}
+      {/* Right Panel - Form Section */}
+      <div className="flex-1 lg:w-1/2 flex items-center justify-center p-6 lg:p-12 bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
+        {/* Floating particles - fewer and lighter for form side */}
+        {particles.slice(0, 8).map((p, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-blue-500/5 dark:bg-blue-500/10"
+            style={{
+              width: p.size,
+              height: p.size,
+              left: `${p.left}%`,
+              bottom: `-${p.size}px`,
+            }}
+            animate={{ y: ["0%", "-120vh"] }}
+            transition={{
+              duration: p.duration,
+              repeat: Infinity,
+              delay: p.delay,
+              ease: "linear",
+            }}
+          />
+        ))}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <FormInput
-              id="institution-name"
-              label="Institution Name"
-              placeholder="Enter Institution's Name"
-              value={formData.institutionName}
-              onChange={(e) =>
-                handleFormDataChange("institutionName", e.target.value)
-              }
-              required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-            />
-
-            <FormInput
-              id="institution-website"
-              label="Website"
-              placeholder="Enter Institution's Website"
-              type="url"
-              value={formData.website}
-              onChange={(e) => handleFormDataChange("website", e.target.value)}
-              required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-            />
-
-            <FormInput
-              id="institution-contact-person"
-              label="Contact Person"
-              placeholder="Enter contact person"
-              value={formData.contactPerson}
-              onChange={(e) =>
-                handleFormDataChange("contactPerson", e.target.value)
-              }
-              required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-            />
-
-            <FormInput
-              id="institution-email"
-              type="email"
-              label="Email"
-              placeholder="Enter email address"
-              value={formData.email}
-              onChange={(e) => handleFormDataChange("email", e.target.value)}
-              required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-            />
-
-            <FormInput
-              id="institution-password"
-              type="password"
-              label="Password"
-              placeholder="Enter password"
-              value={formData.password}
-              onChange={handlePasswordChange}
-              onCopy={(e) => e.preventDefault()}
-              onPaste={(e) => e.preventDefault()}
-              required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-            />
-
-            {/* Dynamic Password Validation - Only show if password field has content */}
-            {formData.password && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="w-full max-w-md relative z-10"
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700">
+            {error && (
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className="mt-2 space-y-2"
+                className="flex items-center p-4 mb-6 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"
               >
-                {passwordValidationRules.map((rule) => {
-                  const isValid = passwordRules[rule.key];
-                  return (
-                    <motion.div
-                      key={rule.key}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex items-center gap-2 text-sm"
-                    >
-                      <motion.div
-                        initial={false}
-                        animate={{
-                          scale: isValid ? 1.1 : 1,
-                          rotate: isValid ? 360 : 0,
-                        }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        {isValid ? (
-                          <CheckCircle className="text-green-500 w-4 h-4" />
-                        ) : (
-                          <XCircle className="text-red-500 w-4 h-4" />
-                        )}
-                      </motion.div>
-                      <span
-                        className={`transition-colors duration-200 ${
-                          isValid
-                            ? "text-green-600 dark:text-green-400"
-                            : "text-red-500 dark:text-red-400"
-                        }`}
-                      >
-                        {rule.label}
-                      </span>
-                    </motion.div>
-                  );
-                })}
+                {error}
               </motion.div>
             )}
 
-            <FormInput
-              id="institution-confirm-password"
-              type="password"
-              label="Confirm Password"
-              placeholder="Enter confirm password"
-              value={formData.confirmPassword}
-              onChange={(e) =>
-                handleFormDataChange("confirmPassword", e.target.value)
-              }
-              onPaste={(e) => e.preventDefault()}
-              required
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-            />
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <FormInput
+                id="institution-name"
+                label="Institution Name"
+                placeholder="Enter Institution's Name"
+                value={formData.institutionName}
+                onChange={(e) =>
+                  handleFormDataChange("institutionName", e.target.value)
+                }
+                required
+                className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+              />
 
-            {/* Password Mismatch Indicator */}
-            {formData.confirmPassword &&
-              formData.password !== formData.confirmPassword && (
+              <FormInput
+                id="institution-website"
+                label="Website"
+                placeholder="Enter Institution's Website"
+                type="url"
+                value={formData.website}
+                onChange={(e) =>
+                  handleFormDataChange("website", e.target.value)
+                }
+                required
+                className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+              />
+
+              <FormInput
+                id="institution-contact-person"
+                label="Contact Person"
+                placeholder="Enter contact person"
+                value={formData.contactPerson}
+                onChange={(e) =>
+                  handleFormDataChange("contactPerson", e.target.value)
+                }
+                required
+                className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+              />
+
+              <FormInput
+                id="institution-email"
+                type="email"
+                label="Email"
+                placeholder="Enter email address"
+                value={formData.email}
+                onChange={(e) => handleFormDataChange("email", e.target.value)}
+                required
+                className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+              />
+
+              <FormInput
+                id="institution-password"
+                type="password"
+                label="Password"
+                placeholder="Enter password"
+                value={formData.password}
+                onChange={handlePasswordChange}
+                onCopy={(e) => e.preventDefault()}
+                onPaste={(e) => e.preventDefault()}
+                required
+                className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+              />
+
+              {/* Dynamic Password Validation - Only show if password field has content */}
+              {formData.password && (
                 <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-2 space-y-2"
                 >
-                  <XCircle className="w-4 h-4" />
-                  <span>Passwords do not match</span>
+                  {passwordValidationRules.map((rule) => {
+                    const isValid = passwordRules[rule.key];
+                    return (
+                      <motion.div
+                        key={rule.key}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex items-center gap-2 text-sm"
+                      >
+                        <motion.div
+                          initial={false}
+                          animate={{
+                            scale: isValid ? 1.1 : 1,
+                            rotate: isValid ? 360 : 0,
+                          }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          {isValid ? (
+                            <CheckCircle className="text-green-500 w-4 h-4" />
+                          ) : (
+                            <XCircle className="text-red-500 w-4 h-4" />
+                          )}
+                        </motion.div>
+                        <span
+                          className={`transition-colors duration-200 ${
+                            isValid
+                              ? "text-green-600 dark:text-green-400"
+                              : "text-red-500 dark:text-red-400"
+                          }`}
+                        >
+                          {rule.label}
+                        </span>
+                      </motion.div>
+                    );
+                  })}
                 </motion.div>
               )}
 
-            {/* Password Match Indicator */}
-            {formData.confirmPassword &&
-              formData.password === formData.confirmPassword &&
-              formData.password.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
-                >
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Passwords match</span>
-                </motion.div>
-              )}
+              <FormInput
+                id="institution-confirm-password"
+                type="password"
+                label="Confirm Password"
+                placeholder="Enter confirm password"
+                value={formData.confirmPassword}
+                onChange={(e) =>
+                  handleFormDataChange("confirmPassword", e.target.value)
+                }
+                onPaste={(e) => e.preventDefault()}
+                required
+                className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+              />
 
-            {/* Submit */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
-              type="submit"
-              disabled={
-                loading ||
-                !allPasswordRulesSatisfied ||
-                formData.password !== formData.confirmPassword
-              }
-              className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded-md shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 ${
-                loading ||
-                !allPasswordRulesSatisfied ||
-                formData.password !== formData.confirmPassword
-                  ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70"
-                  : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white"
-              }`}
-            >
-              {loading && <Loader2 className="animate-spin w-5 h-5" />}
-              {loading ? "Registering..." : "Register Institution"}
-            </motion.button>
-          </form>
-        </div>
+              {/* Password Mismatch Indicator */}
+              {formData.confirmPassword &&
+                formData.password !== formData.confirmPassword && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    <span>Passwords do not match</span>
+                  </motion.div>
+                )}
+
+              {/* Password Match Indicator */}
+              {formData.confirmPassword &&
+                formData.password === formData.confirmPassword &&
+                formData.password.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Passwords match</span>
+                  </motion.div>
+                )}
+
+              {/* Submit */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                type="submit"
+                disabled={
+                  loading ||
+                  !allPasswordRulesSatisfied ||
+                  formData.password !== formData.confirmPassword
+                }
+                className={`w-full flex justify-center items-center gap-2 py-3 px-4 text-base font-semibold rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-200 ${
+                  loading ||
+                  !allPasswordRulesSatisfied ||
+                  formData.password !== formData.confirmPassword
+                    ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-70"
+                    : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white"
+                }`}
+              >
+                {loading && <Loader2 className="animate-spin w-5 h-5" />}
+                {loading ? "Registering..." : "Register Institution"}
+              </motion.button>
+            </form>
+          </div>
+        </motion.div>
       </div>
-      <Footer />
+
+      {/* Footer */}
+      <div className="w-full lg:hidden">
+        <Footer />
+      </div>
     </div>
   );
 }
