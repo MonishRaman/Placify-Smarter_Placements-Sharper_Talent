@@ -155,7 +155,7 @@ const EmployeeDashboard = () => {
         const res = await apiClient.get("/dashboard");
         setProfile(res.data);
       } catch (e) {
-        console.error("Dashboard fetch failed", e);
+        logger.error("Dashboard fetch failed", e);
         setError(e.response?.data?.message || "Failed to load dashboard");
       } finally {
         setLoading(false);

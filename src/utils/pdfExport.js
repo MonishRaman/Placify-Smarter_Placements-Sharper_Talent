@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
+import logger from './logger';
 
 /**
  * PDF Export Utility for Company Insights Dashboard
@@ -131,7 +132,7 @@ export class PDFExportService {
     async captureChart(elementId, title = '', options = {}) {
         const element = document.getElementById(elementId);
         if (!element) {
-            console.warn(`Element with ID ${elementId} not found`);
+            logger.warn(`Element with ID ${elementId} not found`);
             return false;
         }
 
@@ -170,7 +171,7 @@ export class PDFExportService {
 
             return true;
         } catch (error) {
-            console.error(`Error capturing chart ${elementId}:`, error);
+            logger.error(`Error capturing chart ${elementId}:`, error);
             this.addText(`❌ Error capturing chart: ${title || elementId}`);
             return false;
         }
@@ -318,7 +319,7 @@ export async function exportInsightsToPDF(options = {}) {
 
         return { success: true, filename };
     } catch (error) {
-        console.error('Error generating PDF:', error);
+        logger.error('Error generating PDF:', error);
         throw new Error(`Failed to generate PDF: ${error.message}`);
     }
 }
@@ -346,7 +347,7 @@ export async function exportChartAsImage(elementId, filename) {
 
         return { success: true, filename };
     } catch (error) {
-        console.error('Error exporting chart as image:', error);
+        logger.error('Error exporting chart as image:', error);
         throw new Error(`Failed to export chart: ${error.message}`);
     }
 }

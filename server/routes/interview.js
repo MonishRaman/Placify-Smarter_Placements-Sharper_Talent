@@ -3,6 +3,7 @@ import express from 'express';
 import Interview from '../models/Interview.js';
 import verifyToken from '../middleware/authMiddleware.js'; // Optional: for protected access
 import handleVideo from "../controllers/videoController.js"
+import logger from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -31,7 +32,7 @@ const pastInterviews = await Interview.find({ status: 'completed' });
 
     res.status(200).json(formatted);
   } catch (error) {
-    console.error('Error fetching past interviews:', error);
+    logger.error('Error fetching past interviews:', error);
     res.status(500).json({ message: 'Server error while fetching past interviews' });
   }
 });

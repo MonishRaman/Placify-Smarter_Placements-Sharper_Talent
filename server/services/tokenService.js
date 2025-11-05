@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import logger from '../utils/logger.js';
 
 dotenv.config();
 
@@ -31,7 +32,7 @@ class TokenService {
     constructor() {
         this.jwtSecret = process.env.JWT_SECRET;
         if (!this.jwtSecret) {
-            console.warn('⚠️  JWT_SECRET not found in environment variables. JWT functionality will be limited.');
+            logger.warn('⚠️  JWT_SECRET not found in environment variables. JWT functionality will be limited.');
         }
     }
 
@@ -76,7 +77,7 @@ class TokenService {
             // Generate hash of the token for secure storage
             const tokenHash = this.hashToken(token);
 
-            console.log(`🔑 Generated secure token (${format}, ${length} bytes, expires in ${expiryMinutes}min)`);
+            logger.debug(`🔑 Generated secure token (${format}, ${length} bytes, expires in ${expiryMinutes}min)`);
 
             return {
                 token,
@@ -88,7 +89,7 @@ class TokenService {
                 expiryMinutes
             };
         } catch (error) {
-            console.error('❌ Failed to generate token:', error.message);
+            logger.error('❌ Failed to generate token:', error.message);
             throw new Error(`Token generation failed: ${error.message}`);
         }
     }
@@ -128,7 +129,7 @@ class TokenService {
                 algorithm: 'HS256'
             });
 
-            console.log(`🔐 Generated JWT token (expires in ${expiryMinutes}min)`);
+            logger.debug(`🔐 Generated JWT token (expires in ${expiryMinutes}min)`);
 
             return {
                 token,
@@ -139,7 +140,7 @@ class TokenService {
                 expiryMinutes
             };
         } catch (error) {
-            console.error('❌ Failed to generate JWT token:', error.message);
+            logger.error('❌ Failed to generate JWT token:', error.message);
             throw new Error(`JWT token generation failed: ${error.message}`);
         }
     }
@@ -166,7 +167,7 @@ class TokenService {
             const now = new Date();
 
             if (now > expiryDate) {
-                console.log('⏰ Token validation failed: Token has expired');
+                logger.debug('⏰ Token validation failed: Token has expired');
                 return {
                     valid: false,
                     error: 'Token has expired',
@@ -184,7 +185,7 @@ class TokenService {
             );
 
             if (!isHashValid) {
-                console.log('❌ Token validation failed: Invalid token hash');
+                logger.debug('❌ Token validation failed: Invalid token hash');
                 return {
                     valid: false,
                     error: 'Invalid token',
@@ -192,14 +193,14 @@ class TokenService {
                 };
             }
 
-            console.log('✅ Token validation successful');
+            logger.debug('✅ Token validation successful');
             return {
                 valid: true,
                 expiresAt: expiryDate,
                 timeRemaining: expiryDate.getTime() - now.getTime()
             };
         } catch (error) {
-            console.error('❌ Token validation error:', error.message);
+            logger.error('❌ Token validation error:', error.message);
             return {
                 valid: false,
                 error: error.message,
@@ -233,7 +234,7 @@ class TokenService {
 
             const decoded = jwt.verify(token, this.jwtSecret);
 
-            console.log('✅ JWT token validation successful');
+            logger.debug('✅ JWT token validation successful');
             return {
                 valid: true,
                 payload: decoded,
@@ -242,7 +243,7 @@ class TokenService {
                 issuer: decoded.iss
             };
         } catch (error) {
-            console.log('❌ JWT token validation failed:', error.message);
+            logger.debug('❌ JWT token validation failed:', error.message);
 
             let reason = 'INVALID_TOKEN';
             if (error.name === 'TokenExpiredError') {
@@ -277,7 +278,7 @@ class TokenService {
                 .update(token)
                 .digest('hex');
         } catch (error) {
-            console.error('❌ Token hashing failed:', error.message);
+            logger.error('❌ Token hashing failed:', error.message);
             throw new Error(`Token hashing failed: ${error.message}`);
         }
     }
@@ -306,7 +307,7 @@ class TokenService {
                 tokenId: randomToken.token.substring(0, 8) // First 8 chars as ID
             }, expiryMinutes);
 
-            console.log(`🔐 Generated password reset token for user: ${userId}`);
+            logger.debug(`🔐 Generated password reset token for user: ${userId}`);
 
             return {
                 // Random token for URL (more secure for password resets)
@@ -325,7 +326,7 @@ class TokenService {
                 expiryMinutes
             };
         } catch (error) {
-            console.error('❌ Failed to generate password reset token:', error.message);
+            logger.error('❌ Failed to generate password reset token:', error.message);
             throw new Error(`Password reset token generation failed: ${error.message}`);
         }
     }
@@ -381,7 +382,7 @@ class TokenService {
 
             return tokenValidation;
         } catch (error) {
-            console.error('❌ Password reset token validation error:', error.message);
+            logger.error('❌ Password reset token validation error:', error.message);
             return {
                 valid: false,
                 error: error.message,
@@ -411,7 +412,7 @@ class TokenService {
                 expiresAt: expiryDate
             };
         } catch (error) {
-            console.error('❌ Token expiry check failed:', error.message);
+            logger.error('❌ Token expiry check failed:', error.message);
             return {
                 isExpired: true,
                 isNearExpiry: false,

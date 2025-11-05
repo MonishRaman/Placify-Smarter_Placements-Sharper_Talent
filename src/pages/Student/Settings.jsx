@@ -48,7 +48,7 @@ const Settings = () => {
         }
         setError("");
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        logger.error("Error fetching profile:", error);
         setError("Failed to load profile data");
       } finally {
         setLoading(false);
@@ -126,7 +126,7 @@ const Settings = () => {
       setSelectedImage(null);
       setImagePreview(null);
     } catch (error) {
-      console.error("Error updating profile:", error);
+      logger.error("Error updating profile:", error);
       setError("Failed to update profile");
     } finally {
       setSaving(false);

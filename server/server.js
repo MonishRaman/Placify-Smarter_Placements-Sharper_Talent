@@ -32,6 +32,7 @@ import cDryRunRoutes from "./routes/cDryRun.js";
 import javaDryRunRoutes from "./routes/javaDryRun.js";
 import dryRunRoutes from "./routes/dryrun.js";
 import studentRoutes from "./routes/studentRoutes.js";
+import logger from './utils/logger.js';
 
 // ====== Path Setup ======
 const __filename = fileURLToPath(import.meta.url);
@@ -107,19 +108,19 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error("Global Error Handler:", err.stack);
+  logger.error("Global Error Handler:", err.stack);
   res.status(500).json({ error: "Internal Server Error" });
 });
 
 // ====== Start Server ======
 app.listen(port, async () => {
-  console.log(`✅ Server running on port ${port}`);
+  logger.debug(`✅ Server running on port ${port}`);
 
   try {
     await connectToDatabase();
-    console.log("📦 Connected to MongoDB");
-    console.log("📧 Ready to send emails!");
+    logger.debug("📦 Connected to MongoDB");
+    logger.debug("📧 Ready to send emails!");
   } catch (dbError) {
-    console.error("❌ Database connection failed:", dbError.message);
+    logger.error("❌ Database connection failed:", dbError.message);
   }
 });

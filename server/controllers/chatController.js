@@ -1,4 +1,5 @@
 import { chatWithGemini } from "../services/ai/gemini.js";
+import logger from '../utils/logger.js';
 
 /**
  * POST /api/chat
@@ -18,7 +19,7 @@ export async function chatHandler(req, res) {
     }
     return res.json({ response });
   } catch (err) {
-    console.error("[chatHandler] Error:", err);
+    logger.error("[chatHandler] Error:", err);
     return res.status(500).json({ error: "Failed to get Gemini response" });
   }
 }

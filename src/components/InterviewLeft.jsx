@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { AlertCircle, Camera, CameraOff, Mic, MicOff } from "lucide-react";
-
 const InterviewLeft = ({ onStreamReady, onRecordingReady, transcript, setTranscript }) => {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
@@ -38,7 +37,7 @@ const InterviewLeft = ({ onStreamReady, onRecordingReady, transcript, setTranscr
       setCameraPermission("granted");
       onStreamReady(true);
     } catch (error) {
-      console.error("Camera access denied:", error);
+      logger.error("Camera access denied:", error);
       setCameraPermission("denied");
       onStreamReady(false);
     }
@@ -64,10 +63,10 @@ const InterviewLeft = ({ onStreamReady, onRecordingReady, transcript, setTranscr
 
   // --- Speech Recognition Setup ---
 const startSpeechRecognition = () => {
-    console.log("Initializing SpeechRecognition...");
+    logger.debug("Initializing SpeechRecognition...");
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-        console.warn("SpeechRecognition API not supported in this browser.");
+        logger.warn("SpeechRecognition API not supported in this browser.");
         return;
     }
 
@@ -75,34 +74,34 @@ const startSpeechRecognition = () => {
     recognitionRef.current.continuous = true;
     recognitionRef.current.interimResults = true;
     recognitionRef.current.lang = "en-US";
-    console.log("SpeechRecognition instance created and configured.");
+    logger.debug("SpeechRecognition instance created and configured.");
 
     recognitionRef.current.onresult = (event) => {
-        console.log("SpeechRecognition result event:", event);
+        logger.debug("SpeechRecognition result event:", event);
         let interimTranscript = "";
         let finalTranscript = transcript;
 
         for (let i = event.resultIndex; i < event.results.length; ++i) {
             const result = event.results[i];
             if (result.isFinal) {
-                console.log("Final transcript received:", result[0].transcript);
+                logger.debug("Final transcript received:", result[0].transcript);
                 finalTranscript += result[0].transcript + " ";
             } else {
-                console.log("Interim transcript received:", result[0].transcript);
+                logger.debug("Interim transcript received:", result[0].transcript);
                 interimTranscript += result[0].transcript;
             }
         }
 
         // Live update parent transcript (final + interim)
-        console.log("Updating transcript:", finalTranscript + interimTranscript);
+        logger.debug("Updating transcript:", finalTranscript + interimTranscript);
         setTranscript(finalTranscript + interimTranscript);
     };
 
     recognitionRef.current.onerror = (event) => {
-        console.error("SpeechRecognition error:", event.error);
+        logger.error("SpeechRecognition error:", event.error);
     };
 
-    console.log("Starting SpeechRecognition...");
+    logger.debug("Starting SpeechRecognition...");
     recognitionRef.current.start();
 };
 

@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { exportInsightsToPDF, exportChartAsImage, EXPORT_SECTIONS } from '../utils/pdfExport';
 import { toast } from 'react-hot-toast';
 
+
 /**
  * Custom hook for managing PDF/image export functionality
  * Handles the export process, loading states, and error handling
@@ -92,7 +93,7 @@ export const useInsightsExport = (currentData = {}, timeRange = '3M') => {
 
             return result;
         } catch (error) {
-            console.error('Export error:', error);
+            logger.error('Export error:', error);
             toast.error(`Export failed: ${error.message}`, { id: 'export-toast' });
             throw error;
         } finally {
@@ -134,7 +135,7 @@ export const useInsightsExport = (currentData = {}, timeRange = '3M') => {
                     // Small delay between exports
                     await new Promise(resolve => setTimeout(resolve, 500));
                 } catch (error) {
-                    console.error(`Failed to export chart ${chart.title}:`, error);
+                    logger.error(`Failed to export chart ${chart.title}:`, error);
                     toast.error(`Failed to export: ${chart.title}`, { duration: 2000 });
                 }
             }
@@ -148,7 +149,7 @@ export const useInsightsExport = (currentData = {}, timeRange = '3M') => {
 
             return { success: true, exportedCount: successCount };
         } catch (error) {
-            console.error('Image export error:', error);
+            logger.error('Image export error:', error);
             toast.error(`Export failed: ${error.message}`, { id: 'export-toast' });
             throw error;
         } finally {
@@ -170,7 +171,7 @@ export const useInsightsExport = (currentData = {}, timeRange = '3M') => {
                 throw new Error('Invalid export format');
             }
         } catch (error) {
-            console.error('Export handler error:', error);
+            logger.error('Export handler error:', error);
             throw error;
         }
     }, [exportPDF, exportImages]);

@@ -88,10 +88,10 @@ const JobDetailsPage = () => {
       if (data.success) {
         setJobData(data.job);
       } else {
-        console.error('Failed to fetch job data');
+        logger.error('Failed to fetch job data');
       }
     } catch (error) {
-      console.error('Error fetching job data:', error);
+      logger.error('Error fetching job data:', error);
     } finally {
       setLoading(false);
     }
@@ -119,7 +119,7 @@ const JobDetailsPage = () => {
         toast.error(data.message || 'Failed to apply for job');
       }
     } catch (error) {
-      console.error('Error applying for job:', error);
+      logger.error('Error applying for job:', error);
       toast.error('Failed to apply for job');
     } finally {
       setIsApplying(false);

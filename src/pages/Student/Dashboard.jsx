@@ -294,7 +294,7 @@ const StudentDashboard = () => {
       const raw = localStorage.getItem("student_goals");
       return raw ? JSON.parse(raw) : [];
     } catch (e) {
-      console.error("Failed to parse goals from localStorage", e);
+      logger.error("Failed to parse goals from localStorage", e);
       return [];
     }
   });
@@ -311,7 +311,7 @@ const StudentDashboard = () => {
     try {
       localStorage.setItem("student_goals", JSON.stringify(goals));
     } catch (e) {
-      console.error("Failed to save goals to localStorage", e);
+      logger.error("Failed to save goals to localStorage", e);
     }
   }, [goals]);
 

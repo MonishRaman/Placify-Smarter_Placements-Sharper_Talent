@@ -3,10 +3,11 @@ import { analyzeWithGemini } from "../services/ai/gemini.js";
 import { extractPdfText } from "../services/pdf/extractTextPdfjs.js";
 import { scoreResumeMultiFactor } from "../services/ats/atsScorer.js";
 import ResumeScore from "../models/ResumeScore.js";
+import logger from '../utils/logger.js';
 
 // ==================== UTILITY FUNCTIONS ====================
 const handleErrorResponse = (res, error, context) => {
-  console.error(`Error in ${context}:`, error);
+  logger.error(`Error in ${context}:`, error);
   return res.status(500).json({
     error: `Failed to ${context}`,
     details: error.message,
@@ -17,7 +18,7 @@ const cleanupFile = async (filePath) => {
   try {
     await fs.unlink(filePath);
   } catch {
-    console.warn("Could not delete temporary file:", filePath);
+    logger.warn("Could not delete temporary file:", filePath);
   }
 };
 
@@ -67,7 +68,7 @@ const getValidOverallScore = (score) => {
 // ==================== MAIN ANALYSIS FUNCTION ====================
 export async function analyzeUpload(req, res) {
   const startTime = Date.now();
-  console.log("ATS analysis started");
+  logger.debug("ATS analysis started");
 
   try {
     // Validate input
@@ -83,7 +84,7 @@ export async function analyzeUpload(req, res) {
     try {
       resumeText = await extractResumeText(req.file);
     } catch (error) {
-      console.error("File processing error:", error);
+      logger.error("File processing error:", error);
       return res.status(500).json({ error: "Failed to process resume file" });
     }
 
@@ -98,13 +99,13 @@ export async function analyzeUpload(req, res) {
     const [multi, geminiAnalysis] = await Promise.allSettled([
       scoreResumeMultiFactor(resumeText, jobDescription),
       analyzeWithGemini(resumeText, jobDescription).catch((err) => {
-        console.warn("Gemini analysis failed:", err.message);
+        logger.warn("Gemini analysis failed:", err.message);
         return null;
       }),
     ]);
 
     if (multi.status === "rejected") {
-      console.error("Multi-factor scoring failed:", multi.reason);
+      logger.error("Multi-factor scoring failed:", multi.reason);
       return res
         .status(500)
         .json({ error: "Failed to analyze resume content" });
@@ -152,21 +153,21 @@ export async function analyzeUpload(req, res) {
 
         ResumeScore.create(scoreData)
           .then(() =>
-            console.log(
+            logger.debug(
               `✅ Score saved for user ${req.user.userId}: ${overallScore}%`
             )
           )
           .catch((err) =>
-            console.error("Failed to save score to database:", err)
+            logger.error("Failed to save score to database:", err)
           );
 
         responseData.scoreSaved = true;
       } catch (err) {
-        console.error("Error preparing score data:", err);
+        logger.error("Error preparing score data:", err);
       }
     }
 
-    console.log(`ATS analysis completed in ${Date.now() - startTime}ms`);
+    logger.debug(`ATS analysis completed in ${Date.now() - startTime}ms`);
     return res.json(responseData);
   } catch (error) {
     return handleErrorResponse(res, error, "analyze resume");

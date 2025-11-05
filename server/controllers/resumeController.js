@@ -1,12 +1,13 @@
 import Resume from "../models/Resume.js";
 import User from "../models/User.js";
 import mongoose from "mongoose";
+import logger from '../utils/logger.js';
 
 // ==================== UTILITY FUNCTIONS ====================
 const validateObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 const handleErrorResponse = (res, error, context) => {
-  console.error(`❌ Error in ${context}:`, error.message);
+  logger.error(`❌ Error in ${context}:`, error.message);
   res.status(500).json({
     success: false,
     message: `Failed to ${context}`,

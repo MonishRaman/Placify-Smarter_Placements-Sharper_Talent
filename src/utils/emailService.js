@@ -1,4 +1,5 @@
 import apiClient from "../api/apiClient";
+import logger from "./logger";
 
 /**
  * Send feedback email via backend API
@@ -39,7 +40,7 @@ export const sendFeedbackEmail = async (feedbackData) => {
       throw new Error(response.data.message || "Failed to send feedback");
     }
   } catch (error) {
-    console.error("❌ Error sending feedback:", error.message);
+    logger.error("Error sending feedback:", error);
 
     if (error.response) {
       // Server responded with error status
@@ -70,7 +71,7 @@ export const testEmailService = async () => {
       message: response.data.message || "Email service test successful!",
     };
   } catch (error) {
-    console.error("Email service test failed:", error);
+    logger.error("Email service test failed:", error);
 
     if (error.response) {
       throw new Error(

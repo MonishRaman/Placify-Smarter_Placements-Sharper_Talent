@@ -3,6 +3,7 @@
 // Accepts user code and test cases, compares AI output, and returns structured results.
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import logger from '../utils/logger.js';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "YOUR_GEMINI_API_KEY";
 
@@ -56,7 +57,7 @@ What is the output? Respond with only the output.
 
           passed = aiOutput === expectedOutput.trim();
         } catch (err) {
-          console.error("Gemini API error:", err.message);
+          logger.error("Gemini API error:", err.message);
         }
 
         return { input, expectedOutput, aiOutput, passed };
@@ -71,7 +72,7 @@ What is the output? Respond with only the output.
       message: allPassed ? "All test cases passed." : "Some test cases failed.",
     });
   } catch (error) {
-    console.error("Dry-run error:", error);
+    logger.error("Dry-run error:", error);
     res.status(500).json({ success: false, message: "Internal server error." });
   }
 };

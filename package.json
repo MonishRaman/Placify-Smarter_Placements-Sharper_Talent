@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "logger:scan": "node migrate-to-logger.js --scan",
+    "logger:migrate": "node migrate-to-logger.js --migrate"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

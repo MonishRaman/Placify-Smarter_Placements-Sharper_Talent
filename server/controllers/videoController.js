@@ -1,3 +1,5 @@
+import logger from '../utils/logger.js';
+
 const handleVideo = async (req, res) => {
   try {
     const { videoBlob, interviewId } = req.body;
@@ -9,8 +11,8 @@ const handleVideo = async (req, res) => {
       });
     }
 
-    console.log("📹 Video Blob received:", videoBlob);
-    console.log("📝 Interview ID:", interviewId);
+    logger.debug("📹 Video Blob received:", videoBlob);
+    logger.debug("📝 Interview ID:", interviewId);
 
     // Here you can later add actual video processing / storage logic
 
@@ -20,7 +22,7 @@ const handleVideo = async (req, res) => {
       interviewId,
     });
   } catch (error) {
-    console.error("❌ Error in handleVideo:", error.message);
+    logger.error("❌ Error in handleVideo:", error.message);
     res.status(500).json({
       success: false,
       message: "Failed to upload video blob",

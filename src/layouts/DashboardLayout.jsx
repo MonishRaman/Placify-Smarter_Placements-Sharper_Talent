@@ -20,26 +20,26 @@ const DashboardLayout = () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) return;
-        console.log("Fetching profile with token:", token);
+        logger.debug("Fetching profile with token:", token);
 
         // Using axios directly with authorization header
-        console.log("Profile Request:");
+        logger.debug("Profile Request:");
         // Prefer centralized apiClient (auto injects baseURL + Authorization)
         const response = await apiClient.get("/auth/profile");
 
-        console.log("Profile Response Data:", response.data);
+        logger.debug("Profile Response Data:", response.data);
 
         if (response.status === 200) {
           setUserData(response.data);
         } else {
-          console.error(
+          logger.error(
             "Failed to fetch profile:",
             response.data?.message || "Unknown error"
           );
         }
       } catch (error) {
-        console.error("Error fetching profile:", error);
-        console.error("Error details:", error.response?.data || error.message);
+        logger.error("Error fetching profile:", error);
+        logger.error("Error details:", error.response?.data || error.message);
       }
     };
 

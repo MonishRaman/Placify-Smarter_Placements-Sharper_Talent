@@ -121,7 +121,7 @@ const Jobs = () => {
         setError("Failed to fetch jobs");
       }
     } catch (error) {
-      console.error("Error fetching jobs:", error);
+      logger.error("Error fetching jobs:", error);
       setError(error.response?.data?.message || "Failed to fetch jobs");
     } finally {
       setLoading(false);
@@ -464,7 +464,7 @@ const ResumeBuilder = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Resume Data:", formData);
+    logger.debug("Resume Data:", formData);
     setPreviewMode(true);
   };
 

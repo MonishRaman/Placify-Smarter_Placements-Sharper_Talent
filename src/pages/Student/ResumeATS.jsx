@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import apiClient from "../../api/apiClient.js";
-
 const ResumeATS = () => {
   const [resumeFile, setResumeFile] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
@@ -48,14 +47,14 @@ const ResumeATS = () => {
       setHistoryLoading(true);
       setHistoryError("");
 
-      console.log(`🔍 Fetching score history - Page: ${page}, Limit: ${limit}`);
+      logger.debug(`🔍 Fetching score history - Page: ${page}, Limit: ${limit}`);
 
       const response = await apiClient.get(
         `/resume/score?limit=${limit}&page=${page}&sortBy=createdAt&sortOrder=desc`
       );
 
       if (response.data.success) {
-        console.log(`✅ Score history fetched successfully:`, response.data);
+        logger.debug(`✅ Score history fetched successfully:`, response.data);
         setScoreHistory(response.data.data || []);
         setPagination(response.data.pagination || {});
       } else {
@@ -64,7 +63,7 @@ const ResumeATS = () => {
         );
       }
     } catch (err) {
-      console.error("❌ Error fetching score history:", err);
+      logger.error("❌ Error fetching score history:", err);
 
       let errorMessage = "Failed to fetch score history";
       if (err.response?.status === 401) {
@@ -87,12 +86,12 @@ const ResumeATS = () => {
   // Delete a score entry
   const deleteScoreEntry = async (scoreId) => {
     try {
-      console.log(`🗑️ Deleting score entry: ${scoreId}`);
+      logger.debug(`🗑️ Deleting score entry: ${scoreId}`);
 
       const response = await apiClient.delete(`/resume/score/${scoreId}`);
 
       if (response.data.success) {
-        console.log(`✅ Score entry deleted successfully`);
+        logger.debug(`✅ Score entry deleted successfully`);
         // Refresh the current page of history
         await fetchScoreHistory(pagination.currentPage, pagination.limit);
       } else {
@@ -101,7 +100,7 @@ const ResumeATS = () => {
         );
       }
     } catch (err) {
-      console.error("❌ Error deleting score entry:", err);
+      logger.error("❌ Error deleting score entry:", err);
 
       let errorMessage = "Failed to delete score entry";
       if (err.response?.data?.message) {
@@ -148,7 +147,7 @@ const ResumeATS = () => {
     e.preventDefault();
     if (!resumeFile || !jobDescription) {
       setError("⚠️ Please upload resume and enter job description");
-      console.warn(
+      logger.warn(
         "Form submission blocked: Missing resume or job description"
       );
       return;
@@ -166,7 +165,7 @@ const ResumeATS = () => {
 
       updateStep("Uploading resume and job description...");
 
-      console.log("Submitting resume and job description for analysis...");
+      logger.debug("Submitting resume and job description for analysis...");
 
       // Step 1: Analyze the resume using ATS API
       const atsResponse = await apiClient.post("/ats/upload", formData, {
@@ -225,11 +224,11 @@ const ResumeATS = () => {
           };
 
           await apiClient.post("/resume/score", scoreData);
-          console.log("Score saved to user history successfully");
+          logger.debug("Score saved to user history successfully");
           markLastStepComplete();
           updateStep("Analysis complete! 🎉");
         } catch (scoreError) {
-          console.warn("Failed to save score to history:", scoreError);
+          logger.warn("Failed to save score to history:", scoreError);
           // Don't fail the entire process if score saving fails
           markLastStepComplete();
           updateStep("Analysis complete! (Score not saved) ⚠️");
@@ -239,9 +238,9 @@ const ResumeATS = () => {
       }
 
       setAnalysis(atsResponse.data);
-      console.log("Analysis response received:", atsResponse.data);
+      logger.debug("Analysis response received:", atsResponse.data);
     } catch (err) {
-      console.error("Error during resume analysis:", err);
+      logger.error("Error during resume analysis:", err);
 
       let errorMessage = "❌ Failed to analyze resume. Try again later.";
       if (err.response?.data?.message) {
@@ -253,7 +252,7 @@ const ResumeATS = () => {
       setError(errorMessage);
     } finally {
       setLoading(false);
-      console.log("Analysis request completed.");
+      logger.debug("Analysis request completed.");
     }
   };
 

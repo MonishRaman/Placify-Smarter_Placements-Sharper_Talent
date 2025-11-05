@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
 const fallbackQuestionBank = {
@@ -97,11 +98,11 @@ Respond with only the next question text, no explanations, no greetings, no extr
     if (!result.response) throw new Error("No response from Gemini API");
 
     const text = result.response.text().trim();
-    console.log("Gemini Next Question:", text);
+    logger.debug("Gemini Next Question:", text);
 
     return text;
   } catch (error) {
-    console.error("Gemini API Error (fallback triggered):", error);
+    logger.error("Gemini API Error (fallback triggered):", error);
     return getAdaptiveFallback(role, previousAnswers);
   }
 }

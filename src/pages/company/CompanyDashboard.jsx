@@ -37,10 +37,10 @@ const CompanyDashboard = () => {
         const response = await apiClient.get("/auth/profile");
         if (response.status === 200) {
           setUserData(response.data);
-          console.log("Profile data:", response.data);
+          logger.debug("Profile data:", response.data);
         }
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        logger.error("Error fetching profile:", error);
       }
     };
     fetchProfile();

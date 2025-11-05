@@ -5,7 +5,6 @@ import EmployeeSidebar from "../components/EmployeeSidebar";
 import { User, LogOut, ChevronDown } from "lucide-react";
 import apiClient from "../api/apiClient";
 import CursorToggle from "../components/CursorToggle";
-
 const EmployeeDashboardLayout = () => {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -20,24 +19,24 @@ const EmployeeDashboardLayout = () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) return;
-        console.log("Fetching employee profile with token:", token);
+        logger.debug("Fetching employee profile with token:", token);
     
         // With our new request interceptor, we don't need to explicitly set the token
         const response = await apiClient.get("/auth/profile");
 
-        console.log("Raw Response Status:", response.status);
-        console.log("Employee Profile Response Data:", response.data);
+        logger.debug("Raw Response Status:", response.status);
+        logger.debug("Employee Profile Response Data:", response.data);
 
         if (response.status === 200) {
           setUserData(response.data);
         } else {
-          console.error(
+          logger.error(
             "Failed to fetch employee profile:",
             response.data?.message || "Unknown error"
           );
         }
       } catch (error) {
-        console.error("Error fetching employee profile:", error);
+        logger.error("Error fetching employee profile:", error);
       }
     };
 

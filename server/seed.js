@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import Student from "./models/Student.js";
 import connectDB from "./config/db.js";
+import logger from './utils/logger.js';
 
 dotenv.config();
 await connectDB();
@@ -184,10 +185,10 @@ async function seed() {
   try {
     await Student.deleteMany();
     await Student.insertMany(students);
-    console.log("🌱 Student data seeded");
+    logger.debug("🌱 Student data seeded");
     process.exit();
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     process.exit(1);
   }
 }

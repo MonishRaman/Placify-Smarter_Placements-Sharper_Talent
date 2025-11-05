@@ -165,7 +165,7 @@ const Reports = () => {
   const handleDownload = (report) => {
     if (report.status === "completed") {
       // Simulate download
-      console.log(`Downloading ${report.name}`);
+      logger.debug(`Downloading ${report.name}`);
       // Update download count
       setReports(
         reports.map((r) =>
@@ -181,10 +181,10 @@ const Reports = () => {
         handleDownload(report);
         break;
       case "view":
-        console.log(`Viewing ${report.name}`);
+        logger.debug(`Viewing ${report.name}`);
         break;
       case "share":
-        console.log(`Sharing ${report.name}`);
+        logger.debug(`Sharing ${report.name}`);
         break;
       case "delete":
         setReports(reports.filter((r) => r.id !== report.id));

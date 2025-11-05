@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-
 const TOPICS = [
   "Quantitative Aptitude",
   "Logical Reasoning",
@@ -75,7 +74,7 @@ const AptitudePreparation = () => {
         setError(
           "❌ Failed to fetch or generate questions. Please try again later."
         );
-        console.error("Fetch/generate questions error:", err);
+        logger.error("Fetch/generate questions error:", err);
       } finally {
         setLoading(false);
       }
@@ -122,7 +121,7 @@ const AptitudePreparation = () => {
       ]);
     } catch (err) {
       setError("❌ Failed to submit answer. Please try again.");
-      console.error("Submit answer error:", err);
+      logger.error("Submit answer error:", err);
     } finally {
       setLoading(false);
     }

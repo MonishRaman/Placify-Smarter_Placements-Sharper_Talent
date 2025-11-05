@@ -1,5 +1,6 @@
 import apiClient from './apiClient.js';
 
+
 // Because the router is mounted at /api/resume/score, we should call relative to that root:
 // POST   /resume/score          -> '/resume/score'  (for consistency) but to avoid confusion we define a BASE
 // To prevent accidental double 'score/score', we centralize the base path here.
@@ -17,7 +18,7 @@ const validateJSONResponse = (response, endpointLabel) => {
         throw new Error(`No response received for ${endpointLabel}`);
     }
     if (isHTMLPayload(response.data)) {
-        console.error(`❌ Received HTML instead of JSON from ${endpointLabel}. Check VITE_API_URL and backend server.`);
+        logger.error(`❌ Received HTML instead of JSON from ${endpointLabel}. Check VITE_API_URL and backend server.`);
         return {
             success: false,
             message: `Unexpected HTML response from ${endpointLabel}. Backend URL misconfigured?`,
@@ -37,18 +38,18 @@ const validateJSONResponse = (response, endpointLabel) => {
 // Save a new resume score to user's history
 export const saveResumeScore = async (scoreData) => {
     try {
-        console.log('📊 Saving resume score:', scoreData);
+        logger.debug('📊 Saving resume score:', scoreData);
         const response = await apiClient.post(`${BASE}`, scoreData);
         const htmlError = validateJSONResponse(response, 'saveResumeScore');
         if (htmlError) return htmlError;
-        console.log('✅ Resume score saved successfully:', response.data);
+        logger.debug('✅ Resume score saved successfully:', response.data);
         return {
             success: true,
             data: response.data.data,
             message: response.data.message
         };
     } catch (error) {
-        console.error('❌ Error saving resume score:', error);
+        logger.error('❌ Error saving resume score:', error);
         return {
             success: false,
             message: error.response?.data?.message || 'Failed to save resume score',
@@ -68,11 +69,11 @@ export const getUserScoreHistory = async (options = {}) => {
             sortOrder
         });
 
-        console.log('📈 Fetching user score history with params:', { limit, page, sortBy, sortOrder });
+        logger.debug('📈 Fetching user score history with params:', { limit, page, sortBy, sortOrder });
         const response = await apiClient.get(`${BASE}?${params}`);
         const htmlError = validateJSONResponse(response, 'getUserScoreHistory');
         if (htmlError) return htmlError;
-        console.log('✅ Score history fetched successfully:', response.data);
+        logger.debug('✅ Score history fetched successfully:', response.data);
 
         return {
             success: true,
@@ -81,7 +82,7 @@ export const getUserScoreHistory = async (options = {}) => {
             message: response.data.message
         };
     } catch (error) {
-        console.error('❌ Error fetching score history:', error);
+        logger.error('❌ Error fetching score history:', error);
         return {
             success: false,
             message: error.response?.data?.message || 'Failed to fetch score history',
@@ -93,11 +94,11 @@ export const getUserScoreHistory = async (options = {}) => {
 // Get user's latest score
 export const getLatestScore = async () => {
     try {
-        console.log('🔍 Fetching latest resume score...');
+        logger.debug('🔍 Fetching latest resume score...');
         const response = await apiClient.get(`${BASE}/latest`);
         const htmlError = validateJSONResponse(response, 'getLatestScore');
         if (htmlError) return htmlError;
-        console.log('✅ Latest score fetched successfully:', response.data);
+        logger.debug('✅ Latest score fetched successfully:', response.data);
 
         return {
             success: true,
@@ -105,7 +106,7 @@ export const getLatestScore = async () => {
             message: response.data.message
         };
     } catch (error) {
-        console.error('❌ Error fetching latest score:', error);
+        logger.error('❌ Error fetching latest score:', error);
         return {
             success: false,
             message: error.response?.data?.message || 'Failed to fetch latest score',
@@ -117,11 +118,11 @@ export const getLatestScore = async () => {
 // Get comprehensive analytics for user's scores
 export const getUserScoreAnalytics = async () => {
     try {
-        console.log('📊 Fetching user score analytics...');
+        logger.debug('📊 Fetching user score analytics...');
         const response = await apiClient.get(`${BASE}/analytics`);
         const htmlError = validateJSONResponse(response, 'getUserScoreAnalytics');
         if (htmlError) return htmlError;
-        console.log('✅ Score analytics fetched successfully:', response.data);
+        logger.debug('✅ Score analytics fetched successfully:', response.data);
 
         return {
             success: true,
@@ -129,7 +130,7 @@ export const getUserScoreAnalytics = async () => {
             message: response.data.message
         };
     } catch (error) {
-        console.error('❌ Error fetching score analytics:', error);
+        logger.error('❌ Error fetching score analytics:', error);
         return {
             success: false,
             message: error.response?.data?.message || 'Failed to fetch score analytics',
@@ -141,11 +142,11 @@ export const getUserScoreAnalytics = async () => {
 // Delete a specific score entry by ID (soft delete)
 export const deleteScoreEntry = async (scoreId) => {
     try {
-        console.log('🗑️ Deleting score entry:', scoreId);
+        logger.debug('🗑️ Deleting score entry:', scoreId);
         const response = await apiClient.delete(`${BASE}/${scoreId}`);
         const htmlError = validateJSONResponse(response, 'deleteScoreEntry');
         if (htmlError) return htmlError;
-        console.log('✅ Score entry deleted successfully:', response.data);
+        logger.debug('✅ Score entry deleted successfully:', response.data);
 
         return {
             success: true,
@@ -153,7 +154,7 @@ export const deleteScoreEntry = async (scoreId) => {
             message: response.data.message
         };
     } catch (error) {
-        console.error('❌ Error deleting score entry:', error);
+        logger.error('❌ Error deleting score entry:', error);
         return {
             success: false,
             message: error.response?.data?.message || 'Failed to delete score entry',

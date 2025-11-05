@@ -3,7 +3,6 @@ import { MessageCircle, X, Send, Bot, User, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-
 const Chatbot = () => {
   const [open, setOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -99,7 +98,7 @@ const Chatbot = () => {
         { role: "assistant", content: data.response },
       ]);
     } catch (err) {
-      console.error("Chatbot error:", err);
+      logger.error("Chatbot error:", err);
       setMessages((prev) => [
         ...prev,
         {

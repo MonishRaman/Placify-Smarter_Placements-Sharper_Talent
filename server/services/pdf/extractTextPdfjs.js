@@ -1,6 +1,7 @@
 import fs from 'fs';
 import pdfjsLib from 'pdfjs-dist';
 import pkg from 'canvas';
+import logger from '../../utils/logger.js';
 
 const { getDocument } = pdfjsLib;
 const { DOMMatrix, ImageData, Path2D } = pkg;
@@ -10,7 +11,7 @@ global.ImageData = ImageData;
 global.Path2D = Path2D;
 
 export async function extractPdfText(filePath) {
-  console.log(`[extractPdfText] Starting extraction for: ${filePath}`);
+  logger.debug(`[extractPdfText] Starting extraction for: ${filePath}`);
   try {
     const data = new Uint8Array(fs.readFileSync(filePath));
     const pdf = await getDocument({ data }).promise;
@@ -23,10 +24,10 @@ export async function extractPdfText(filePath) {
       textContent += strings.join(" ") + "\n";
     }
 
-    console.log(`[extractPdfText] Extraction complete.`);
+    logger.debug(`[extractPdfText] Extraction complete.`);
     return textContent.trim();
   } catch (err) {
-    console.error(`[extractPdfText] Error:`, err);
+    logger.error(`[extractPdfText] Error:`, err);
     throw new Error("Failed to parse PDF");
   }
 }

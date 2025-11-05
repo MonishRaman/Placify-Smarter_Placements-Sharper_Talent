@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { spawn } from "child_process";
 import Job from "../models/Jobs.js";
 import Resume from "../models/Resume.js";
+import logger from '../utils/logger.js';
 
 // ==================== UTILITY FUNCTIONS ====================
 const validateObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
@@ -16,7 +17,7 @@ const buildSortObject = (sortBy, sortOrder) => {
 };
 
 const handleErrorResponse = (res, error, context) => {
-  console.error(`Error in ${context}:`, error);
+  logger.error(`Error in ${context}:`, error);
   res.status(500).json({
     success: false,
     message: `Failed to ${context}`,
@@ -396,7 +397,7 @@ export const getResumeJobMatch = async (req, res) => {
     py.stdin.end();
 
     py.stdout.on("data", (data) => (output += data.toString()));
-    py.stderr.on("data", (data) => console.error("ML Error:", data.toString()));
+    py.stderr.on("data", (data) => logger.error("ML Error:", data.toString()));
 
     py.on("close", () => {
       try {
