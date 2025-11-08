@@ -3,7 +3,6 @@ import axios from "axios";
 import { Briefcase, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const EmployeeProfile = () => {
@@ -43,7 +42,7 @@ const EmployeeProfile = () => {
           setImagePreview(`${API_BASE}${res.data.profileImage}`);
         }
       } catch (err) {
-        console.error("Fetch profile error:", err);
+        logger.error("Fetch profile error:", err);
         toast.error("Failed to load profile data");
       } finally {
         setTimeout(() => setIsLoaded(true), 150);
@@ -105,7 +104,7 @@ const EmployeeProfile = () => {
       toast.success("Employee profile updated successfully!");
       navigate("/dashboard/employee");
     } catch (err) {
-      console.error("Error updating profile:", err);
+      logger.error("Error updating profile:", err);
       toast.error(err.response?.data?.message || "Update failed");
     }
   };

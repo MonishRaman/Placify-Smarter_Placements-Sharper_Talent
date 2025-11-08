@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import logger from '../utils/logger.js';
 
 dotenv.config();
 
@@ -33,7 +34,7 @@ export const sendFeedback = async (req, res) => {
       });
     }
 
-    console.log("📧 Sending feedback email...");
+    logger.debug("📧 Sending feedback email...");
 
     // Format email content
     const emailContent = `
@@ -77,14 +78,14 @@ ${additionalFeedback || "No additional feedback provided"}
       html: emailContent.replace(/\n/g, "<br>"),
     });
 
-    console.log("✅ Feedback email sent successfully!");
+    logger.debug("✅ Feedback email sent successfully!");
 
     return res.status(200).json({
       success: true,
       message: "Feedback sent successfully! Thank you for your input.",
     });
   } catch (error) {
-    console.error("❌ Error sending feedback email:", error.message);
+    logger.error("❌ Error sending feedback email:", error.message);
 
     return res.status(500).json({
       success: false,
@@ -97,7 +98,7 @@ ${additionalFeedback || "No additional feedback provided"}
 // Test Email Configuration
 export const testEmailConfig = async (_req, res) => {
   try {
-    console.log("🧪 Testing email configuration...");
+    logger.debug("🧪 Testing email configuration...");
 
     const transporter = createTransporter();
 
@@ -109,14 +110,14 @@ export const testEmailConfig = async (_req, res) => {
       html: "<p>✅ <strong>Success!</strong> Email working!</p>",
     });
 
-    console.log("✅ Test email sent successfully!");
+    logger.debug("✅ Test email sent successfully!");
 
     return res.status(200).json({
       success: true,
       message: "Email test successful!",
     });
   } catch (error) {
-    console.error("❌ Email test failed:", error.message);
+    logger.error("❌ Email test failed:", error.message);
 
     return res.status(500).json({
       success: false,

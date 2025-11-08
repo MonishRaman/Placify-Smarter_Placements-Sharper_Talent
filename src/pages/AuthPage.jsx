@@ -9,7 +9,6 @@ import "react-toastify/dist/ReactToastify.css";
 import apiClient from "../api/apiClient"; // <-- CHANGE HERE
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
-
 const AuthPage = () => {
   const navigate = useNavigate();
   const { setIsAuthenticated } = useAuth();
@@ -85,11 +84,11 @@ const AuthPage = () => {
       // Store token & user info
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-      console.log("Token stored:", token);
+      logger.debug("Token stored:", token);
 
       const decoded = jwtDecode(token);
       const role = decoded.role;
-      console.log("User role:", role);
+      logger.debug("User role:", role);
 
       setIsAuthenticated(true);
 
@@ -119,7 +118,7 @@ const AuthPage = () => {
             navigate("/dashboard/company");
             break;
           default:
-            console.warn("Unknown role:", role);
+            logger.warn("Unknown role:", role);
             navigate("/dashboard");
         }
       }, 1000);

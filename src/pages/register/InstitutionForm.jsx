@@ -1,3 +1,4 @@
+import logger from '../../utils/logger';
 import {
   School,
   Loader2,
@@ -21,8 +22,8 @@ import apiClient from "../../api/apiClient";
 // =================== PERFORMANCE MONITORING ===================
 const componentStartTime = performance.now();
 console.group("⚡ InstitutionForm Component Performance Monitoring");
-console.log("🚀 Component file loaded at:", new Date().toISOString());
-console.log("📊 Performance start time:", componentStartTime);
+logger.debug("🚀 Component file loaded at:", new Date().toISOString());
+logger.debug("📊 Performance start time:", componentStartTime);
 console.groupEnd();
 
 export default function InstitutionForm() {
@@ -30,8 +31,8 @@ export default function InstitutionForm() {
 
   // =================== COMPONENT INITIALIZATION DEBUGGING ===================
   console.group("🏛️ InstitutionForm Component Initialization");
-  console.log("📅 Component mounted at:", new Date().toISOString());
-  console.log("🧭 Navigation object:", navigate);
+  logger.debug("📅 Component mounted at:", new Date().toISOString());
+  logger.debug("🧭 Navigation object:", navigate);
 
   const [formData, setFormData] = useState({
     institutionName: "",
@@ -102,8 +103,8 @@ export default function InstitutionForm() {
 
     // =================== DEBUGGING GROUP: FORM SUBMISSION ===================
     console.group("🏛️ Institution Registration Form Submission");
-    console.log("📋 Form submission started at:", new Date().toISOString());
-    console.log("📝 Current form data:", formData);
+    logger.debug("📋 Form submission started at:", new Date().toISOString());
+    logger.debug("📝 Current form data:", formData);
     console.table(formData); // Table format for better readability
 
     // =================== CLIENT-SIDE VALIDATION ===================
@@ -119,7 +120,7 @@ export default function InstitutionForm() {
       confirmPassword: formData.confirmPassword,
     };
 
-    console.log("🔍 Checking required fields:", requiredFields);
+    logger.debug("🔍 Checking required fields:", requiredFields);
 
     if (
       !formData.institutionName ||
@@ -129,7 +130,7 @@ export default function InstitutionForm() {
       !formData.password ||
       !formData.confirmPassword
     ) {
-      console.error("❌ Validation failed: Missing required fields");
+      logger.error("❌ Validation failed: Missing required fields");
       console.table(
         Object.entries(requiredFields).map(([key, value]) => ({
           field: key,
@@ -146,13 +147,13 @@ export default function InstitutionForm() {
 
     try {
       const urlObj = new URL(formData.website);
-      console.log("✅ Website URL is valid:", {
+      logger.debug("✅ Website URL is valid:", {
         protocol: urlObj.protocol,
         hostname: urlObj.hostname,
         pathname: urlObj.pathname,
       });
     } catch (urlError) {
-      console.error("❌ Website URL validation failed:", urlError.message);
+      logger.error("❌ Website URL validation failed:", urlError.message);
       setError("Please enter a valid website URL");
       setLoading(false);
       console.groupEnd();
@@ -171,9 +172,9 @@ export default function InstitutionForm() {
     }
 
     if (formData.password !== formData.confirmPassword) {
-      console.error("❌ Password confirmation mismatch");
-      console.log("Password:", formData.password?.length, "characters");
-      console.log(
+      logger.error("❌ Password confirmation mismatch");
+      logger.debug("Password:", formData.password?.length, "characters");
+      logger.debug(
         "Confirm Password:",
         formData.confirmPassword?.length,
         "characters"
@@ -185,7 +186,7 @@ export default function InstitutionForm() {
       return;
     }
 
-    console.log("✅ All client-side validations passed");
+    logger.debug("✅ All client-side validations passed");
     console.groupEnd(); // End validation group
 
     // =================== API REQUEST PREPARATION ===================
@@ -201,9 +202,9 @@ export default function InstitutionForm() {
       role: formData.role,
     };
 
-    console.log("📦 Request payload prepared:", requestPayload);
-    console.log("🎯 API endpoint: /auth/register/institution");
-    console.log(
+    logger.debug("📦 Request payload prepared:", requestPayload);
+    logger.debug("🎯 API endpoint: /auth/register/institution");
+    logger.debug(
       "📊 Request size:",
       JSON.stringify(requestPayload).length,
       "bytes"
@@ -215,7 +216,7 @@ export default function InstitutionForm() {
       console.group("🌐 API Call Execution");
       console.time("⏱️ Registration API Call Duration");
 
-      console.log("📡 Sending POST request to backend...");
+      logger.debug("📡 Sending POST request to backend...");
       const response = await apiClient.post(
         "/auth/register/institution",
         requestPayload
@@ -225,10 +226,10 @@ export default function InstitutionForm() {
 
       // =================== SUCCESS RESPONSE ANALYSIS ===================
       console.group("✅ SUCCESS - Backend Response Analysis");
-      console.log("🎉 Registration successful!");
-      console.log("📈 Response status:", response.status);
-      console.log("📋 Response headers:", response.headers);
-      console.log("💾 Response data:", response.data);
+      logger.debug("🎉 Registration successful!");
+      logger.debug("📈 Response status:", response.status);
+      logger.debug("📋 Response headers:", response.headers);
+      logger.debug("💾 Response data:", response.data);
 
       /*
        * BACKEND RESPONSE STRUCTURE (from authController.js registerInstitution):
@@ -248,39 +249,39 @@ export default function InstitutionForm() {
        * - createdAt, updatedAt: timestamps (auto-generated)
        */
 
-      console.log("📝 Expected backend actions completed:");
-      console.log("  ✅ Email uniqueness check passed");
-      console.log("  ✅ Password hashed using bcrypt");
-      console.log("  ✅ Institution document created in MongoDB");
-      console.log("  ✅ Success response sent");
+      logger.debug("📝 Expected backend actions completed:");
+      logger.debug("  ✅ Email uniqueness check passed");
+      logger.debug("  ✅ Password hashed using bcrypt");
+      logger.debug("  ✅ Institution document created in MongoDB");
+      logger.debug("  ✅ Success response sent");
 
       console.groupEnd(); // End success analysis group
       console.groupEnd(); // End API execution group
 
       // =================== UI FEEDBACK ===================
       console.group("🎨 UI Feedback & Navigation");
-      console.log("🍞 Showing success toast notification");
+      logger.debug("🍞 Showing success toast notification");
       toast.success("Institution registration successful! Please login.");
 
-      console.log("⏰ Setting 2-second delay before navigation");
-      console.log("🧭 Will navigate to: /auth");
+      logger.debug("⏰ Setting 2-second delay before navigation");
+      logger.debug("🧭 Will navigate to: /auth");
       setTimeout(() => {
-        console.log("🚀 Navigating to login page...");
+        logger.debug("🚀 Navigating to login page...");
         navigate("/auth");
       }, 2000);
       console.groupEnd();
     } catch (err) {
       // =================== ERROR HANDLING & ANALYSIS ===================
       console.group("❌ ERROR - Registration Failed");
-      console.error("💥 Registration error occurred:", err);
+      logger.error("💥 Registration error occurred:", err);
 
       if (err.response) {
         // =================== SERVER ERROR RESPONSE ===================
         console.group("🖥️ Server Error Response Analysis");
-        console.error("📡 Server responded with error");
-        console.error("📈 Error status:", err.response.status);
-        console.error("📋 Error headers:", err.response.headers);
-        console.error("💾 Error data:", err.response.data);
+        logger.error("📡 Server responded with error");
+        logger.error("📈 Error status:", err.response.status);
+        logger.error("📋 Error headers:", err.response.headers);
+        logger.error("💾 Error data:", err.response.data);
 
         /*
          * POSSIBLE BACKEND ERROR RESPONSES (from authController.js):
@@ -300,20 +301,20 @@ export default function InstitutionForm() {
 
         const errorMessage =
           err.response?.data?.message || `Server error: ${err.response.status}`;
-        console.log("🔍 Parsed error message:", errorMessage);
+        logger.debug("🔍 Parsed error message:", errorMessage);
 
         // Analyze specific error types
         if (
           err.response.status === 400 &&
           err.response.data?.message === "Email already exists"
         ) {
-          console.warn("⚠️ CONFLICT: Email already registered");
-          console.log(
+          logger.warn("⚠️ CONFLICT: Email already registered");
+          logger.debug(
             "💡 Suggestion: User should try login or use different email"
           );
         } else if (err.response.status === 500) {
-          console.error("🔥 CRITICAL: Server internal error");
-          console.log(
+          logger.error("🔥 CRITICAL: Server internal error");
+          logger.debug(
             "💡 Suggestion: Check server logs, database connection, or try again later"
           );
         }
@@ -324,14 +325,14 @@ export default function InstitutionForm() {
       } else if (err.request) {
         // =================== NETWORK ERROR ===================
         console.group("🌐 Network Error Analysis");
-        console.error("📡 No response received from server");
-        console.error("🔌 Request object:", err.request);
-        console.error("💡 Possible causes:");
-        console.error("  - Server is down");
-        console.error("  - Network connectivity issues");
-        console.error("  - CORS problems");
-        console.error("  - Firewall blocking request");
-        console.error("  - Wrong API endpoint URL");
+        logger.error("📡 No response received from server");
+        logger.error("🔌 Request object:", err.request);
+        logger.error("💡 Possible causes:");
+        logger.error("  - Server is down");
+        logger.error("  - Network connectivity issues");
+        logger.error("  - CORS problems");
+        logger.error("  - Firewall blocking request");
+        logger.error("  - Wrong API endpoint URL");
 
         const networkError =
           "No response from server. Please check your connection.";
@@ -341,10 +342,10 @@ export default function InstitutionForm() {
       } else {
         // =================== CLIENT-SIDE ERROR ===================
         console.group("🖥️ Client-side Error Analysis");
-        console.error("💻 Client-side error during request setup");
-        console.error("📝 Error message:", err.message);
-        console.error("🔍 Error type:", err.name);
-        console.error("📚 Error stack:", err.stack);
+        logger.error("💻 Client-side error during request setup");
+        logger.error("📝 Error message:", err.message);
+        logger.error("🔍 Error type:", err.name);
+        logger.error("📚 Error stack:", err.stack);
 
         const clientError = `Error: ${err.message}`;
         setError(clientError);
@@ -356,13 +357,13 @@ export default function InstitutionForm() {
     } finally {
       // =================== CLEANUP ===================
       console.group("🧹 Cleanup & State Reset");
-      console.log("⏳ Setting loading state to false");
+      logger.debug("⏳ Setting loading state to false");
       setLoading(false);
-      console.log("✅ Form submission process completed");
+      logger.debug("✅ Form submission process completed");
       console.groupEnd();
 
       console.groupEnd(); // End main form submission group
-      console.log(
+      logger.debug(
         "🏁 Institution registration form submission ended at:",
         new Date().toISOString()
       );

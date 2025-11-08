@@ -73,7 +73,7 @@ const InterviewExperience = () => {
       const res = await fetch("http://localhost:5000/api/interviewExperience");
       if (!res.ok) throw new Error("Failed to fetch interview experiences");
       const data = await res.json();
-      console.log("Fetched interview experiences:", data);
+      logger.debug("Fetched interview experiences:", data);
       if (data.success && Array.isArray(data.data) && data.data.length > 0) {
         setExperiences(
           data.data.map((exp, idx) => ({

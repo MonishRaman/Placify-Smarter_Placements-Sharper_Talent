@@ -1,5 +1,6 @@
 import apiClient from './apiClient.js';
 
+
 // ==================== RESUME API SERVICE ====================
 
 /**
@@ -17,7 +18,7 @@ export const createResume = async (resumeData) => {
             message: response.data.message
         };
     } catch (error) {
-        console.error('Error creating resume:', error);
+        logger.error('Error creating resume:', error);
         return {
             success: false,
             message: error.response?.data?.message || 'Failed to create resume',
@@ -37,7 +38,7 @@ export const getUserResumes = async () => {
             message: response.data.message
         };
     } catch (error) {
-        console.error('Error fetching resumes:', error);
+        logger.error('Error fetching resumes:', error);
         return {
             success: false,
             message: error.response?.data?.message || 'Failed to fetch resumes',
@@ -56,7 +57,7 @@ export const getResumeById = async (resumeId) => {
             message: response.data.message
         };
     } catch (error) {
-        console.error('Error fetching resume:', error);
+        logger.error('Error fetching resume:', error);
         return {
             success: false,
             message: error.response?.data?.message || 'Failed to fetch resume',
@@ -75,7 +76,7 @@ export const updateResume = async (resumeId, resumeData) => {
             message: response.data.message
         };
     } catch (error) {
-        console.error('Error updating resume:', error);
+        logger.error('Error updating resume:', error);
         return {
             success: false,
             message: error.response?.data?.message || 'Failed to update resume',
@@ -94,7 +95,7 @@ export const deleteResume = async (resumeId) => {
             message: response.data.message
         };
     } catch (error) {
-        console.error('Error deleting resume:', error);
+        logger.error('Error deleting resume:', error);
         return {
             success: false,
             message: error.response?.data?.message || 'Failed to delete resume',
@@ -113,7 +114,7 @@ export const getResumeAnalytics = async () => {
             message: response.data.message
         };
     } catch (error) {
-        console.error('Error fetching resume analytics:', error);
+        logger.error('Error fetching resume analytics:', error);
         return {
             success: false,
             message: error.response?.data?.message || 'Failed to fetch analytics',

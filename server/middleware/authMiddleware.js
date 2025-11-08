@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import logger from '../utils/logger.js';
 
 const verifyToken = (roles = [], optional = false) => {
   const allowedRoles = Array.isArray(roles) ? roles : [roles];
@@ -28,7 +29,7 @@ const verifyToken = (roles = [], optional = false) => {
 
       next();
     } catch (err) {
-      console.error("JWT verification error:", err.message);
+      logger.error("JWT verification error:", err.message);
       if (optional) {
         req.user = null;
         return next();

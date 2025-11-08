@@ -1,9 +1,10 @@
 import Student from "../models/Student.js";
 import Company from "../models/Company.js";
+import logger from '../utils/logger.js';
 
 // Utility: Standard error handler
 const handleError = (res, error, message) => {
-  console.error(message, error);
+  logger.error(message, error);
   return res.status(500).json({
     success: false,
     message,

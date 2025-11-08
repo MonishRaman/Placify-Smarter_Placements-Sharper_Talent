@@ -1,3 +1,5 @@
+
+
 const challenges = [
   {
     id: "reverse-string",
@@ -20,7 +22,7 @@ function reverseString(str) {
   // your code here
 }
 
-console.log(reverseString("hello")); // Expected: "olleh"`,
+logger.debug(reverseString("hello")); // Expected: "olleh"`,
     solution: `function reverseString(str) {
   return str.split('').reverse().join('');
 }`,
@@ -47,7 +49,7 @@ function maxInArray(arr) {
   // your code here
 }
 
-console.log(maxInArray([1, 5, 3])); // Expected: 5`,
+logger.debug(maxInArray([1, 5, 3])); // Expected: 5`,
     solution: `function maxInArray(arr) {
   if (!Array.isArray(arr) || arr.length === 0) return null;
   return arr.reduce((max, v) => (v > max ? v : max), arr[0]);
@@ -74,7 +76,7 @@ sum(-1, 8) // returns 7
   // Your code here
 }
 
-console.log(sum(2, 3)); // Expected output: 5`,
+logger.debug(sum(2, 3)); // Expected output: 5`,
     solution: `function sum(a, b) {
   return a + b;
 }`,

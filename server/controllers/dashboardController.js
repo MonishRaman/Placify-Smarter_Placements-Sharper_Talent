@@ -3,6 +3,7 @@ import Student from "../models/Student.js";
 import Company from "../models/Company.js";
 import Employee from "../models/Employee.js";
 import Institution from "../models/Institution.js";
+import logger from '../utils/logger.js';
 
 const roleModelMap = {
   student: Student,
@@ -108,7 +109,7 @@ export const getUserDashboardData = async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error("Dashboard data error:", error);
+    logger.error("Dashboard data error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

@@ -1,4 +1,5 @@
 import Question from "../models/Question.js";
+import logger from '../utils/logger.js';
 
 // GET /questions?topic=xyz
 export const getQuestions = async (req, res) => {
@@ -8,7 +9,7 @@ export const getQuestions = async (req, res) => {
     const questions = await Question.find(filter);
     res.status(200).json(questions);
   } catch (error) {
-    console.error("❌ Failed to fetch questions:", error.message);
+    logger.error("❌ Failed to fetch questions:", error.message);
     res.status(500).json({ error: "Failed to fetch questions" });
   }
 };
@@ -35,7 +36,7 @@ export const submitAnswer = async (req, res) => {
       answer: question.answer,
     });
   } catch (error) {
-    console.error("❌ Failed to submit answer:", error.message);
+    logger.error("❌ Failed to submit answer:", error.message);
     res.status(500).json({ error: "Failed to submit answer" });
   }
 };

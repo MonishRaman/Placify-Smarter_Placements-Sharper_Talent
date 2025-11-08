@@ -96,7 +96,7 @@ const ResumeBuilder = () => {
         const parsedData = JSON.parse(savedData);
         setFormData(parsedData);
       } catch (error) {
-        console.error("Error loading saved resume data:", error);
+        logger.error("Error loading saved resume data:", error);
       }
     }
   };
@@ -114,7 +114,7 @@ const ResumeBuilder = () => {
         toast.error(result.message);
       }
     } catch (error) {
-      console.error("Error loading resumes:", error);
+      logger.error("Error loading resumes:", error);
       toast.error("Failed to load saved resumes");
     } finally {
       setIsLoading(false);
@@ -139,7 +139,7 @@ const ResumeBuilder = () => {
         toast.error(result.message);
       }
     } catch (error) {
-      console.error("Error loading resume:", error);
+      logger.error("Error loading resume:", error);
       toast.error("Failed to load resume");
     } finally {
       setIsLoading(false);
@@ -184,7 +184,7 @@ const ResumeBuilder = () => {
         toast.error(result.message);
       }
     } catch (error) {
-      console.error("Error saving resume:", error);
+      logger.error("Error saving resume:", error);
       toast.error("Failed to save resume");
     } finally {
       setIsSaving(false);
@@ -227,7 +227,7 @@ const ResumeBuilder = () => {
         toast.error(result.message);
       }
     } catch (error) {
-      console.error("Error deleting resume:", error);
+      logger.error("Error deleting resume:", error);
       toast.error("Failed to delete resume");
     }
   };
@@ -302,7 +302,7 @@ const ResumeBuilder = () => {
       setErrors({});
       // Switch to preview tab to show the completed resume
       setActiveTab("preview");
-      console.log("Resume Data:", formData);
+      logger.debug("Resume Data:", formData);
 
       // Auto-save to backend if authenticated
       if (isAuthenticated) {
@@ -460,7 +460,7 @@ const ResumeBuilder = () => {
         toast.error(result.message);
       }
     } catch (error) {
-      console.error("Download error:", error);
+      logger.error("Download error:", error);
       toast.error("Failed to download resume. Please try again.");
     } finally {
       setIsGeneratingPDF(false);

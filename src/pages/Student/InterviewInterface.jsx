@@ -122,7 +122,7 @@ const SpeechRecognitionComponent = ({
         };
 
         recognitionRef.current.onerror = (event) => {
-          console.error("Speech recognition error:", event.error);
+          logger.error("Speech recognition error:", event.error);
           setIsListening(false);
         };
       }
@@ -130,7 +130,7 @@ const SpeechRecognitionComponent = ({
       setIsListening(true);
       recognitionRef.current.start();
     } catch (error) {
-      console.error("Error starting speech recognition:", error);
+      logger.error("Error starting speech recognition:", error);
       setIsListening(false);
     }
   };

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { institutionStats, departmentSummary } from "./data/mockData";
 import { generatePDFReport, generateExcelReport } from "./utils/generateReport";
 import { FileText, Download, Settings, BarChart3 } from "lucide-react";
-
 const GenerateReports = () => {
   const [reportType, setReportType] = useState("Full");
   const [department, setDepartment] = useState("");
@@ -20,7 +19,7 @@ const GenerateReports = () => {
     };
 
     if (format === "PDF") {
-        console.log("Generating PDF report with filters:", filters);
+        logger.debug("Generating PDF report with filters:", filters);
       generatePDFReport(reportType, filters, payload);
     } else {
       generateExcelReport(reportType, filters, payload);

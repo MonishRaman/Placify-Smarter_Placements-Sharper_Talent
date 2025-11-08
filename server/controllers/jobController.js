@@ -1,4 +1,5 @@
 import Job from "../models/Jobs.js";
+import logger from '../utils/logger.js';
 
 /* -------------------- Helpers -------------------- */
 
@@ -48,7 +49,7 @@ export const createJob = async (req, res) => {
       job: savedJob,
     });
   } catch (error) {
-    console.error("Error creating job:", error);
+    logger.error("Error creating job:", error);
     res.status(500).json({
       success: false,
       message: "Server Error: Could not create job.",
@@ -154,7 +155,7 @@ export const getJobs = async (req, res) => {
       jobs,
     });
   } catch (error) {
-    console.error("Error fetching jobs:", error.message);
+    logger.error("Error fetching jobs:", error.message);
     res.status(500).json({
       success: false,
       message: "Server Error: Could not fetch jobs.",
@@ -189,7 +190,7 @@ export const updateJob = async (req, res) => {
       job: updatedJob,
     });
   } catch (error) {
-    console.error("Error updating job:", error.message);
+    logger.error("Error updating job:", error.message);
     res.status(500).json({
       success: false,
       message: "Server Error: Could not update job.",
@@ -224,7 +225,7 @@ export const deleteJob = async (req, res) => {
       message: "Job deleted successfully",
     });
   } catch (error) {
-    console.error("Error deleting job:", error);
+    logger.error("Error deleting job:", error);
     res.status(500).json({
       success: false,
       message: "Server Error: Could not delete job",
@@ -269,7 +270,7 @@ export const applyForJob = async (req, res) => {
       jobId: job._id,
     });
   } catch (error) {
-    console.error("Error applying for job:", error);
+    logger.error("Error applying for job:", error);
     res.status(500).json({
       success: false,
       message: "Server Error: Could not apply for job",
@@ -317,7 +318,7 @@ export const getAppliedJobs = async (req, res) => {
       jobs: formattedJobs,
     });
   } catch (error) {
-    console.error("Error fetching applied jobs:", error);
+    logger.error("Error fetching applied jobs:", error);
     res.status(500).json({
       success: false,
       message: "Server Error: Could not fetch applied jobs",
@@ -360,7 +361,7 @@ export const withdrawApplication = async (req, res) => {
         jobId: job._id,
       });
   } catch (error) {
-    console.error("Error withdrawing application:", error);
+    logger.error("Error withdrawing application:", error);
     res.status(500).json({
       success: false,
       message: "Server Error: Could not withdraw application",
@@ -419,7 +420,7 @@ export const getCompanyJobs = async (req, res) => {
       jobs,
     });
   } catch (error) {
-    console.error("Error fetching company jobs:", error);
+    logger.error("Error fetching company jobs:", error);
     res.status(500).json({
       success: false,
       message: "Server Error: Could not fetch company jobs",

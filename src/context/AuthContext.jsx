@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode"; 
+import logger from '../utils/logger';
 
 const AuthContext = createContext();
 
@@ -10,12 +11,12 @@ export const AuthProvider = ({ children }) => {
   
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("Token from localStorage:", token);
+    logger.debug("Token from localStorage:", token);
     
     if (token) {
       // Verify token has correct format (header.payload.signature)
       if (!token.includes('.') || token.split('.').length !== 3) {
-        console.error("Invalid token format");
+        logger.error("Invalid token format");
         localStorage.removeItem("token"); // Remove invalid token
         setIsAuthenticated(false);
         setLoading(false);
@@ -24,11 +25,11 @@ export const AuthProvider = ({ children }) => {
       
       try {
         const decoded = jwtDecode(token);
-        console.log("Decoded user:", decoded);
+        logger.debug("Decoded user:", decoded);
         
         // Check if token is expired
         if (decoded.exp && decoded.exp < Math.floor(Date.now() / 1000)) {
-          console.error("Token expired");
+          logger.error("Token expired");
           localStorage.removeItem("token");
           setIsAuthenticated(false);
         } else {
@@ -36,7 +37,7 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true);
         }
       } catch (err) {
-        console.error("Invalid token:", err);
+        logger.error("Invalid token:", err);
         localStorage.removeItem("token");
         setIsAuthenticated(false);
       }
@@ -81,7 +82,7 @@ export const AuthProvider = ({ children }) => {
 
       return Promise.resolve(updatedUser);
     } catch (error) {
-      console.error('Failed to update subscription:', error);
+      logger.error('Failed to update subscription:', error);
       return Promise.reject(error);
     }
   };

@@ -3,7 +3,6 @@ import axios from "axios";
 import { Building2, School } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const InstitutionProfile = () => {
@@ -47,7 +46,7 @@ const InstitutionProfile = () => {
           setImagePreview(`${API_BASE}${res.data.profileImage}`);
         }
       } catch (err) {
-        console.error("Fetch profile error:", err);
+        logger.error("Fetch profile error:", err);
         toast.error("Failed to load profile data");
       } finally {
         setTimeout(() => setIsLoaded(true), 150);
@@ -111,7 +110,7 @@ const InstitutionProfile = () => {
       toast.success("Institution profile updated successfully!");
       navigate("/dashboard/institution");
     } catch (err) {
-      console.error("Error updating profile:", err);
+      logger.error("Error updating profile:", err);
       toast.error(err.response?.data?.message || "Update failed");
     }
   };

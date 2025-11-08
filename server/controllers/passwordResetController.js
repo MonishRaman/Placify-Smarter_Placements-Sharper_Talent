@@ -6,6 +6,7 @@ import Employee from "../models/Employee.js";
 import Institution from "../models/Institution.js";
 import emailService from "../services/emailService.js";
 import tokenService from "../services/tokenService.js";
+import logger from '../utils/logger.js';
 
 // In-memory storage for password reset tokens (use Redis/MongoDB in production)
 const passwordResetTokens = new Map();
@@ -62,7 +63,7 @@ const cleanupExpiredTokens = () => {
     }
   }
   if (cleanedCount)
-    console.log(`🧹 Cleaned up ${cleanedCount} expired password reset tokens`);
+    logger.debug(`🧹 Cleaned up ${cleanedCount} expired password reset tokens`);
 };
 
 // Token helpers
@@ -87,7 +88,7 @@ export const forgotPassword = async (req, res) => {
           message: "Please provide a valid email address",
         });
 
-    console.log(`🔍 Processing password reset request for email: ${email}`);
+    logger.debug(`🔍 Processing password reset request for email: ${email}`);
     let user = null,
       userModel = null;
     const models = [
@@ -103,7 +104,7 @@ export const forgotPassword = async (req, res) => {
         user = await model.findOne({ email: email.toLowerCase() });
         if (user) {
           userModel = name;
-          console.log(`✅ User found in ${name} model`);
+          logger.debug(`✅ User found in ${name} model`);
           break;
         }
       } catch {
@@ -117,7 +118,7 @@ export const forgotPassword = async (req, res) => {
         "If an account with that email exists, we have sent a password reset link.",
     };
     if (!user) {
-      console.log(`⚠️  No user found with email: ${email}`);
+      logger.debug(`⚠️  No user found with email: ${email}`);
       return res.status(200).json(securityResponse);
     }
 
@@ -148,11 +149,11 @@ export const forgotPassword = async (req, res) => {
         expiryMinutes:
           parseInt(process.env.PASSWORD_RESET_TOKEN_EXPIRY_MINUTES) || 15,
       });
-      console.log(
+      logger.debug(
         `✅ Password reset email sent successfully to: ${user.email}`
       );
     } catch (emailError) {
-      console.error(
+      logger.error(
         `❌ Failed to send password reset email: ${emailError.message}`
       );
       passwordResetTokens.delete(resetTokenData.resetToken);
@@ -160,7 +161,7 @@ export const forgotPassword = async (req, res) => {
 
     return res.status(200).json(securityResponse);
   } catch (error) {
-    console.error("❌ Forgot password error:", error);
+    logger.error("❌ Forgot password error:", error);
     res
       .status(500)
       .json({
@@ -286,7 +287,7 @@ export const resetPassword = async (req, res) => {
           "Password has been reset successfully. You can now log in with your new password.",
       });
   } catch (error) {
-    console.error("❌ Reset password error:", error);
+    logger.error("❌ Reset password error:", error);
     res
       .status(500)
       .json({

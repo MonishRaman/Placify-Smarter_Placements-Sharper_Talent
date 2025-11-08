@@ -3,7 +3,6 @@ import { FaBriefcase } from "react-icons/fa";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const PostJob = () => {
@@ -59,11 +58,11 @@ const PostJob = () => {
       });
 
       toast.success("Job posted successfully!");
-      console.log("Job created:", response.data);
+      logger.debug("Job created:", response.data);
 
       navigate("/dashboard/company");
     } catch (err) {
-      console.error("Error posting job:", err);
+      logger.error("Error posting job:", err);
       toast.error(err.response?.data?.message || "Failed to post job");
     }
   };

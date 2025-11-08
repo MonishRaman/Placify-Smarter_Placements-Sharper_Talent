@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Award, User, Camera, X, Save, Mail, Phone, MapPin, GraduationCap, Calendar, Briefcase, Edit3, Check, AlertTriangle, CheckCircle } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import toast from "react-hot-toast";
-
 // Mock data for demonstration (replace with your actual API calls)
 export const mockProfile = {
   fullName: "John Smith",
@@ -359,7 +358,7 @@ const ProfilePage = () => {
       ));
 
       setIsSaving(false);
-      console.log("Profile saved:", profile);
+      logger.debug("Profile saved:", profile);
     }, 2000);
   };
 

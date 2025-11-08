@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import logger from './logger';
 
 export const generateResumePDF = async (resumeElement, fileName = 'resume') => {
     try {
@@ -58,7 +59,7 @@ export const generateResumePDF = async (resumeElement, fileName = 'resume') => {
 
         return { success: true, message: 'Resume downloaded successfully!' };
     } catch (error) {
-        console.error('Error generating PDF:', error);
+        logger.error('Error generating PDF:', error);
         return { success: false, message: 'Failed to generate PDF. Please try again.' };
     }
 }; export const generateResumeBlob = async (resumeElement) => {
@@ -79,7 +80,7 @@ export const generateResumePDF = async (resumeElement, fileName = 'resume') => {
 
         return pdf.output('blob');
     } catch (error) {
-        console.error('Error generating PDF blob:', error);
+        logger.error('Error generating PDF blob:', error);
         throw error;
     }
 };

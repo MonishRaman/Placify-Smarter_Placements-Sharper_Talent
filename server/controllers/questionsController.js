@@ -1,5 +1,6 @@
 import { generateAptitudeQuestionWithGemini } from "../services/ai/gemini.js";
 import Question from "../models/Question.js";
+import logger from '../utils/logger.js';
 
 /**
  * POST /api/questions/generate
@@ -20,7 +21,7 @@ export async function generateQuestion(req, res) {
     });
 
     if (generated.error) {
-      console.error(
+      logger.error(
         "[generateQuestion] Gemini generation error:",
         generated.error
       );
@@ -42,7 +43,7 @@ export async function generateQuestion(req, res) {
     await questionDoc.save();
     return res.status(201).json(questionDoc);
   } catch (err) {
-    console.error("[generateQuestion] Error:", err);
+    logger.error("[generateQuestion] Error:", err);
     return res.status(500).json({ error: "Failed to generate question" });
   }
 }

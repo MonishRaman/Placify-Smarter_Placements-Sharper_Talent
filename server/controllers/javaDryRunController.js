@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import logger from '../utils/logger.js';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -31,7 +32,7 @@ export const dryRunJava = async (req, res) => {
       message: allPassed ? "All test cases passed." : "Some test cases failed.",
     });
   } catch (error) {
-    console.error("Java Dry-Run Error:", error);
+    logger.error("Java Dry-Run Error:", error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error." });
@@ -61,7 +62,7 @@ async function callGeminiAPI(prompt) {
     const result = await model.generateContent(prompt);
     return result.response.text();
   } catch (err) {
-    console.error("Gemini API error:", err.message);
+    logger.error("Gemini API error:", err.message);
     return null;
   }
 }

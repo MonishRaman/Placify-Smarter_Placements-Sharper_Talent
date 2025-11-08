@@ -1,4 +1,5 @@
 import axios from 'axios';
+import logger from '../utils/logger';
 
 // Determine if we're in development mode
 const isDev = import.meta.env.MODE === 'development' || !import.meta.env.PROD;
@@ -23,13 +24,13 @@ const apiClient = axios.create({
 });
 
 if (isDev) {
-  console.log('🛠️ apiClient baseURL set to:', computedBaseURL);
+  logger.debug('🛠️ apiClient baseURL set to:', computedBaseURL);
 }
 
 // For debugging in development only
 if (isDev) {
   apiClient.interceptors.request.use(request => {
-    console.log('🚀 Request:', request.method?.toUpperCase(), request.url);
+    logger.debug('🚀 Request:', request.method?.toUpperCase(), request.url);
     return request;
   });
 }
@@ -67,7 +68,7 @@ apiClient.interceptors.response.use(
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      console.error('API Error Response:', error.response.data);
+      logger.error('API Error Response:', error.response.data);
       errorMessage = error.response.data?.message || `Error: ${error.response.status}`;
 
       // Handle authentication errors - redirect to login page
@@ -78,7 +79,7 @@ apiClient.interceptors.response.use(
 
         // Redirect to login page (if not already there)
         if (!window.location.pathname.includes('/auth')) {
-          console.warn('Session expired. Redirecting to login...');
+          logger.warn('Session expired. Redirecting to login...');
           window.location.href = '/auth';
 
           // Show error only if not redirecting
@@ -87,17 +88,17 @@ apiClient.interceptors.response.use(
       }
     } else if (error.request) {
       // The request was made but no response was received
-      console.error('API No Response:', error.request);
+      logger.error('API No Response:', error.request);
       errorMessage = 'Could not connect to the server. Please check your connection and try again.';
     } else {
       // Something happened in setting up the request that triggered an Error
-      console.error('API Error:', error.message);
+      logger.error('API Error:', error.message);
       errorMessage = error.message;
     }
 
     // Here you could trigger a global notification/toast using a toast library
     // For now, we'll just log to console and let the component handle it
-    console.error(`API Error: ${errorMessage}`);
+    logger.error(`API Error: ${errorMessage}`);
 
     // Reject the promise so the component's .catch() block can also handle it if needed
     return Promise.reject(error);

@@ -280,7 +280,7 @@ const JobSwitchInsights = () => {
 
         setInsightsData(mockInsightsData);
       } catch (error) {
-        console.error("Failed to fetch job insights:", error);
+        logger.error("Failed to fetch job insights:", error);
         // Handle error state
       } finally {
         setLoading(false);

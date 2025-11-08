@@ -1,3 +1,5 @@
+import logger from '../utils/logger.js';
+
 // server/controllers/studentController.js
 
 // Mock data to simulate fetching from a database
@@ -112,7 +114,7 @@ export const getStudentProgress = async (req, res) => {
   try {
     res.status(200).json(mockStudents);
   } catch (error) {
-    console.error("Error fetching student progress:", error);
+    logger.error("Error fetching student progress:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -135,7 +137,7 @@ export const getStudentById = async (req, res) => {
 
     res.status(200).json(student);
   } catch (error) {
-    console.error("Error fetching student by ID:", error);
+    logger.error("Error fetching student by ID:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

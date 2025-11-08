@@ -5,6 +5,7 @@ import Student from "../models/Student.js";
 import Company from "../models/Company.js";
 import Employee from "../models/Employee.js";
 import Institution from "../models/Institution.js";
+import logger from '../utils/logger.js';
 
 const generateToken = (id, role) =>
   jwt.sign({ userId: id, role }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -47,7 +48,7 @@ export const registerStudent = async (req, res) => {
     });
     res.status(201).json({ message: "Student registered successfully" });
   } catch (error) {
-    console.error("Student Register Error:", error);
+    logger.error("Student Register Error:", error);
     if (error.message === "Email already exists")
       return res.status(400).json({ message: error.message });
     res.status(500).json({ message: "Server error" });
@@ -71,7 +72,7 @@ export const registerInstitution = async (req, res) => {
     });
     res.status(201).json({ message: "Institution registered successfully" });
   } catch (error) {
-    console.error("Institution Register Error:", error);
+    logger.error("Institution Register Error:", error);
     if (error.message === "Email already exists")
       return res.status(400).json({ message: error.message });
     res.status(500).json({ message: "Server error" });
@@ -96,7 +97,7 @@ export const registerEmployee = async (req, res) => {
     });
     res.status(201).json({ message: "Employee registered successfully" });
   } catch (error) {
-    console.error("Employee Register Error:", error);
+    logger.error("Employee Register Error:", error);
     if (error.message === "Email already exists")
       return res.status(400).json({ message: error.message });
     if (error.name === "ValidationError") {
@@ -129,7 +130,7 @@ export const registerCompany = async (req, res) => {
     });
     res.status(201).json({ message: "Company registered successfully" });
   } catch (error) {
-    console.error("Company Register Error:", error);
+    logger.error("Company Register Error:", error);
     if (error.message === "Email already exists")
       return res.status(400).json({ message: error.message });
     res.status(500).json({ message: "Server error" });
@@ -155,7 +156,7 @@ export const loginUser = async (req, res) => {
       user: { id: user._id, role: user.role?.toLowerCase(), email: user.email },
     });
   } catch (error) {
-    console.error("Login Error:", error);
+    logger.error("Login Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -182,7 +183,7 @@ export const getProfile = async (req, res) => {
 
     return res.json(user);
   } catch (error) {
-    console.error("Get profile error:", error);
+    logger.error("Get profile error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -282,7 +283,7 @@ export const updateProfile = async (req, res) => {
 
     return res.json(updatedUser);
   } catch (error) {
-    console.error("Update profile error:", error);
+    logger.error("Update profile error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

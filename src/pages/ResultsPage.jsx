@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import logger from '../utils/logger';
 import {
   ArrowLeft, TrendingUp, Eye, Mic, Brain,
   Award, Target, CheckCircle, AlertTriangle,
@@ -260,7 +261,7 @@ const ResultsPage = () => {
           setPreviousSessions(fallbackPreviousSessions);
         }
       } catch (err) {
-        console.error('Error fetching data:', err);
+        logger.error('Error fetching data:', err);
         setError('Failed to load interview results. Please try again.');
         
         const fallbackData = {

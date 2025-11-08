@@ -1,4 +1,5 @@
 import InterviewExperience from "../models/InterviewExperience.js";
+import logger from '../utils/logger.js';
 
 // Utility: Validate required fields
 const validateRequiredFields = (body, requiredFields) => {
@@ -8,7 +9,7 @@ const validateRequiredFields = (body, requiredFields) => {
 
 // Utility: Standard error response
 const handleError = (res, error, message) => {
-  console.error(message, error);
+  logger.error(message, error);
   return res.status(500).json({
     success: false,
     message,

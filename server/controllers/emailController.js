@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import validator from "validator";
+import logger from '../utils/logger.js';
 
 dotenv.config();
 
@@ -71,7 +72,7 @@ export const sendFeedback = async (req, res) => {
     const feedbackData = req.body;
     validateFeedback(feedbackData);
 
-    console.log("📧 Sending feedback email...");
+    logger.debug("📧 Sending feedback email...");
 
     const emailContent = formatFeedbackContent(feedbackData);
     const subject = `🎯 New Feedback - ${feedbackData.rating}⭐ Rating from ${
@@ -86,14 +87,14 @@ export const sendFeedback = async (req, res) => {
       html: emailContent.replace(/\n/g, "<br>"),
     });
 
-    console.log("✅ Feedback email sent successfully!");
+    logger.debug("✅ Feedback email sent successfully!");
 
     return res.status(200).json({
       success: true,
       message: "Feedback sent successfully! Thank you for your input.",
     });
   } catch (error) {
-    console.error("❌ Error sending feedback email:", error.message);
+    logger.error("❌ Error sending feedback email:", error.message);
 
     const isValidationError = ["required", "must be", "Invalid email"].some(
       (msg) => error.message.includes(msg)
@@ -112,7 +113,7 @@ export const sendFeedback = async (req, res) => {
 // Test email configuration
 export const testEmailConfig = async (_req, res) => {
   try {
-    console.log("🧪 Testing email configuration...");
+    logger.debug("🧪 Testing email configuration...");
 
     await sendEmail({
       from: process.env.EMAIL_USER,
@@ -122,14 +123,14 @@ export const testEmailConfig = async (_req, res) => {
       html: "<p>✅ <strong>Success!</strong> Email working!</p>",
     });
 
-    console.log("✅ Test email sent successfully!");
+    logger.debug("✅ Test email sent successfully!");
 
     return res.status(200).json({
       success: true,
       message: "Email test successful!",
     });
   } catch (error) {
-    console.error("❌ Email test failed:", error.message);
+    logger.error("❌ Email test failed:", error.message);
 
     return res.status(500).json({
       success: false,

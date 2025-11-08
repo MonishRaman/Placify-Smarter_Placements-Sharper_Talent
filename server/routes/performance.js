@@ -1,6 +1,7 @@
 
 
 import express from "express";
+import logger from '../utils/logger.js';
 const router = express.Router();
 import Student from "../models/Student.js";
 
@@ -71,7 +72,7 @@ router.get("/", async (req, res) => {
       departmentStats,
     });
   } catch (error) {
-    console.error("Error in /performance route:", error);
+    logger.error("Error in /performance route:", error);
     res.status(500).json({ message: "Failed to fetch stats", error });
   }
 });

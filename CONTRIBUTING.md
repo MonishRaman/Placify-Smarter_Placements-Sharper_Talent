@@ -183,6 +183,70 @@ python code_quality.py --lint
 
 ---
 
+## 📊 Logging Guidelines
+
+Placify uses a **centralized logging system** instead of direct `console.*` statements for better production readiness and debugging.
+
+### 🎯 Quick Start with Logger
+
+```javascript
+// ✅ DO: Use the logger
+import logger from '@/utils/logger'; // Frontend
+import logger from './utils/logger.js'; // Backend
+
+logger.debug('Detailed debug info', { data });
+logger.info('Operation successful', { userId });
+logger.warn('Potential issue detected', { warning });
+logger.error('Operation failed', error);
+```
+
+```javascript
+// ❌ DON'T: Use console directly
+console.log('Debug info');      // ESLint will error
+console.error('Error occurred'); // ESLint will error
+```
+
+### Log Levels
+
+- **`logger.debug()`**: Detailed debugging (development only)
+- **`logger.info()`**: General information (successful operations)
+- **`logger.warn()`**: Warnings that don't stop execution
+- **`logger.error()`**: Errors and exceptions
+
+### Best Practices
+
+1. **Use appropriate log levels** based on message severity
+2. **Include context** with your logs:
+   ```javascript
+   logger.error('Failed to save user', { userId, error });
+   ```
+3. **Never log sensitive data** (passwords, tokens, credit cards)
+4. **Keep messages concise and descriptive**
+5. **Use structured data** instead of string concatenation
+
+### Environment-Based Logging
+
+- **Development**: All logs visible (DEBUG, INFO, WARN, ERROR)
+- **Production**: Only warnings and errors (WARN, ERROR)
+- **Test**: Errors only (ERROR)
+
+### 📚 Full Documentation
+
+For complete logging guidelines, examples, and best practices, see:
+**[LOGGING_GUIDE.md](./LOGGING_GUIDE.md)**
+
+### ESLint Enforcement
+
+The project uses ESLint to prevent direct console usage:
+```bash
+# Check for linting errors
+npm run lint
+```
+
+Direct `console.*` usage will trigger an ESLint error. Always use the logger utility instead.
+
+---
+
 ## 📝 Issue Report Process
 
 1. Go to [Issues](https://github.com/MonishRaman/Placify-Smarter-Placements.-Sharper-Talent.-.git/issues)

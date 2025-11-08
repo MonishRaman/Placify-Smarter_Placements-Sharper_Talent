@@ -1,6 +1,7 @@
 import Settings from "../models/Settings.js";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+import logger from '../utils/logger.js';
 
 /* -------------------- Default Settings -------------------- */
 
@@ -78,7 +79,7 @@ export const getSettings = async (req, res) => {
 
     res.json({ profile: user, settings });
   } catch (error) {
-    console.error("Get settings error:", error);
+    logger.error("Get settings error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -111,7 +112,7 @@ export const updateNotifications = async (req, res) => {
       settings: settings.notifications,
     });
   } catch (error) {
-    console.error("Update notifications error:", error);
+    logger.error("Update notifications error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -141,7 +142,7 @@ export const updateIntegrations = async (req, res) => {
       settings: settings.integrations,
     });
   } catch (error) {
-    console.error("Update integrations error:", error);
+    logger.error("Update integrations error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -158,7 +159,7 @@ export const uploadLogo = async (req, res) => {
 
     res.json({ message: "Logo uploaded successfully", logoPath });
   } catch (error) {
-    console.error("Upload logo error:", error);
+    logger.error("Upload logo error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import logger from '../utils/logger.js';
 
 dotenv.config();
 
@@ -39,7 +40,7 @@ class EmailService {
     initializeTransporter() {
         try {
             if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-                console.warn('⚠️  Email service not configured: Missing GMAIL_USER or GMAIL_APP_PASSWORD environment variables');
+                logger.warn('⚠️  Email service not configured: Missing GMAIL_USER or GMAIL_APP_PASSWORD environment variables');
                 return;
             }
 
@@ -60,9 +61,9 @@ class EmailService {
             });
 
             this.isConfigured = true;
-            console.log('✅ Email service configured successfully');
+            logger.debug('✅ Email service configured successfully');
         } catch (error) {
-            console.error('❌ Failed to configure email service:', error.message);
+            logger.error('❌ Failed to configure email service:', error.message);
             this.isConfigured = false;
         }
     }
@@ -73,16 +74,16 @@ class EmailService {
      */
     async verifyConnection() {
         if (!this.isConfigured || !this.transporter) {
-            console.error('❌ Email service not configured');
+            logger.error('❌ Email service not configured');
             return false;
         }
 
         try {
             await this.transporter.verify();
-            console.log('✅ Email service connection verified');
+            logger.debug('✅ Email service connection verified');
             return true;
         } catch (error) {
-            console.error('❌ Email service verification failed:', error.message);
+            logger.error('❌ Email service verification failed:', error.message);
             return false;
         }
     }
@@ -122,10 +123,10 @@ class EmailService {
                 html: this.generateHtmlResetEmail(userName, resetLink, expiryMinutes)
             };
 
-            console.log(`📧 Sending password reset email to: ${to}`);
+            logger.debug(`📧 Sending password reset email to: ${to}`);
             const info = await this.transporter.sendMail(mailOptions);
 
-            console.log('✅ Password reset email sent successfully:', info.messageId);
+            logger.debug('✅ Password reset email sent successfully:', info.messageId);
             return {
                 success: true,
                 messageId: info.messageId,
@@ -133,7 +134,7 @@ class EmailService {
                 timestamp: new Date().toISOString()
             };
         } catch (error) {
-            console.error('❌ Failed to send password reset email:', error.message);
+            logger.error('❌ Failed to send password reset email:', error.message);
             throw new Error(`Failed to send password reset email: ${error.message}`);
         }
     }
@@ -259,10 +260,10 @@ ${resetLink}
                 ...(html && { html })
             };
 
-            console.log(`📧 Sending email to: ${to}`);
+            logger.debug(`📧 Sending email to: ${to}`);
             const info = await this.transporter.sendMail(mailOptions);
 
-            console.log('✅ Email sent successfully:', info.messageId);
+            logger.debug('✅ Email sent successfully:', info.messageId);
             return {
                 success: true,
                 messageId: info.messageId,
@@ -270,7 +271,7 @@ ${resetLink}
                 timestamp: new Date().toISOString()
             };
         } catch (error) {
-            console.error('❌ Failed to send email:', error.message);
+            logger.error('❌ Failed to send email:', error.message);
             throw new Error(`Failed to send email: ${error.message}`);
         }
     }

@@ -1,5 +1,6 @@
 import Company from "../models/Company.js";
 import Employee from "../models/Employee.js";
+import logger from '../utils/logger.js';
 
 // Assumes req.user is set by auth middleware and contains _id and role
 export const getCompanyDashboard = async (req, res) => {
@@ -32,7 +33,7 @@ export const getCompanyDashboard = async (req, res) => {
       performance: {}, // Placeholder for performance data
     });
   } catch (error) {
-    console.error("Company Dashboard Error:", error);
+    logger.error("Company Dashboard Error:", error);
     res.status(500).json({ error: "Internal server error." });
   }
 };

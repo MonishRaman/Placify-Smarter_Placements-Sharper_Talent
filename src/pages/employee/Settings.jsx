@@ -45,7 +45,7 @@ const Settings = () => {
         if (data?.profileImage)
           setImagePreview(profileImageUrl(data.profileImage));
       } catch (err) {
-        console.warn(
+        logger.warn(
           "Failed to fetch profile from API, falling back to local mock:",
           err.message || err
         );
@@ -61,7 +61,7 @@ const Settings = () => {
             setEdited(defaultMock);
           }
         } catch (e) {
-          console.error("Failed to load mock settings", e);
+          logger.error("Failed to load mock settings", e);
           setProfile(defaultMock);
           setEdited(defaultMock);
         }
@@ -157,7 +157,7 @@ const Settings = () => {
         setIsEditing(false);
         setSelectedFile(null);
       } catch (err) {
-        console.error("Failed to save profile:", err);
+        logger.error("Failed to save profile:", err);
         setError("Failed to save profile. Changes not persisted.");
         // fallback: save locally so dev can continue
         try {
